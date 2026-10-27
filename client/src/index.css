@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ─────────────────────────────────────────────────── */
+:root {
+  --bg-primary:    #0f0f13;
+  --bg-secondary:  #16161d;
+  --bg-surface:    #1e1e2a;
+  --bg-hover:      #252535;
+  --border:        #2d2d40;
+  --text-primary:  #e8e8f0;
+  --text-secondary:#8888a8;
+  --text-muted:    #55556a;
+  --accent:        #6366f1;
+  --accent-hover:  #4f52d6;
+  --accent-light:  #6366f120;
+  --danger:        #ef4444;
+  --success:       #22c55e;
+  --editor-bg:     #ffffff;
+  --editor-text:   #1a1a2e;
+}
+
+/* ─── Base Reset ──────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ─── Editor Canvas ──────────────────────────────────────────────────────── */
+.editor-canvas {
+  position: relative;
+  background: var(--editor-bg);
+  color: var(--editor-text);
+  min-height: calc(100vh - 120px);
+  max-width: 816px;      /* US Letter width in pixels at 96dpi */
+  margin: 0 auto;
+  padding: 96px 96px;
+  border-radius: 4px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.editor-content {
+  outline: none;
+  min-height: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  caret-color: var(--accent);
+}
+
+/* ─── Remote Cursor ──────────────────────────────────────────────────────── */
+.remote-cursor {
+  position: absolute;
+  width: 2px;
+  pointer-events: none;
+  z-index: 10;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+.remote-cursor-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ─── Glassmorphism Card ─────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(30, 30, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+/* ─── Animated gradient background for auth pages ───────────────────────── */
+.auth-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 20%, #6366f140 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, #8b5cf640 0%, transparent 50%),
+    var(--bg-primary);
+}
+
+/* ─── Document card ─────────────────────────────────────────────────────── */
+.doc-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.doc-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+}
+
+/* ─── Button variants ───────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover  { background: var(--accent-hover); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--text-muted); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-danger:hover { background: #ef444420; }
+
+/* ─── Form inputs ────────────────────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+.input-field::placeholder { color: var(--text-muted); }
+
+/* ─── Connection badge ───────────────────────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.status-connected { background: #22c55e20; color: #22c55e; }
+.status-connected .status-dot { background: #22c55e; animation: pulse 2s infinite; }
+.status-disconnected { background: #ef444420; color: #ef4444; }
+.status-disconnected .status-dot { background: #ef4444; }
+.status-connecting { background: #f59e0b20; color: #f59e0b; }
+.status-connecting .status-dot { background: #f59e0b; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.3); }
+}
+
+/* ─── Topbar ─────────────────────────────────────────────────────────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15, 15, 19, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ─── Presence avatars ───────────────────────────────────────────────────── */
+.presence-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  border: 2px solid var(--bg-primary);
+  margin-left: -8px;
+  transition: transform 0.2s;
+}
+.presence-avatar:first-child { margin-left: 0; }
+.presence-avatar:hover { transform: translateY(-2px) scale(1.1); z-index: 10; }
+
+/* ─── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 260px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── Utility ─────────────────────────────────────────────────────────────── */
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
