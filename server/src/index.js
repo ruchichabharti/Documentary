@@ -25,8 +25,23 @@ const app  = express();
 const PORT = process.env.PORT ?? 3001;
 
 // ── Middleware ────────────────────────────────────────────────────────────────
+const allowedOrigins = process.env.CLIENT_ORIGIN
+  ? process.env.CLIENT_ORIGIN.split(',').map((o) => o.trim())
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      allowedOrigins.includes('*') ||
+      origin.endsWith('.onrender.com') ||
+      origin.endsWith('.vercel.app')
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS origin not allowed: ' + origin));
+  },
   credentials: true,
 }));
 app.use(express.json({ limit: '50mb' }));

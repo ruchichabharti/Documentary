@@ -132,11 +132,12 @@ export function AuthProvider({ children }) {
   const sendOtp = async (email) => {
     setAuthError(null);
     const cleanEmail = email.trim().toLowerCase();
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
     // 1. Send directly through local backend using Gmail SMTP
     let localReachable = false;
     try {
-      const res = await fetch('http://localhost:3001/auth/send-otp', {
+      const res = await fetch(`${apiBase}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail }),
@@ -184,11 +185,12 @@ export function AuthProvider({ children }) {
     setAuthError(null);
     const cleanEmail = email.trim().toLowerCase();
     const cleanToken = token.trim();
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
     // 1. Try verifying against local backend OTP store
     let localReachable = false;
     try {
-      const res = await fetch('http://localhost:3001/auth/verify-otp', {
+      const res = await fetch(`${apiBase}/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail, code: cleanToken }),
