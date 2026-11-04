@@ -165,11 +165,52 @@ export function estimateTokens(text) {
   return Math.ceil(text.length / 4);
 }
 
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
+/**
+ * Extracts plain text from a PDF file page by page using pdfjs-dist.
+ */
+export async function readPdfAsText(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+  const pdf = await loadingTask.promise;
+  const pageTexts = [];
+
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .map((item) => ('str' in item ? item.str : ''))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (pageText) {
+      pageTexts.push(`[Page ${pageNum}]\n${pageText}`);
+    }
+  }
+
+  return pageTexts.join('\n\n');
+}
+
 /**
  * Reads a File or Blob object as plain text.
- * Supports txt, md, json, csv, or basic text-extracted content.
+ * Automatically handles PDFs with real text extraction, plus txt, md, json, csv.
  */
 export async function readFileAsText(file) {
+  if (file.name?.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+    try {
+      const extractedPdf = await readPdfAsText(file);
+      if (extractedPdf && extractedPdf.trim().length > 0) {
+        return extractedPdf;
+      }
+    } catch (pdfErr) {
+      console.warn('[DocMind] PDF text extraction failed, falling back to text reader:', pdfErr);
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => resolve(e.target.result);
@@ -177,3 +218,4 @@ export async function readFileAsText(file) {
     reader.readAsText(file);
   });
 }
+

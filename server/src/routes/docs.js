@@ -13,10 +13,69 @@ import { authMiddleware } from '../auth/jwt.js';
 import {
   createDocument, getDocument, getDocumentsByOwner,
   updateDocumentTitle, deleteDocument, hasAccess,
+  getIngestedDocuments, saveIngestedDocument, deleteIngestedDocument,
 } from '../db/queries.js';
 
 const router = Router();
 router.use(authMiddleware);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Ingested RAG Knowledge Base Documents (Strict Per-User Scope)
+// ─────────────────────────────────────────────────────────────────────────────
+
+router.get('/ingested', async (req, res) => {
+  try {
+    const ownerId = req.user.sub;
+    const ownerEmail = (req.user.email || '').toLowerCase();
+    const docs = await getIngestedDocuments(ownerId, ownerEmail);
+    res.json({ documents: docs });
+  } catch (err) {
+    console.error('[docs/ingested get error]:', err);
+    res.status(500).json({ error: 'Failed to retrieve user documents' });
+  }
+});
+
+router.post('/ingested', async (req, res) => {
+  try {
+    const ownerId = req.user.sub;
+    const ownerEmail = (req.user.email || '').toLowerCase();
+    const { id, title, file_path, file_type, file_size, chunk_count, chunks } = req.body;
+
+    if (!id || !title) {
+      return res.status(400).json({ error: 'id and title are required' });
+    }
+
+    const saved = await saveIngestedDocument({
+      id,
+      ownerId,
+      ownerEmail,
+      title,
+      filePath: file_path,
+      fileType: file_type,
+      fileSize: file_size,
+      chunkCount: chunk_count,
+      chunks,
+    });
+
+    res.status(201).json({ success: true, document: saved });
+  } catch (err) {
+    console.error('[docs/ingested post error]:', err);
+    res.status(500).json({ error: 'Failed to save document' });
+  }
+});
+
+router.delete('/ingested/:id', async (req, res) => {
+  try {
+    const ownerId = req.user.sub;
+    const ownerEmail = (req.user.email || '').toLowerCase();
+    const success = await deleteIngestedDocument(req.params.id, ownerId, ownerEmail);
+    res.json({ success });
+  } catch (err) {
+    console.error('[docs/ingested delete error]:', err);
+    res.status(500).json({ error: 'Failed to delete document' });
+  }
+});
+
 
 router.get('/', async (req, res) => {
   try {

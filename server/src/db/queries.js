@@ -168,3 +168,83 @@ export async function grantAccess(docId, userId, role = 'editor') {
     args: [docId, userId, role],
   });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Ingested RAG Knowledge Base Documents (Strict Per-User Isolation)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getIngestedDocuments(ownerId, ownerEmail = '') {
+  const cleanEmail = (ownerEmail || '').toLowerCase();
+  const res = await db.execute({
+    sql: `SELECT * FROM ingested_documents 
+          WHERE owner_id = ? OR (owner_email != '' AND owner_email = ?) 
+          ORDER BY created_at DESC`,
+    args: [ownerId, cleanEmail],
+  });
+  return res.rows.map((row) => ({
+    id: row.id,
+    user_id: row.owner_id,
+    user_email: row.owner_email,
+    title: row.title,
+    file_path: row.file_path,
+    file_type: row.file_type,
+    file_size: row.file_size,
+    chunk_count: row.chunk_count,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    chunks: row.chunks_json ? JSON.parse(row.chunks_json) : [],
+  }));
+}
+
+export async function saveIngestedDocument({
+  id,
+  ownerId,
+  ownerEmail,
+  title,
+  filePath,
+  fileType,
+  fileSize,
+  chunkCount,
+  chunks,
+}) {
+  const cleanEmail = (ownerEmail || '').toLowerCase();
+  const chunksJson = JSON.stringify(chunks || []);
+  await db.execute({
+    sql: `INSERT OR REPLACE INTO ingested_documents 
+          (id, owner_id, owner_email, title, file_path, file_type, file_size, chunk_count, chunks_json, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+    args: [
+      id,
+      ownerId,
+      cleanEmail,
+      title,
+      filePath || null,
+      fileType || 'text/plain',
+      fileSize || 0,
+      chunkCount || (chunks ? chunks.length : 0),
+      chunksJson,
+    ],
+  });
+  return {
+    id,
+    user_id: ownerId,
+    user_email: cleanEmail,
+    title,
+    file_path: filePath,
+    file_type: fileType,
+    file_size: fileSize,
+    chunk_count: chunkCount || (chunks ? chunks.length : 0),
+    chunks,
+  };
+}
+
+export async function deleteIngestedDocument(id, ownerId, ownerEmail = '') {
+  const cleanEmail = (ownerEmail || '').toLowerCase();
+  const res = await db.execute({
+    sql: `DELETE FROM ingested_documents 
+          WHERE id = ? AND (owner_id = ? OR (owner_email != '' AND owner_email = ?))`,
+    args: [id, ownerId, cleanEmail],
+  });
+  return res.rowsAffected > 0;
+}
+

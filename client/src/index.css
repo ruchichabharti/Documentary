@@ -268,3 +268,32 @@ html, body, #root {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ─── KaTeX Math Display Styles ────────────────────────────────────────────── */
+.katex {
+  font-size: 1.08em;
+  color: inherit;
+  line-height: 1.2;
+}
+
+.katex-display {
+  margin: 0.75em 0;
+  padding: 0.5em 0.75em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.katex-display > .katex {
+  max-width: 100%;
+  text-align: center;
+  color: #e0e7ff;
+}
+
+.katex .mord.mathbf {
+  font-weight: 700;
+  color: #a5b4fc;
+}
+

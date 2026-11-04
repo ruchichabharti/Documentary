@@ -18,6 +18,116 @@ import {
   BookOpen
 } from 'lucide-react';
 import { searchSimilarChunks, generateGroundedAnswer } from '../lib/rag.js';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
+function isInsideMath(fullText, index) {
+  const textBefore = fullText.slice(0, index);
+
+  // Count $$ occurrences
+  const doubleMatches = textBefore.match(/\$\$/g);
+  const doubleCount = doubleMatches ? doubleMatches.length : 0;
+  if (doubleCount % 2 === 1) return true; // Inside display block $$ ... $$
+
+  // Count unescaped single $ occurrences (excluding $$)
+  const cleaned = textBefore.replace(/\$\$/g, '');
+  const singleMatches = cleaned.match(/(?<!\\)\$/g);
+  const singleCount = singleMatches ? singleMatches.length : 0;
+  if (singleCount % 2 === 1) return true; // Inside inline block $ ... $
+
+  return false;
+}
+
+function formatMathForDisplay(text) {
+  if (!text || typeof text !== 'string') return '';
+  let str = text;
+
+  // 1. Standardize display math delimiters: \[ ... \] -> $$ ... $$
+  str = str.replace(/\\\[([\s\S]*?)\\\]/g, '\n$$\n$1\n$$\n');
+
+  // 2. Standardize inline math delimiters: \( ... \) -> $ ... $
+  str = str.replace(/\\\(([\s\S]*?)\\\)/g, '$$1$');
+
+  // 3. Fix matrix pipes: KaTeX doesn't support raw '|' inside bmatrix without array spec
+  // Replace ' | ' inside matrices with ' & ' so KaTeX renders clean column blocks
+  str = str.replace(/(\\begin\{(?:b|p|v|V)?matrix\}[\s\S]*?\\end\{(?:b|p|v|V)?matrix\})/g, (match) => {
+    return match.replace(/\s*\|\s*/g, ' & ');
+  });
+
+  // 4. Ensure bare LaTeX environments (\begin{cases}, \begin{aligned}, etc.) are wrapped in $$ ONLY IF NOT already inside math
+  str = str.replace(/(\\begin\{(cases|aligned|align\*?|matrix|pmatrix|bmatrix|vmatrix)\}[\s\S]*?\\end\{\2\})/g, (match, p1, env, offset, fullStr) => {
+    if (isInsideMath(fullStr, offset)) {
+      return match; // Already inside $ or $$, leave intact!
+    }
+    return `\n$$\n${match.trim()}\n$$\n`;
+  });
+
+  // 5. Clean up any accidental quadruple or triple dollars: $$$$ -> $$
+  str = str.replace(/\${3,}/g, '$$');
+
+  // 6. Clean up empty double newlines inside $$ blocks that break KaTeX
+  str = str.replace(/\$\$([\s\S]*?)\$\$/g, (_match, inner) => {
+    const cleanedInner = inner.replace(/\n\s*\n/g, '\n');
+    return `$$${cleanedInner}$$`;
+  });
+
+  // 7. Standardize unicode integrals to LaTeX
+  str = str.replace(/∫\(from\s+([^)]+)\s+to\s+([^)]+)\)/gi, '\\int_{$1}^{$2} ');
+  str = str.replace(/∫_\{([^}]+)\}\^\{([^}]+)\}/g, '\\int_{$1}^{$2} ');
+  str = str.replace(/∫/g, '\\int ');
+
+  const lines = str.split('\n');
+  let inDisplayBlock = false;
+
+  const processedLines = lines.map((line) => {
+    const trimmed = line.trim();
+
+    // Toggle display math block state
+    if (trimmed === '$$') {
+      inDisplayBlock = !inDisplayBlock;
+      return line;
+    }
+    if (trimmed.startsWith('$$') && trimmed.endsWith('$$') && trimmed.length > 2) {
+      return line;
+    }
+    if (inDisplayBlock) {
+      return line;
+    }
+
+    // Preserve code blocks and markdown headings
+    if (trimmed.startsWith('```') || trimmed.startsWith('#')) {
+      return line;
+    }
+
+    // Don't modify lines that already have math delimiters
+    if (trimmed.includes('$')) {
+      return line;
+    }
+
+    let l = line;
+
+    // Convert parenthesized fractions: ((2 / 7)) -> (\frac{2}{7}), (12 / 49) -> \frac{12}{49}
+    l = l.replace(/\(\(([0-9]+)\s*\/\s*([0-9]+)\)\)/g, '(\\frac{$1}{$2})');
+    l = l.replace(/\(([0-9]+)\s*\/\s*([0-9]+)\)/g, '\\frac{$1}{$2}');
+
+    // If line has standalone LaTeX commands, check if it is pure formula or prose
+    const hasLatexCmd = /\\[a-zA-Z]+/.test(l);
+    if (hasLatexCmd) {
+      // Count regular English words in this line (2 or more letters)
+      const proseWords = l.replace(/\\[a-zA-Z]+(\{[^}]*\})?/g, '').match(/[a-zA-Z]{2,}/g) || [];
+      // If there are ANY prose words (e.g. 'for', 'where', 'let', 'then', 'joint', 'rates'), NEVER wrap in math!
+      if (proseWords.length === 0 && /[=><+\-*\\^]/.test(l)) {
+        return `$$${l.trim()}$$`;
+      }
+    }
+
+    return l;
+  });
+
+  return processedLines.join('\n');
+}
 
 export default function ChatAssistant({
   isOpen,
@@ -268,10 +378,40 @@ export default function ChatAssistant({
                   </div>
                 </div>
 
-                <div className="whitespace-pre-wrap font-sans space-y-1">
-                  {msg.content}
-                  {msg.isStreaming && (
-                    <span className="inline-block w-1.5 h-3.5 bg-indigo-400 ml-1 animate-pulse align-middle" />
+                <div className="font-sans text-xs leading-relaxed space-y-2">
+                  {msg.role === 'user' ? (
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  ) : (
+                    <div className="space-y-2 text-slate-200">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#a5b4fc' }]]}
+                        components={{
+                          h1: ({ children }) => <h1 className="text-sm font-bold text-white mt-2 mb-1 border-b border-slate-700/60 pb-1">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-xs font-bold text-indigo-300 mt-2 mb-1">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-xs font-semibold text-indigo-200 mt-2 mb-1">{children}</h3>,
+                          p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-relaxed">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 my-1.5">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal pl-4 space-y-0.5 my-1.5">{children}</ol>,
+                          li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+                          code: ({ inline, children }) =>
+                            inline ? (
+                              <code className="bg-slate-800/80 text-indigo-300 px-1 py-0.5 rounded font-mono text-[11px]">{children}</code>
+                            ) : (
+                              <pre className="bg-[#0b0d14] border border-slate-800 p-2.5 rounded-lg font-mono text-[11px] overflow-x-auto my-2 text-indigo-200">{children}</pre>
+                            ),
+                          blockquote: ({ children }) => (
+                            <blockquote className="border-l-2 border-indigo-500 pl-3 italic text-slate-400 my-1.5">{children}</blockquote>
+                          ),
+                        }}
+                      >
+                        {formatMathForDisplay(msg.content)}
+                      </ReactMarkdown>
+                      {msg.isStreaming && (
+                        <span className="inline-block w-1.5 h-3.5 bg-indigo-400 ml-1 animate-pulse align-middle" />
+                      )}
+                    </div>
                   )}
                 </div>
 

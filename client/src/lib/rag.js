@@ -210,26 +210,32 @@ export async function searchSimilarChunks({
 
   // Fallback: Local cosine similarity ranking if DB RPC returns empty or during offline preview
   if (localFallbackChunks && localFallbackChunks.length > 0) {
-    const pool = localFallbackChunks.filter(
-      (c) => !documentId || c.metadata?.documentId === documentId || c.document_id === documentId || c.documentId === documentId
-    );
+    let pool = localFallbackChunks.filter((c) => {
+      if (!documentId || documentId === 'all') return true;
+      const cDocId = c.documentId || c.document_id || c.metadata?.documentId;
+      return !cDocId || cDocId === documentId;
+    });
+
+    if (pool.length === 0) {
+      pool = localFallbackChunks;
+    }
 
     const scored = pool
       .map((chunk) => {
         let sim = 0;
-        if (chunk.embedding && Array.isArray(chunk.embedding)) {
+        if (chunk.embedding && Array.isArray(chunk.embedding) && chunk.embedding.length > 0) {
           sim = cosineSimilarity(queryEmbedding, chunk.embedding);
-        } else {
-          // Keyword overlap fallback
-          sim = calculateKeywordSimilarity(query, chunk.content);
         }
+        const kwSim = calculateKeywordSimilarity(query, chunk.content);
+        const finalSim = Math.max(sim, kwSim);
+
         return {
           id: chunk.id || `chunk-${chunk.chunkIndex ?? chunk.chunk_index}`,
           documentId: chunk.metadata?.documentId || chunk.document_id || chunk.documentId || documentId,
           chunkIndex: chunk.chunkIndex ?? chunk.chunk_index ?? 0,
           content: chunk.content,
           metadata: chunk.metadata || {},
-          similarity: Math.max(0.1, Math.min(0.99, sim)),
+          similarity: Math.max(0.1, Math.min(0.99, finalSim)),
         };
       })
       .sort((a, b) => b.similarity - a.similarity);
@@ -274,12 +280,29 @@ function cosineSimilarity(vecA, vecB) {
 }
 
 function calculateKeywordSimilarity(query, text) {
-  const qWords = query.toLowerCase().split(/\s+/).filter((w) => w.length > 2);
-  const tWords = new Set(text.toLowerCase().split(/\s+/));
+  const queryLower = query.toLowerCase().trim();
+  const textLower = text.toLowerCase();
+
+  // 1. Direct question number detection: e.g. "question 1" <-> "q1", "q 1", "question 1"
+  const qNumMatch = queryLower.match(/(?:question|q|problem|prob|exercise)\s*(\d+)/i);
+  if (qNumMatch) {
+    const num = qNumMatch[1];
+    const patterns = [`q${num}`, `q ${num}`, `question ${num}`, `problem ${num}`, `q.${num}`, `module-${num}`, `module ${num}`];
+    for (const pat of patterns) {
+      // Look for whole token / boundary match
+      const regex = new RegExp(`\\b${pat}\\b|\\b${pat}[^a-z0-9]`, 'i');
+      if (regex.test(textLower) || textLower.includes(pat)) {
+        return 0.96;
+      }
+    }
+  }
+
+  // 2. Multi-word and token overlap
+  const qWords = queryLower.split(/[^a-z0-9]+/).filter((w) => w.length >= 2);
   if (qWords.length === 0) return 0.2;
   let matches = 0;
   for (const w of qWords) {
-    if (tWords.has(w)) matches++;
+    if (textLower.includes(w)) matches++;
   }
   return 0.3 + (matches / qWords.length) * 0.65;
 }
@@ -296,45 +319,63 @@ export async function generateGroundedAnswer({
   // If no chunks matched the selected scope
   if (!retrievedChunks || retrievedChunks.length === 0) {
     if (GEMINI_API_KEY) {
-      try {
-        const outOfScopePrompt = `You are DocMind, an intelligent AI assistant. 
+      const outOfScopePrompt = `You are DocMind, an intelligent AI assistant. 
 The user is searching their uploaded document(s), but their query was not found in the selected document scope.
 1. Start with: "I searched your selected document(s) and could not find any sections matching your query. However, here is the answer to your question:"
-2. Answer the user's question clearly, concisely, and accurately.
+2. Answer the user's question clearly, comprehensively, and accurately.
+3. Mathematical Formatting (CRITICAL):
+   - For inline variables, use single dollar signs: e.g. $\\mathbf{V}$, $\\dot{\\mathbf{q}}$, $6 \\times 1$.
+   - For display equations and matrices, ALWAYS use double dollar signs on their own separate lines:
+     $$\\mathbf{J}(\\mathbf{q}) = \\begin{bmatrix} \\mathbf{J}_v \\\\ \\mathbf{J}_\\omega \\end{bmatrix}$$
+   - Never use '|' directly inside bmatrix rows (use '&' to separate columns).
+   - Keep all English sentences and explanations outside math delimiters as normal markdown text.
+   - Use \\frac{a}{b} for fractions and \\int_{a}^{b} for integrals.
 User Question: ${query}`;
 
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: outOfScopePrompt }] }],
-              generationConfig: {
-                temperature: 0.3,
-                maxOutputTokens: 1000,
-              },
-            }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (fullAnswer) {
-            const tokens = fullAnswer.split(/(?<=\s)/);
-            let accumulated = '';
-            for (const tok of tokens) {
-              await new Promise((r) => setTimeout(r, 14));
-              accumulated += tok;
-              onStreamChunk(tok);
+      for (const model of ['gemini-3.6-flash', 'gemini-2.5-flash']) {
+        try {
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: outOfScopePrompt }] }],
+                generationConfig: {
+                  temperature: 0.3,
+                  maxOutputTokens: 8192,
+                },
+              }),
             }
-            onComplete?.({ answer: accumulated, citations: [] });
-            return;
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            const candidate = data.candidates?.[0];
+            const parts = candidate?.content?.parts || [];
+            const nonThoughtText = parts
+              .filter((p) => !p.thought && p.text)
+              .map((p) => p.text)
+              .join('');
+            const fullAnswer = nonThoughtText.trim().length > 0 
+              ? nonThoughtText 
+              : parts.map((p) => p.text || '').join('');
+
+            if (fullAnswer) {
+              const tokens = fullAnswer.split(/(?<=\s)/);
+              let accumulated = '';
+              for (const tok of tokens) {
+                await new Promise((r) => setTimeout(r, 8));
+                accumulated += tok;
+                onStreamChunk(tok);
+              }
+              onComplete?.({ answer: accumulated, citations: [] });
+              return;
+            }
           }
+        } catch (err) {
+          console.warn(`[DocMind] Gemini (${model}) out-of-scope answer error:`, err);
         }
-      } catch (err) {
-        console.warn('[DocMind] Gemini out-of-scope answer error:', err);
       }
     }
 
@@ -367,52 +408,87 @@ User Question: ${query}`;
     })
     .join('\n\n');
 
-  const systemInstruction = `You are DocMind, an intelligent and precise AI document assistant.
-Answer the user's question accurately using the provided Source snippets.
-Rules:
-1. Always ground your facts in the provided sources.
-2. Whenever you state a claim or fact from a source, cite it in square brackets like [Source 1] or [Source 2].
-3. If the sources do not provide enough information to fully answer, state clearly what is known and what is missing.
-4. Keep the answer structured, clear, and professional with bullet points where appropriate.`;
+  const systemInstruction = `You are DocMind, an advanced AI tutor and document analysis assistant, similar to ChatGPT, Claude, and Gemini Advanced.
+Your objective is to provide a complete, comprehensive, and exhaustive step-by-step answer to the user's question, fully grounded in the provided document sources.
+
+Guidelines:
+1. Complete, Exhaustive Solutions:
+   - Never truncate or cut corners. Provide the complete explanation and calculation from start to finish.
+   - For mathematical, statistical, or analytical problems:
+     * State the problem statement and given values.
+     * State the formulas, laws, or theorems used (e.g. total probability condition for PDF: $\\int_{-\\infty}^{\\infty} f(x)\\,dx = 1$, definition of CDF: $F(x) = \\int_{-\\infty}^{x} f(t)\\,dt$, total discrete probability: $\\sum P(X = x) = 1$).
+     * Show every integration, substitution, and algebraic simplification step-by-step for all intervals.
+     * Systematically solve each sub-part (e.g., Part 1: Value of 'c' or 'a', Part 2: Finding CDF $F(x)$ across each piecewise range).
+     * Clearly highlight the final answer for each part.
+2. Mathematical & Scientific Notation (CRITICAL):
+   - ALWAYS format every equation, formula, and mathematical expression using standard LaTeX enclosed in proper math delimiters.
+   - For inline variables, symbols, and short expressions: ALWAYS wrap in single dollar signs: e.g. $\\mathbf{V}$, $\\dot{\\mathbf{q}}$, $6 \\times 1$, $P(X = 0)$.
+   - For display equations, matrices, and multi-line equations: ALWAYS use double dollar signs on their own separate lines:
+     $$\\mathbf{J}(\\mathbf{q}) = \\begin{bmatrix} \\mathbf{J}_v \\\\ \\mathbf{J}_\\omega \\end{bmatrix}$$
+   - MATRICES: Always format matrices using standard LaTeX \\begin{bmatrix} ... \\end{bmatrix} inside $$ ... $$. Use '&' to separate columns and '\\\\' to separate rows. Never use vertical pipe '|' characters directly inside bmatrix rows (use '&' or separate blocks).
+   - STRICT PROSE SEPARATION: NEVER wrap full English sentences, explanations, bullet text, or source tags inside math delimiters ($...$ or $$...$$). Keep words in plain markdown text, and only put the mathematical symbols inside $...$.
+   - FRACTIONS: NEVER write fractions as plain text slashes like '4/5', '12/49', or '(2 / 7)'. ALWAYS use LaTeX '\\frac{numerator}{denominator}' (e.g. '$\\frac{4}{5}$', '$\\frac{12}{49}$', '$\\frac{2}{7}$') so that the number appears with a proper horizontal fraction bar.
+   - INTEGRATION: ALWAYS use '\\int_{a}^{b} f(x)\\,dx'.
+   - BOLD / HIGHLIGHTED ANSWERS: Use '\\mathbf{...}' or '\\boxed{...}' INSIDE math delimiters.
+   - NEVER output bare LaTeX commands without enclosing them in '$...$' or '$$...$$'.
+3. Structure and Polish:
+   - Use clean, structured Markdown with headings (###), numbered steps, and bullet points.
+   - Present equations cleanly so they are easy to read and understand.
+4. Grounding & Citations:
+   - Ground all facts in the provided sources and cite them in square brackets like [Source 1].`;
 
   // 1. Check if Gemini API key available for LLM generation
   if (GEMINI_API_KEY) {
-    try {
-      const promptText = `${systemInstruction}\n\nContext Sources:\n${contextBlock}\n\nQuestion: ${query}`;
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }],
-            generationConfig: {
-              temperature: 0.2,
-              maxOutputTokens: 1500,
-            },
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        const fullAnswer = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (fullAnswer) {
-          const tokens = fullAnswer.split(/(?<=\s)/);
-          let accumulated = '';
-          for (const tok of tokens) {
-            await new Promise((r) => setTimeout(r, 14));
-            accumulated += tok;
-            onStreamChunk(tok);
+    const promptText = `${systemInstruction}\n\nContext Sources:\n${contextBlock}\n\nQuestion: ${query}`;
+    for (const model of ['gemini-3.6-flash', 'gemini-2.5-flash']) {
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: promptText }] }],
+              generationConfig: {
+                temperature: 0.2,
+                maxOutputTokens: 8192,
+              },
+            }),
           }
-          onComplete?.({ answer: accumulated, citations });
-          return;
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const candidate = data.candidates?.[0];
+          const parts = candidate?.content?.parts || [];
+          
+          // Filter out internal thought parts if present and combine all real response text parts
+          const nonThoughtText = parts
+            .filter((p) => !p.thought && p.text)
+            .map((p) => p.text)
+            .join('');
+          
+          const fullAnswer = nonThoughtText.trim().length > 0 
+            ? nonThoughtText 
+            : parts.map((p) => p.text || '').join('');
+
+          if (fullAnswer) {
+            const tokens = fullAnswer.split(/(?<=\s)/);
+            let accumulated = '';
+            for (const tok of tokens) {
+              await new Promise((r) => setTimeout(r, 8));
+              accumulated += tok;
+              onStreamChunk(tok);
+            }
+            onComplete?.({ answer: accumulated, citations });
+            return;
+          }
+        } else {
+          console.warn(`[DocMind] Gemini (${model}) generation API response error:`, await response.text());
         }
-      } else {
-        console.warn('[DocMind] Gemini generation API response error:', await response.text());
+      } catch (err) {
+        console.warn(`[DocMind] Gemini (${model}) generation network error:`, err);
       }
-    } catch (err) {
-      console.warn('[DocMind] Gemini generation network error:', err);
     }
   }
 

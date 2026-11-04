@@ -113,6 +113,8 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         setProgressPercent(20);
       }
 
+      const docId = crypto.randomUUID();
+
       // Step 2: Chunk Document
       setCurrentStep(2);
       setStepMessage('Splitting into overlapping contextual chunks...');
@@ -122,6 +124,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
       const chunks = chunkDocumentText(textContent, {
         chunkSize,
         chunkOverlap,
+        documentId: docId,
         documentTitle: title,
       });
 
@@ -143,6 +146,13 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         const embedding = await createEmbedding(chunk.content);
         chunkDataWithVectors.push({
           ...chunk,
+          documentId: docId,
+          document_id: docId,
+          metadata: {
+            ...chunk.metadata,
+            documentId: docId,
+            documentTitle: title,
+          },
           embedding,
         });
         setProgressPercent(75 + Math.floor(((i + 1) / chunks.length) * 15));
@@ -153,10 +163,10 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
       setStepMessage('Saving document & vector chunks to database...');
       setProgressPercent(95);
 
-      const docId = crypto.randomUUID();
       const newDocRecord = {
         id: docId,
         user_id: user?.id || 'demo-user',
+        user_email: (user?.email || '').toLowerCase(),
         title,
         file_path: activeTab === 'file' ? selectedFile.name : null,
         file_type: fileType,
@@ -167,7 +177,14 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         updated_at: new Date().toISOString(),
       };
 
-      if (isSupabaseConfigured && user) {
+      const isRealAuthUser = Boolean(
+        isSupabaseConfigured &&
+        user?.id &&
+        !user.id.startsWith('demo-guest') &&
+        user.app_metadata?.provider !== 'guest'
+      );
+
+      if (isRealAuthUser) {
         // Insert into Supabase documents table
         const { error: docError } = await supabase.from('documents').insert({
           id: docId,
@@ -326,7 +343,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept=".txt,.md,.json,.csv,.js,.jsx,.ts,.py"
+                    accept=".pdf,.txt,.md,.json,.csv,.js,.jsx,.ts,.py"
                     className="hidden"
                     onChange={handleFileSelect}
                   />
@@ -339,7 +356,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                       <div className="text-left">
                         <p className="text-sm font-semibold text-white">{selectedFile.name}</p>
                         <p className="text-xs text-slate-400 font-mono">
-                          {(selectedFile.size / 1024).toFixed(1)} KB • {selectedFile.type || 'Plain text'}
+                          {(selectedFile.size / 1024).toFixed(1)} KB • {selectedFile.type || 'Document'}
                         </p>
                       </div>
                     </div>
@@ -351,7 +368,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                       <p className="text-sm font-medium text-slate-200">
                         Drag and drop your document here, or <span className="text-indigo-400 underline">browse</span>
                       </p>
-                      <p className="text-xs text-slate-500">Supports .txt, .md, .csv, .json, markdown notes & manuals</p>
+                      <p className="text-xs text-slate-500">Supports PDF (.pdf), .txt, .md, .csv, .json, notes & question banks</p>
                     </div>
                   )}
                 </div>

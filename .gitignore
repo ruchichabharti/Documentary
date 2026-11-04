@@ -14,6 +14,17 @@ server/.env.*
 !server/.env.example
 *.local
 
+# Database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+collab.db
+server/collab.db
+server/collab.db-shm
+server/collab.db-wal
+
 # Logs and OS files
 *.log
 .DS_Store

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { api } from '../lib/api.js';
 import DocumentUploadModal from '../components/DocumentUploadModal.jsx';
 import ChatAssistant from '../components/ChatAssistant.jsx';
 
@@ -43,122 +44,142 @@ export default function Dashboard() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChatDocId, setActiveChatDocId] = useState(null);
 
-  // Load documents on mount
+  // Helper to get storage key strictly isolated by user email
+  const getUserStorageKey = (currentUser) => {
+    if (!currentUser?.email) return 'docmind_guest_docs';
+    return `docmind_user_docs_${currentUser.email.trim().toLowerCase()}`;
+  };
+
+  // Load documents on mount or user change
   useEffect(() => {
     loadUserDocuments();
   }, [user]);
 
   const loadUserDocuments = async () => {
     setLoadingDocs(true);
+
+    // Clean up legacy shared global storage key to prevent cross-account leakage
     try {
-      if (isSupabaseConfigured && user) {
+      localStorage.removeItem('docmind_local_docs');
+    } catch (_) {}
+
+    if (!user) {
+      setDocuments([]);
+      setAllLocalChunks([]);
+      setLoadingDocs(false);
+      return;
+    }
+
+    try {
+      // 1. Primary: Fetch from backend database (strictly filtered by JWT user.sub and email)
+      try {
+        const res = await api.listIngestedDocs();
+        if (res?.documents && Array.isArray(res.documents)) {
+          setDocuments(res.documents);
+          const allChunks = res.documents.flatMap((d) => d.chunks || []);
+          setAllLocalChunks(allChunks);
+
+          // Update user-scoped local cache
+          const storageKey = getUserStorageKey(user);
+          if (storageKey) {
+            localStorage.setItem(
+              storageKey,
+              JSON.stringify({ documents: res.documents, chunks: allChunks })
+            );
+          }
+          setLoadingDocs(false);
+          return;
+        }
+      } catch (backendErr) {
+        console.warn('[DocMind] Backend doc load notice:', backendErr.message);
+      }
+
+      // 2. Secondary: If Supabase Auth is active, query Supabase strictly for user.id
+      const isRealSupabaseUser = Boolean(
+        isSupabaseConfigured &&
+        user?.id &&
+        !user.id.startsWith('demo-guest') &&
+        user.app_metadata?.provider !== 'guest'
+      );
+
+      if (isRealSupabaseUser) {
         const { data, error } = await supabase
           .from('documents')
           .select('*')
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
-        if (!error && Array.isArray(data)) {
+        if (!error && Array.isArray(data) && data.length > 0) {
           setDocuments(data);
-          // Also load chunks into memory for instant local RAG fallback
           try {
             const { data: chunksData } = await supabase
               .from('document_chunks')
-              .select('id, document_id, chunk_index, content, metadata, embedding');
+              .select('id, document_id, chunk_index, content, metadata, embedding')
+              .eq('user_id', user.id);
             if (chunksData && Array.isArray(chunksData)) {
               setAllLocalChunks(chunksData);
             }
           } catch (chunkErr) {
-            console.warn('[DocMind] Could not pre-cache chunks from Supabase:', chunkErr);
+            console.warn('[DocMind] Could not load chunks from Supabase:', chunkErr);
           }
           setLoadingDocs(false);
           return;
         }
       }
 
-      // Fallback: Read from localStorage if Supabase is still connecting
-      const stored = localStorage.getItem('docmind_local_docs');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setDocuments(parsed.documents || []);
-        setAllLocalChunks(parsed.chunks || []);
-      } else {
-        // Seed with a rich default demo document if empty
-        seedDefaultDocument();
+      // 3. Fallback: Read from user-scoped localStorage (NEVER shared with other emails)
+      const storageKey = getUserStorageKey(user);
+      if (storageKey) {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed.documents)) {
+            setDocuments(parsed.documents);
+            setAllLocalChunks(parsed.chunks || []);
+            setLoadingDocs(false);
+            return;
+          }
+        }
       }
+
+      // 4. Fresh new account: Start completely clean with 0 documents!
+      setDocuments([]);
+      setAllLocalChunks([]);
     } catch (err) {
       console.warn('[DocMind] Could not load documents:', err);
+      setDocuments([]);
+      setAllLocalChunks([]);
     } finally {
       setLoadingDocs(false);
     }
   };
 
-  const seedDefaultDocument = () => {
-    const demoDoc = {
-      id: 'demo-doc-1',
-      title: 'DocMind Architecture & pgvector RAG Whitepaper.md',
-      file_path: 'architecture_whitepaper.md',
-      file_type: 'text/markdown',
-      file_size: 4280,
-      status: 'ready',
-      chunk_count: 5,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    const demoChunks = [
-      {
-        id: 'c-1',
-        chunkIndex: 0,
-        documentId: 'demo-doc-1',
-        content: 'DocMind is a next-generation document intelligence engine that couples Supabase Postgres and the pgvector extension with large language models. The system guarantees sub-millisecond approximate nearest neighbor (ANN) search across millions of embedded text chunks utilizing Hierarchical Navigable Small World (HNSW) indexing.',
-        metadata: { documentId: 'demo-doc-1', documentTitle: demoDoc.title },
-      },
-      {
-        id: 'c-2',
-        chunkIndex: 1,
-        documentId: 'demo-doc-1',
-        content: 'Data isolation and tenant security in DocMind are enforced cryptographically via Supabase Row Level Security (RLS). Every document, chunk, and chat history entry references auth.uid(). Policies guarantee that no user can query or inspect embeddings belonging to another tenant.',
-        metadata: { documentId: 'demo-doc-1', documentTitle: demoDoc.title },
-      },
-      {
-        id: 'c-3',
-        chunkIndex: 2,
-        documentId: 'demo-doc-1',
-        content: 'The document ingestion pipeline processes input files through an overlap-aware sliding window chunker. The default configuration uses 1200 characters per chunk with a 200-character overlap, ensuring sentence boundaries remain intact and cross-chunk context is preserved.',
-        metadata: { documentId: 'demo-doc-1', documentTitle: demoDoc.title },
-      },
-      {
-        id: 'c-4',
-        chunkIndex: 3,
-        documentId: 'demo-doc-1',
-        content: 'During query retrieval, the match_document_chunks PostgreSQL RPC function calculates cosine similarity (1 - (embedding <=> query_embedding)) with configurable threshold filters and match counts, returning structured metadata directly to the grounded answer synthesizer.',
-        metadata: { documentId: 'demo-doc-1', documentTitle: demoDoc.title },
-      },
-    ];
-
-    setDocuments([demoDoc]);
-    setAllLocalChunks(demoChunks);
-    localStorage.setItem(
-      'docmind_local_docs',
-      JSON.stringify({ documents: [demoDoc], chunks: demoChunks })
-    );
-  };
-
-  const handleDocumentAdded = (newDoc) => {
+  const handleDocumentAdded = async (newDoc) => {
+    // 1. Optimistically update local React state
     setDocuments((prev) => [newDoc, ...prev.filter((d) => d.id !== newDoc.id)]);
     if (newDoc.chunks) {
       setAllLocalChunks((prev) => [...newDoc.chunks, ...prev]);
     }
 
-    // Persist to localStorage as well
+    // 2. Persist to backend database for this user
     try {
-      const stored = localStorage.getItem('docmind_local_docs');
-      const parsed = stored ? JSON.parse(stored) : { documents: [], chunks: [] };
-      parsed.documents = [newDoc, ...parsed.documents.filter((d) => d.id !== newDoc.id)];
-      if (newDoc.chunks) {
-        parsed.chunks = [...newDoc.chunks, ...parsed.chunks];
+      await api.saveIngestedDoc(newDoc);
+    } catch (saveErr) {
+      console.warn('[DocMind] Could not save document to backend:', saveErr);
+    }
+
+    // 3. Persist to user-scoped localStorage
+    try {
+      const storageKey = getUserStorageKey(user);
+      if (storageKey) {
+        const stored = localStorage.getItem(storageKey);
+        const parsed = stored ? JSON.parse(stored) : { documents: [], chunks: [] };
+        parsed.documents = [newDoc, ...parsed.documents.filter((d) => d.id !== newDoc.id)];
+        if (newDoc.chunks) {
+          parsed.chunks = [...newDoc.chunks, ...parsed.chunks];
+        }
+        localStorage.setItem(storageKey, JSON.stringify(parsed));
       }
-      localStorage.setItem('docmind_local_docs', JSON.stringify(parsed));
     } catch (_) {}
   };
 
@@ -168,24 +189,37 @@ export default function Dashboard() {
       return;
     }
 
-    if (isSupabaseConfigured && user) {
+    // 1. Delete from backend database
+    try {
+      await api.deleteIngestedDoc(docId);
+    } catch (delErr) {
+      console.warn('[DocMind] Could not delete from backend:', delErr);
+    }
+
+    // 2. Delete from Supabase if configured
+    if (isSupabaseConfigured && user?.id) {
       try {
-        await supabase.from('documents').delete().eq('id', docId);
+        await supabase.from('documents').delete().eq('id', docId).eq('user_id', user.id);
       } catch (err) {
         console.warn('Error deleting document from Supabase:', err);
       }
     }
 
+    // 3. Update React state
     setDocuments((prev) => prev.filter((d) => d.id !== docId));
     setAllLocalChunks((prev) => prev.filter((c) => c.documentId !== docId && c.document_id !== docId));
 
+    // 4. Update user-scoped localStorage
     try {
-      const stored = localStorage.getItem('docmind_local_docs');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        parsed.documents = parsed.documents.filter((d) => d.id !== docId);
-        parsed.chunks = parsed.chunks.filter((c) => c.documentId !== docId && c.document_id !== docId);
-        localStorage.setItem('docmind_local_docs', JSON.stringify(parsed));
+      const storageKey = getUserStorageKey(user);
+      if (storageKey) {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          parsed.documents = (parsed.documents || []).filter((d) => d.id !== docId);
+          parsed.chunks = (parsed.chunks || []).filter((c) => c.documentId !== docId && c.document_id !== docId);
+          localStorage.setItem(storageKey, JSON.stringify(parsed));
+        }
       }
     } catch (_) {}
   };
@@ -197,6 +231,8 @@ export default function Dashboard() {
 
   const handleSignOut = async () => {
     try {
+      setDocuments([]);
+      setAllLocalChunks([]);
       await signOut();
       navigate('/auth', { replace: true });
     } catch (err) {
@@ -233,14 +269,15 @@ export default function Dashboard() {
               <span>Ask AI (All Docs)</span>
             </button>
 
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-xs text-slate-300">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-mono text-[11px]">{user?.email || 'Authenticated User'}</span>
+            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 max-w-[160px] sm:max-w-[280px]">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="font-mono text-[11px] truncate text-slate-200" title={user?.email}>{user?.email || 'Authenticated User'}</span>
             </div>
 
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/60 bg-slate-800/40 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-300 text-slate-300 text-xs font-medium transition-all cursor-pointer"
+              title="Sign Out of this account"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/70 bg-slate-800/60 hover:bg-rose-500/15 hover:border-rose-500/40 hover:text-rose-300 text-slate-300 text-xs font-medium transition-all cursor-pointer whitespace-nowrap"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign Out</span>

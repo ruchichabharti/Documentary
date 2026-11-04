@@ -72,3 +72,23 @@ CREATE TABLE IF NOT EXISTS document_access (
   role    TEXT NOT NULL DEFAULT 'editor' CHECK(role IN ('owner','editor','viewer')),
   PRIMARY KEY (doc_id, user_id)
 );
+
+-- ----------------------------------------------------------
+-- Ingested documents (Knowledge base / RAG)
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ingested_documents (
+  id          TEXT PRIMARY KEY,
+  owner_id    TEXT NOT NULL,
+  owner_email TEXT NOT NULL,
+  title       TEXT NOT NULL,
+  file_path   TEXT,
+  file_type   TEXT,
+  file_size   INTEGER DEFAULT 0,
+  chunk_count INTEGER DEFAULT 0,
+  chunks_json TEXT DEFAULT '[]',
+  created_at  TEXT DEFAULT (datetime('now')),
+  updated_at  TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_ingested_owner ON ingested_documents(owner_id, owner_email);
+

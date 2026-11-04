@@ -13,10 +13,16 @@
     "@supabase/supabase-js": "^2.116.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^13.2.0",
+    "katex": "^0.19.1",
     "lucide-react": "^1.45.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.18.3",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
     "uuid": "^14.0.2"
   },
   "devDependencies": {

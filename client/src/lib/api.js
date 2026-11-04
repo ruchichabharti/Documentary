@@ -36,7 +36,7 @@ export const api = {
   login: (email, password) =>
     request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
 
-  // Documents
+  // Collaborative Live Documents
   listDocs: () => request('/docs'),
 
   createDoc: (title = 'Untitled') =>
@@ -49,4 +49,13 @@ export const api = {
 
   deleteDoc: (id) =>
     request(`/docs/${id}`, { method: 'DELETE' }),
+
+  // Ingested RAG Knowledge Base Documents
+  listIngestedDocs: () => request('/docs/ingested'),
+
+  saveIngestedDoc: (doc) =>
+    request('/docs/ingested', { method: 'POST', body: JSON.stringify(doc) }),
+
+  deleteIngestedDoc: (id) =>
+    request(`/docs/ingested/${id}`, { method: 'DELETE' }),
 };
