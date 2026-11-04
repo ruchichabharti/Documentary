@@ -11,6 +11,9 @@
 
 import 'dotenv/config';
 import http     from 'http';
+import path     from 'path';
+import { fileURLToPath } from 'url';
+import fs       from 'fs';
 import express  from 'express';
 import cors     from 'cors';
 import authRouter from './routes/auth.js';
@@ -20,6 +23,10 @@ import { createWsServer } from './ws/server.js';
 // Initialize database tables on startup
 import { runMigrations } from './db/db.js';
 await runMigrations();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
 
 const app  = express();
 const PORT = process.env.PORT ?? 3001;
@@ -52,6 +59,34 @@ app.use('/auth', authRouter);
 app.use('/docs', docsRouter);
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
+// ── Static Frontend Serving & Single Page App Fallback ────────────────────────
+if (fs.existsSync(clientDistPath)) {
+  console.log(`[server] Serving static frontend from ${clientDistPath}`);
+  app.use(express.static(clientDistPath));
+
+  // SPA fallback: any non-API GET route serves client/dist/index.html
+  app.get('*', (req, res, next) => {
+    if (
+      req.path.startsWith('/auth') ||
+      req.path.startsWith('/docs') ||
+      req.path.startsWith('/health')
+    ) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+} else {
+  app.get('/', (_req, res) => {
+    res.json({
+      name: 'DocMind API & Collaboration Server',
+      status: 'online',
+      message: 'Backend server is running. Build the frontend to view the UI directly on this domain.',
+      health: '/health',
+      docs: '/docs',
+    });
+  });
+}
 
 // ── HTTP + WebSocket server ───────────────────────────────────────────────────
 // We attach the WebSocket server to the same http.Server instance so that

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "npm --prefix ../client install && npm --prefix ../client run build",
     "dev": "nodemon --experimental-vm-modules src/index.js",
     "start": "node src/index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
