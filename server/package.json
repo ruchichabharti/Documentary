@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "npm --prefix ../client install --no-audit --no-fund && npm --prefix ../client run build",
     "build": "npm --prefix ../client install --no-audit --no-fund && npm --prefix ../client run build",
     "dev": "nodemon --experimental-vm-modules src/index.js",
     "start": "node src/index.js",

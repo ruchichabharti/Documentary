@@ -26,7 +26,16 @@ await runMigrations();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const clientDistPath = path.resolve(__dirname, '../../client/dist');
+
+const candidatePaths = [
+  path.resolve(__dirname, '../../client/dist'),
+  path.resolve(__dirname, '../client/dist'),
+  path.resolve(process.cwd(), 'client/dist'),
+  path.resolve(process.cwd(), '../client/dist'),
+  path.resolve(__dirname, '../dist'),
+  path.resolve(process.cwd(), 'dist'),
+];
+const clientDistPath = candidatePaths.find((p) => fs.existsSync(path.join(p, 'index.html')));
 
 const app  = express();
 const PORT = process.env.PORT ?? 3001;
@@ -61,7 +70,7 @@ app.use('/docs', docsRouter);
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 // ── Static Frontend Serving & Single Page App Fallback ────────────────────────
-if (fs.existsSync(clientDistPath)) {
+if (clientDistPath && fs.existsSync(clientDistPath)) {
   console.log(`[server] Serving static frontend from ${clientDistPath}`);
   app.use(express.static(clientDistPath));
 
