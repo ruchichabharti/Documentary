@@ -46,6 +46,9 @@ router.post('/send-otp', async (req, res) => {
         user: smtpUser,
         pass: smtpPass,
       },
+      connectionTimeout: 4000, // Fast fail on hosts where SMTP is blocked
+      greetingTimeout: 4000,
+      socketTimeout: 5000,
     });
 
     await transporter.sendMail({
