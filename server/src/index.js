@@ -76,10 +76,10 @@ if (clientDistPath && fs.existsSync(clientDistPath)) {
 
   // SPA fallback: any non-API GET route serves client/dist/index.html
   app.get('*', (req, res, next) => {
+    // Let API routes pass through if they are not requesting HTML
     if (
-      req.path.startsWith('/auth') ||
-      req.path.startsWith('/docs') ||
-      req.path.startsWith('/health')
+      req.path === '/health' ||
+      (req.path.startsWith('/docs') && !req.accepts('html'))
     ) {
       return next();
     }
