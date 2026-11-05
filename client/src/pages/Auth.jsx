@@ -16,6 +16,7 @@ export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otpLength, setOtpLength] = useState(6);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [pastedLink, setPastedLink] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -161,6 +162,16 @@ export default function Auth() {
     }
   };
 
+  const handleToggleOtpLength = (targetLen) => {
+    const nextLen = targetLen || (otpLength === 6 ? 8 : 6);
+    setOtpLength(nextLen);
+    setOtp(new Array(nextLen).fill(''));
+    setError('');
+    setTimeout(() => {
+      otpInputsRef.current[0]?.focus();
+    }, 50);
+  };
+
   // Handle individual OTP input changes
   const handleOtpChange = (index, value) => {
     const sanitized = value.replace(/[^0-9]/g, '');
@@ -169,18 +180,21 @@ export default function Auth() {
     const newOtp = [...otp];
 
     if (sanitized.length > 1) {
-      const pastedChars = sanitized.slice(0, 6).split('');
+      const targetLen = sanitized.length >= 8 ? 8 : (otpLength === 8 ? 8 : 6);
+      if (targetLen !== otpLength) {
+        setOtpLength(targetLen);
+      }
+      const adjustedOtp = new Array(targetLen).fill('');
+      const pastedChars = sanitized.slice(0, targetLen).split('');
       pastedChars.forEach((char, i) => {
-        if (index + i < 6) {
-          newOtp[index + i] = char;
-        }
+        adjustedOtp[i] = char;
       });
-      setOtp(newOtp);
-      const nextIndex = Math.min(index + pastedChars.length, 5);
+      setOtp(adjustedOtp);
+      const nextIndex = Math.min(pastedChars.length, targetLen - 1);
       otpInputsRef.current[nextIndex]?.focus();
 
-      if (newOtp.every((digit) => digit !== '')) {
-        handleVerifyOtp(newOtp.join(''));
+      if (adjustedOtp.every((digit) => digit !== '')) {
+        handleVerifyOtp(adjustedOtp.join(''));
       }
       return;
     }
@@ -188,11 +202,11 @@ export default function Auth() {
     newOtp[index] = sanitized;
     setOtp(newOtp);
 
-    if (sanitized && index < 5) {
+    if (sanitized && index < otpLength - 1) {
       otpInputsRef.current[index + 1]?.focus();
     }
 
-    if (sanitized && index === 5 && newOtp.every((digit) => digit !== '')) {
+    if (sanitized && index === otpLength - 1 && newOtp.every((digit) => digit !== '')) {
       handleVerifyOtp(newOtp.join(''));
     }
   };
@@ -204,7 +218,7 @@ export default function Auth() {
       }
     } else if (e.key === 'ArrowLeft' && index > 0) {
       otpInputsRef.current[index - 1]?.focus();
-    } else if (e.key === 'ArrowRight' && index < 5) {
+    } else if (e.key === 'ArrowRight' && index < otpLength - 1) {
       otpInputsRef.current[index + 1]?.focus();
     }
   };
@@ -223,14 +237,19 @@ export default function Auth() {
     const pastedData = rawData.replace(/[^0-9]/g, '');
     if (!pastedData) return;
 
-    const digits = pastedData.slice(0, 6).split('');
-    const newOtp = [...otp];
+    const targetLen = pastedData.length >= 8 ? 8 : 6;
+    if (targetLen !== otpLength) {
+      setOtpLength(targetLen);
+    }
+
+    const digits = pastedData.slice(0, targetLen).split('');
+    const newOtp = new Array(targetLen).fill('');
     digits.forEach((digit, i) => {
       newOtp[i] = digit;
     });
     setOtp(newOtp);
 
-    const focusTarget = Math.min(digits.length, 5);
+    const focusTarget = Math.min(digits.length, targetLen - 1);
     otpInputsRef.current[focusTarget]?.focus();
 
     if (newOtp.every((d) => d !== '')) {
@@ -238,11 +257,11 @@ export default function Auth() {
     }
   };
 
-  // Handle OTP verification
+  // Handle OTP verification (accepts either 6-digit or 8-digit codes)
   const handleVerifyOtp = async (codeToVerify) => {
     const fullCode = typeof codeToVerify === 'string' ? codeToVerify : otp.join('');
-    if (fullCode.length !== 6) {
-      setError('Please enter the complete 6-digit verification code.');
+    if (fullCode.length !== 6 && fullCode.length !== 8) {
+      setError(`Please enter the complete ${otpLength}-digit verification code.`);
       return;
     }
 
@@ -567,14 +586,14 @@ export default function Auth() {
                   <span>Code sent to:</span>
                   <strong className="text-indigo-300 font-medium">{email}</strong>
                 </div>
-                <h3 className="text-base font-bold text-white">Enter 6-Digit OTP Code</h3>
+                <h3 className="text-base font-bold text-white">Enter {otpLength}-Digit OTP Code</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Type the 6-digit verification code below to continue
+                  Type the {otpLength}-digit verification code below to continue
                 </p>
               </div>
 
-              {/* 6-Digit Segmented OTP Input */}
-              <div className="flex justify-between gap-2" onPaste={handlePaste}>
+              {/* Segmented OTP Input (adapts to 6 or 8 digits) */}
+              <div className="flex justify-between gap-1.5" onPaste={handlePaste}>
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -586,13 +605,24 @@ export default function Auth() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     disabled={isLoading || isSuccess}
-                    className={`w-12 h-14 text-center text-xl font-bold font-mono rounded-xl bg-[#181926] border transition-all duration-200 outline-none ${
+                    className={`${otpLength === 8 ? 'w-10 h-13 text-lg' : 'w-12 h-14 text-xl'} text-center font-bold font-mono rounded-xl bg-[#181926] border transition-all duration-200 outline-none ${
                       digit
                         ? 'border-indigo-500 bg-indigo-950/20 text-indigo-200 ring-2 ring-indigo-500/30'
                         : 'border-slate-700/70 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
                     }`}
                   />
                 ))}
+              </div>
+
+              {/* Code Length Switcher */}
+              <div className="flex justify-end pt-0.5">
+                <button
+                  type="button"
+                  onClick={() => handleToggleOtpLength()}
+                  className="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium transition-colors cursor-pointer"
+                >
+                  {otpLength === 6 ? 'Have an 8-digit code? Click here →' : 'Switch back to 6 digits →'}
+                </button>
               </div>
 
               {/* Verify Action Button */}
