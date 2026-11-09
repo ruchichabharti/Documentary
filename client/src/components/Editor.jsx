@@ -65,8 +65,8 @@ export default function Editor({ docId }) {
     <div className="flex flex-col h-screen bg-[--bg-primary]">
       {/* ── Top bar ─────────────────────────────────────────────────── */}
       <header className="topbar">
-        <Link to="/dashboard" className="text-[#f7f2eb] font-normal text-base mr-2 no-underline flex items-center gap-2.5 hover:opacity-85 transition-opacity font-serif-luxury">
-          <div className="w-7 h-7 rounded-lg bg-[#241c18] border border-[#3d3027] text-amber-400 flex items-center justify-center">
+        <Link to="/dashboard" className="text-[#f2f7f5] font-semibold text-base mr-2 no-underline flex items-center gap-2.5 hover:opacity-85 transition-opacity">
+          <div className="w-7 h-7 rounded-lg bg-[#14221f] border border-[#2f4f47] text-emerald-400 flex items-center justify-center">
             <BookOpen className="w-3.5 h-3.5" />
           </div>
           <span>DocMind Studio</span>
@@ -76,7 +76,7 @@ export default function Editor({ docId }) {
           type="text"
           value={localTitle}
           onChange={onTitleChange}
-          className="flex-1 bg-transparent text-[#f7f2eb] font-normal font-serif-luxury text-sm outline-none border-b border-transparent hover:border-[#483a30] focus:border-amber-500 transition-colors px-2 py-1 max-w-xs"
+          className="flex-1 bg-transparent text-[#f2f7f5] font-medium text-sm outline-none border-b border-transparent hover:border-[#2f4f47] focus:border-emerald-500 transition-colors px-2 py-1 max-w-xs"
           placeholder="Document title"
         />
         <div className="ml-auto flex items-center gap-3">
@@ -100,7 +100,7 @@ export default function Editor({ docId }) {
       {/* ── Main content area ────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
         {/* Editor column */}
-        <main className="flex-1 overflow-y-auto bg-[#15110e] py-8 px-4">
+        <main className="flex-1 overflow-y-auto bg-[#0d1715] py-8 px-4">
           <div className="editor-canvas">
             <div
               ref={editorRef}

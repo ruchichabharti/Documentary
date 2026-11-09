@@ -102,7 +102,7 @@ export default function ChatAssistant({
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Welcome to your **Library Research Companion**. Inquire across your volumes, and I will search the literature to synthesize answers with verified source passage citations.',
+      content: 'Welcome to your **Research Companion**. Inquire across your volumes, and I will search the texts to synthesize answers with verified source passage citations.',
       citations: [],
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
@@ -195,7 +195,7 @@ export default function ChatAssistant({
           msg.id === assistantMsgId
             ? {
                 ...msg,
-                content: 'I encountered an issue searching your literature. Please try again.',
+                content: 'I encountered an issue searching your texts. Please try again.',
                 isStreaming: false,
               }
             : msg
@@ -236,17 +236,17 @@ export default function ChatAssistant({
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-        className="w-full max-w-xl h-full bg-[#17120f] border-l border-[#2d241e] shadow-2xl flex flex-col relative overflow-hidden"
+        className="w-full max-w-xl h-full bg-[#0f1a18] border-l border-[#233a34] shadow-2xl flex flex-col relative overflow-hidden"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#2d241e] bg-[#15110e] flex items-center justify-between z-10">
+        <div className="px-6 py-4 border-b border-[#233a34] bg-[#0d1715] flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#241c18] border border-[#3d3027] text-amber-400 flex items-center justify-center shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-[#1a2d29] border border-[#2e4d45] text-emerald-400 flex items-center justify-center shadow-xs">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-serif-luxury font-normal text-[#f7f2eb]">Library Research Companion</h2>
-              <p className="text-xs text-[#a89888]">Source-grounded reading and synthesis</p>
+              <h2 className="text-sm font-semibold text-[#f2f7f5]">Research Companion</h2>
+              <p className="text-xs text-[#8ca89f]">Source-grounded reading and synthesis</p>
             </div>
           </div>
 
@@ -254,13 +254,13 @@ export default function ChatAssistant({
             <button
               onClick={handleResetChat}
               title="Reset Conversation"
-              className="p-1.5 rounded-lg text-[#736557] hover:text-[#f7f2eb] hover:bg-[#241c18] transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-[#526f67] hover:text-[#f2f7f5] hover:bg-[#1a2d29] transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-[#736557] hover:text-[#f7f2eb] hover:bg-[#241c18] transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-[#526f67] hover:text-[#f2f7f5] hover:bg-[#1a2d29] transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -268,16 +268,16 @@ export default function ChatAssistant({
         </div>
 
         {/* Scope Filter Bar */}
-        <div className="px-6 py-2.5 bg-[#14100e] border-b border-[#2d241e] flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-[#a89888]">
-            <Search className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-serif-luxury">Search Scope:</span>
+        <div className="px-6 py-2.5 bg-[#0b1412] border-b border-[#233a34] flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-[#8ca89f]">
+            <Search className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Search Scope:</span>
           </div>
 
           <select
             value={filterDocId}
             onChange={(e) => setFilterDocId(e.target.value)}
-            className="bg-[#1a1512] border border-[#332922] rounded-lg px-2.5 py-1 text-xs text-[#f7f2eb] focus:outline-none focus:border-amber-500 cursor-pointer max-w-[280px] truncate shadow-xs"
+            className="bg-[#14221f] border border-[#233a34] rounded-lg px-2.5 py-1 text-xs text-[#f2f7f5] focus:outline-none focus:border-emerald-500 cursor-pointer max-w-[280px] truncate shadow-xs"
           >
             <option value="all">All Volumes ({documents.length})</option>
             {documents.map((doc) => (
@@ -296,7 +296,7 @@ export default function ChatAssistant({
               className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.role === 'assistant' && (
-                <div className="w-7 h-7 rounded-lg bg-[#241c18] border border-[#3d3027] text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-lg bg-[#1a2d29] border border-[#2e4d45] text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
                   <BookOpen className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -304,12 +304,12 @@ export default function ChatAssistant({
               <div
                 className={`max-w-[85%] rounded-xl p-4 text-xs leading-relaxed space-y-2.5 ${
                   msg.role === 'user'
-                    ? 'bg-[#251d18] border border-[#3d3027] text-[#f7f2eb] rounded-br-none shadow-xs'
-                    : 'bg-[#1c1714] border border-[#2d241e] text-[#ede6dc] rounded-bl-none shadow-xs'
+                    ? 'bg-[#1b2e2a] border border-[#2e4d45] text-[#f2f7f5] rounded-br-none shadow-xs'
+                    : 'bg-[#14221f] border border-[#233a34] text-[#e2ede8] rounded-bl-none shadow-xs'
                 }`}
               >
-                <div className="flex items-center justify-between gap-4 text-[10px] text-[#736557] mb-1">
-                  <span className={msg.role === 'user' ? 'text-amber-200/80 font-mono' : 'text-amber-400 font-medium font-serif-luxury'}>
+                <div className="flex items-center justify-between gap-4 text-[10px] text-[#526f67] mb-1">
+                  <span className={msg.role === 'user' ? 'text-emerald-300 font-mono' : 'text-emerald-400 font-medium'}>
                     {msg.role === 'user' ? 'You' : 'Companion'}
                   </span>
                   <div className="flex items-center gap-2">
@@ -317,7 +317,7 @@ export default function ChatAssistant({
                     {msg.role === 'assistant' && msg.content && (
                       <button
                         onClick={() => handleCopy(msg.content, msg.id)}
-                        className="hover:text-amber-300 transition-colors cursor-pointer"
+                        className="hover:text-emerald-300 transition-colors cursor-pointer"
                         title="Copy answer"
                       >
                         {copiedId === msg.id ? (
@@ -330,38 +330,38 @@ export default function ChatAssistant({
                   </div>
                 </div>
 
-                <div className="font-serif-luxury text-[14px] leading-relaxed space-y-2">
+                <div className="text-[14px] leading-relaxed space-y-2">
                   {msg.role === 'user' ? (
                     <p className="whitespace-pre-wrap font-sans text-xs">{msg.content}</p>
                   ) : (
-                    <div className="space-y-2 text-[#ede6dc]">
+                    <div className="space-y-2 text-[#e2ede8]">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
-                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#f59e0b' }]]}
+                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#10b981' }]]}
                         components={{
-                          h1: ({ children }) => <h1 className="text-sm font-semibold text-[#f7f2eb] mt-2 mb-1 border-b border-[#332922] pb-1">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-xs font-semibold text-amber-300 mt-2 mb-1">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-xs font-semibold text-[#f7f2eb] mt-2 mb-1">{children}</h3>,
+                          h1: ({ children }) => <h1 className="text-sm font-semibold text-[#f2f7f5] mt-2 mb-1 border-b border-[#233a34] pb-1">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-xs font-semibold text-emerald-300 mt-2 mb-1">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-xs font-semibold text-[#f2f7f5] mt-2 mb-1">{children}</h3>,
                           p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-relaxed">{children}</p>,
                           ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 my-1.5">{children}</ul>,
                           ol: ({ children }) => <ol className="list-decimal pl-4 space-y-0.5 my-1.5">{children}</ol>,
                           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-                          strong: ({ children }) => <strong className="font-semibold text-amber-200">{children}</strong>,
+                          strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
                           code: ({ inline, children }) =>
                             inline ? (
-                              <code className="bg-[#241c18] text-amber-300 px-1 py-0.5 rounded font-mono text-[11px]">{children}</code>
+                              <code className="bg-[#1a2d29] text-emerald-300 px-1 py-0.5 rounded font-mono text-[11px]">{children}</code>
                             ) : (
-                              <pre className="bg-[#120f0d] border border-[#2d241e] p-2.5 rounded-lg font-mono text-[11px] overflow-x-auto my-2 text-amber-200">{children}</pre>
+                              <pre className="bg-[#0a1110] border border-[#233a34] p-2.5 rounded-lg font-mono text-[11px] overflow-x-auto my-2 text-emerald-200">{children}</pre>
                             ),
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l-2 border-amber-500 pl-3 italic text-[#a89888] my-1.5">{children}</blockquote>
+                            <blockquote className="border-l-2 border-emerald-500 pl-3 italic text-[#8ca89f] my-1.5">{children}</blockquote>
                           ),
                         }}
                       >
                         {formatMathForDisplay(msg.content)}
                       </ReactMarkdown>
                       {msg.isStreaming && (
-                        <span className="inline-block w-1.5 h-3.5 bg-amber-400 ml-1 animate-pulse align-middle" />
+                        <span className="inline-block w-1.5 h-3.5 bg-emerald-400 ml-1 animate-pulse align-middle" />
                       )}
                     </div>
                   )}
@@ -369,9 +369,9 @@ export default function ChatAssistant({
 
                 {/* Grounded Citation Badges */}
                 {msg.citations && msg.citations.length > 0 && (
-                  <div className="pt-2 border-t border-[#2a221d] mt-3 space-y-1.5">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#a89888] flex items-center gap-1 font-mono">
-                      <Layers className="w-3 h-3 text-amber-400" />
+                  <div className="pt-2 border-t border-[#1f342f] mt-3 space-y-1.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#8ca89f] flex items-center gap-1 font-mono">
+                      <Layers className="w-3 h-3 text-emerald-400" />
                       <span>Referenced Sources ({msg.citations.length})</span>
                     </p>
                     <div className="flex flex-wrap gap-1.5">
@@ -379,11 +379,11 @@ export default function ChatAssistant({
                         <button
                           key={c.id}
                           onClick={() => setSelectedCitation(c)}
-                          className="px-2.5 py-1 rounded-md bg-amber-950/30 hover:bg-amber-900/40 border border-amber-500/30 text-amber-300 text-[11px] font-medium font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded-md bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 text-emerald-300 text-[11px] font-medium font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Bookmark className="w-3 h-3" />
                           <span>Passage {c.id}</span>
-                          <span className="text-[10px] text-amber-400/80">({c.similarity}%)</span>
+                          <span className="text-[10px] text-emerald-400/80">({c.similarity}%)</span>
                         </button>
                       ))}
                     </div>
@@ -392,7 +392,7 @@ export default function ChatAssistant({
               </div>
 
               {msg.role === 'user' && (
-                <div className="w-7 h-7 rounded-lg bg-[#241c18] border border-[#3d3027] text-white flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-7 h-7 rounded-lg bg-[#1a2d29] border border-[#2e4d45] text-white flex items-center justify-center shrink-0 mt-0.5">
                   <User className="w-3.5 h-3.5" />
                 </div>
               )}
@@ -402,16 +402,16 @@ export default function ChatAssistant({
           {/* Suggested prompts */}
           {messages.length === 1 && (
             <div className="pt-4 space-y-2">
-              <p className="text-[11px] font-mono text-[#736557] uppercase tracking-wider">Suggested Questions:</p>
+              <p className="text-[11px] font-mono text-[#526f67] uppercase tracking-wider">Suggested Questions:</p>
               <div className="space-y-1.5">
                 {samplePrompts.map((prompt, idx) => (
                   <button
                     key={idx}
                     onClick={() => setInputQuery(prompt)}
-                    className="w-full text-left p-2.5 rounded-xl bg-[#1c1714] hover:bg-[#241c18] border border-[#2d241e] text-xs text-[#a89888] hover:text-[#f7f2eb] transition-all flex items-center justify-between group cursor-pointer shadow-xs font-serif-luxury text-[13px]"
+                    className="w-full text-left p-2.5 rounded-xl bg-[#14221f] hover:bg-[#1b2e2a] border border-[#233a34] text-xs text-[#8ca89f] hover:text-[#f2f7f5] transition-all flex items-center justify-between group cursor-pointer shadow-xs text-[13px]"
                   >
                     <span>{prompt}</span>
-                    <Search className="w-3 h-3 text-[#736557] group-hover:text-amber-400" />
+                    <Search className="w-3 h-3 text-[#526f67] group-hover:text-emerald-400" />
                   </button>
                 ))}
               </div>
@@ -428,27 +428,27 @@ export default function ChatAssistant({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="p-4 bg-[#1c1714] border-t border-[#2d241e] space-y-2 shadow-lg relative"
+              className="p-4 bg-[#14221f] border-t border-[#233a34] space-y-2 shadow-lg relative"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#f7f2eb]">
-                  <FileText className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="font-serif-luxury">
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#f2f7f5]">
+                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>
                     Passage {selectedCitation.id}: {selectedCitation.documentTitle}
                   </span>
-                  <span className="px-1.5 py-0.5 rounded bg-emerald-950/30 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">
+                  <span className="px-1.5 py-0.5 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">
                     {selectedCitation.similarity}% Match
                   </span>
                 </div>
                 <button
                   onClick={() => setSelectedCitation(null)}
-                  className="text-[#736557] hover:text-[#f7f2eb] p-1 cursor-pointer"
+                  className="text-[#526f67] hover:text-[#f2f7f5] p-1 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              <div className="p-3 rounded-lg bg-[#14100e] border border-[#2a211b] text-xs font-serif-luxury text-[#ede6dc] max-h-36 overflow-y-auto leading-relaxed text-[13px]">
+              <div className="p-3 rounded-lg bg-[#0d1715] border border-[#1f342f] text-xs text-[#8ca89f] max-h-36 overflow-y-auto leading-relaxed text-[13px] font-mono">
                 "{selectedCitation.fullContent}"
               </div>
             </motion.div>
@@ -456,7 +456,7 @@ export default function ChatAssistant({
         </AnimatePresence>
 
         {/* Input Form */}
-        <form onSubmit={handleSend} className="p-4 bg-[#15110e] border-t border-[#2d241e] flex gap-2">
+        <form onSubmit={handleSend} className="p-4 bg-[#0d1715] border-t border-[#233a34] flex gap-2">
           <input
             type="text"
             value={inputQuery}
@@ -467,15 +467,15 @@ export default function ChatAssistant({
                 ? 'Upload a volume first to ask questions…'
                 : 'Inquire across your library…'
             }
-            className="input-luxury text-xs font-serif-luxury text-[13px]"
+            className="input-nordic text-xs text-[13px]"
           />
 
           <button
             type="submit"
             disabled={isGenerating || !inputQuery.trim()}
-            className="btn-cognac px-4"
+            className="btn-emerald px-4"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 text-[#051410]" />
           </button>
         </form>
       </motion.div>

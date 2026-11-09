@@ -1,29 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Espresso & Cognac Luxury Theme Variables ───────────────────────────── */
+/* ─── Option 3: Nordic Forest & Dark Slate Theme Variables ─────────────────── */
 :root {
-  --bg-primary:     #120f0d;   /* Deep roasted coffee */
-  --bg-secondary:   #181310;   /* Dark espresso */
-  --bg-surface:     #1f1915;   /* Rich warm leather card */
-  --bg-hover:       #29211c;   /* Elevated hover */
-  --border:         #332922;   /* Warm bronze hairline border */
-  --border-strong:  #483a30;   /* Defined umber border */
-  --text-primary:   #f7f2eb;   /* Cream parchment */
-  --text-secondary: #a89888;   /* Soft warm hazelnut */
-  --text-muted:     #736557;   /* Muted roasted coffee */
-  --accent:         #d97706;   /* Rich honey amber */
-  --accent-hover:   #b45309;   /* Cognac */
-  --accent-light:   rgba(217, 119, 6, 0.15);
-  --cognac:         #c2410c;   /* Rich burnt terracotta / cognac */
-  --gold:           #fbbf24;
+  --bg-primary:     #0a1110;   /* Deep dark pine / slate-moss */
+  --bg-secondary:   #0f1917;   /* Slate pine secondary */
+  --bg-surface:     #14221f;   /* Elevated forest card */
+  --bg-hover:       #1b2e2a;   /* Hover state */
+  --border:         #233a34;   /* Hairline moss border */
+  --border-strong:  #2f4f47;   /* Defined pine border */
+  --text-primary:   #f2f7f5;   /* Frosted mist ivory */
+  --text-secondary: #8ca89f;   /* Soft sage / lichen */
+  --text-muted:     #526f67;   /* Dark forest moss */
+  --accent:         #10b981;   /* Vibrant forest emerald */
+  --accent-hover:   #059669;   /* Deep emerald */
+  --accent-light:   rgba(16, 185, 129, 0.15);
+  --accent-glow:    rgba(16, 185, 129, 0.25);
+  --gold:           #facc15;   /* Lichen gold */
   --danger:         #f43f5e;
   --success:        #10b981;
-  --editor-bg:      #fcf9f2;   /* Parchment letter paper */
-  --editor-text:    #1a1512;   /* Deep charcoal ink */
+  --editor-bg:      #fbfdfc;   /* Crisp paper */
+  --editor-text:    #0e1a17;   /* Deep pine ink */
 }
 
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
@@ -33,67 +33,63 @@ html, body, #root {
   height: 100%;
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.font-serif-luxury {
-  font-family: 'Newsreader', 'Georgia', Cambria, serif;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #332922; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #483a30; }
+::-webkit-scrollbar-thumb { background: #233a34; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2f4f47; }
 
-/* ─── Luxury Cards ───────────────────────────────────────────────────────── */
-.luxury-card {
+/* ─── Nordic Forest Cards ─────────────────────────────────────────────────── */
+.nordic-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.luxury-card-interactive:hover {
-  border-color: #5a493c;
+.nordic-card-interactive:hover {
+  border-color: #3b6359;
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 1px rgba(217, 119, 6, 0.3);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4), 0 0 1px rgba(16, 185, 129, 0.35);
 }
 
-/* ─── Cognac & Amber Buttons ─────────────────────────────────────────────── */
-.btn-cognac {
+/* ─── Forest Emerald Buttons ─────────────────────────────────────────────── */
+.btn-emerald {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  color: #120f0d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #051410;
   font-weight: 600;
   font-size: 13px;
   padding: 9px 18px;
   border-radius: 8px;
-  border: 1px solid #f59e0b;
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+  border: 1px solid #34d399;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
   transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
   cursor: pointer;
 }
-.btn-cognac:hover {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+.btn-emerald:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
 }
-.btn-cognac:active { transform: scale(0.98); }
-.btn-cognac:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-emerald:active { transform: scale(0.98); }
+.btn-emerald:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.btn-luxury-secondary {
+.btn-nordic-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #181310;
-  color: #f7f2eb;
+  background: #0f1917;
+  color: #f2f7f5;
   font-weight: 500;
   font-size: 13px;
   padding: 8px 14px;
@@ -103,16 +99,16 @@ html, body, #root {
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   cursor: pointer;
 }
-.btn-luxury-secondary:hover {
+.btn-nordic-secondary:hover {
   background: var(--bg-hover);
   border-color: var(--border-strong);
   color: #ffffff;
 }
 
 /* ─── Form Inputs ────────────────────────────────────────────────────────── */
-.input-luxury {
+.input-nordic {
   width: 100%;
-  background: #15100e;
+  background: #0d1715;
   border: 1px solid var(--border);
   color: var(--text-primary);
   border-radius: 8px;
@@ -122,13 +118,13 @@ html, body, #root {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) inset;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.input-luxury:focus {
+.input-nordic:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
 }
-.input-luxury::placeholder { color: var(--text-muted); }
+.input-nordic::placeholder { color: var(--text-muted); }
 
-/* ─── Editor Canvas (US Letter Parchment on Dark Mahogany) ─────────────────── */
+/* ─── Editor Canvas (Parchment Paper on Dark Pine Desk) ───────────────────── */
 .editor-canvas {
   position: relative;
   background: var(--editor-bg);
@@ -138,10 +134,10 @@ html, body, #root {
   margin: 0 auto;
   padding: 80px 88px;
   border-radius: 8px;
-  border: 1px solid #e7ded0;
-  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.6);
-  font-family: 'Newsreader', Georgia, serif;
-  font-size: 17px;
+  border: 1px solid #dbe4df;
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.55);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
   line-height: 1.8;
 }
 
@@ -150,7 +146,7 @@ html, body, #root {
   min-height: 100%;
   white-space: pre-wrap;
   word-break: break-word;
-  caret-color: #b45309;
+  caret-color: #10b981;
 }
 
 /* ─── Topbar ─────────────────────────────────────────────────────────────── */
@@ -158,7 +154,7 @@ html, body, #root {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(18, 15, 13, 0.92);
+  background: rgba(10, 17, 16, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
@@ -186,10 +182,10 @@ html, body, #root {
 }
 .presence-avatar:first-child { margin-left: 0; }
 
-/* ─── KaTeX Math Display Styles (Luxury Espresso) ────────────────────────── */
+/* ─── KaTeX Math Display Styles (Nordic Forest) ───────────────────────────── */
 .katex {
   font-size: 1.05em;
-  color: #f7f2eb;
+  color: #f2f7f5;
 }
 
 .katex-display {
@@ -197,18 +193,18 @@ html, body, #root {
   padding: 0.6em 0.85em;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #17120f;
+  background: #0f1a18;
   border-radius: 8px;
-  border: 1px solid #3d3129;
+  border: 1px solid #28423c;
 }
 
 .katex-display > .katex {
   max-width: 100%;
   text-align: center;
-  color: #f7f2eb;
+  color: #f2f7f5;
 }
 
 .katex .mord.mathbf {
   font-weight: 700;
-  color: var(--gold);
+  color: #34d399;
 }
