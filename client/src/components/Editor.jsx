@@ -62,24 +62,24 @@ export default function Editor({ docId }) {
   }, [handleKeyDown, editorRef]);
 
   return (
-    <div className="flex flex-col h-screen bg-[#f8fafc] text-[#0f172a] font-sans">
+    <div className="flex flex-col h-screen bg-[#09090b] text-[#fafafa] font-sans">
       {/* ── Top bar ─────────────────────────────────────────────────── */}
       <header className="topbar">
-        <Link to="/dashboard" className="text-slate-900 font-bold text-base mr-2 no-underline flex items-center gap-2.5 hover:opacity-85 transition-opacity">
-          <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-xs">
-            <BookOpen className="w-4 h-4 stroke-[2.3]" />
+        <Link to="/dashboard" className="text-[#fafafa] font-semibold text-sm mr-2 no-underline flex items-center gap-2.5 hover:opacity-85 transition-opacity font-mono">
+          <div className="w-7 h-7 rounded-md bg-[#16161a] border border-[#27272a] text-cyan-400 flex items-center justify-center font-bold text-xs shadow-xs">
+            DM
           </div>
-          <span>DocMind Studio</span>
+          <span>DOCMIND // KERNEL</span>
         </Link>
-        <div className="w-px h-6 bg-slate-200" />
+        <div className="w-px h-5 bg-[#27272a]" />
         <input
           type="text"
           value={localTitle}
           onChange={onTitleChange}
-          className="flex-1 bg-transparent text-slate-900 font-semibold text-sm outline-none border-b border-transparent hover:border-slate-300 focus:border-blue-600 transition-colors px-2 py-1 max-w-xs"
-          placeholder="Document title"
+          className="flex-1 bg-transparent text-[#fafafa] font-mono font-medium text-xs outline-none border-b border-transparent hover:border-[#3f3f46] focus:border-cyan-400 transition-colors px-2 py-1 max-w-xs"
+          placeholder="buffer_title.md"
         />
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-3 font-mono">
           {/* Presence avatars */}
           <div className="flex items-center">
             {presence.filter(u => u.userId !== clientId).slice(0, 5).map((u) => (
@@ -100,7 +100,7 @@ export default function Editor({ docId }) {
       {/* ── Main content area ────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
         {/* Editor column */}
-        <main className="flex-1 overflow-y-auto bg-slate-100/70 py-8 px-4">
+        <main className="flex-1 overflow-y-auto bg-[#0c0c0e] py-8 px-4">
           <div className="editor-canvas">
             <div
               ref={editorRef}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  BookOpen, 
+  Terminal, 
   LogOut, 
   ShieldCheck, 
   FileUp, 
@@ -14,8 +14,9 @@ import {
   Layers, 
   Edit3, 
   BookmarkCheck, 
-  CheckCircle2,
-  Sparkles
+  Binary,
+  Command,
+  CornerDownLeft
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
@@ -151,7 +152,7 @@ export default function Dashboard() {
 
   const handleDeleteDocument = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this document from your library?')) return;
+    if (!window.confirm('Delete this volume from repository?')) return;
 
     try {
       try {
@@ -199,137 +200,137 @@ export default function Dashboard() {
   const totalChunks = documents.reduce((acc, d) => acc + (d.chunk_count || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
-      {/* ── Studio Top Navigation ─────────────────────────────────────────── */}
-      <header className="border-b border-slate-200/90 bg-white/90 backdrop-blur-md sticky top-0 z-30 transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
-              <BookOpen className="w-4 h-4 stroke-[2.3]" />
+    <div className="min-h-screen bg-[#09090b] text-[#fafafa] flex flex-col font-sans selection:bg-cyan-950 selection:text-cyan-300">
+      {/* ── High-Tech Top Navigation ──────────────────────────────────────── */}
+      <header className="border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-md bg-[#16161a] border border-[#27272a] text-cyan-400 flex items-center justify-center font-mono font-bold text-xs shadow-xs">
+              DM
             </div>
-            <span className="font-bold text-base tracking-tight text-slate-900">
-              DocMind Studio
+            <span className="font-semibold text-sm tracking-tight text-[#fafafa] font-mono">
+              DOCMIND // COMMAND_HUB
             </span>
           </div>
 
-          {/* Quick Search */}
+          {/* Quick Search with KBD Hint */}
           <div className="hidden md:flex flex-1 max-w-md mx-4">
             <div className="relative w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-[#52525b] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                placeholder="Search across documents and notes…"
-                className="input-modern pl-9 py-1.5 text-xs text-slate-900 bg-slate-50/80 focus:bg-white"
+                placeholder="Query repository index…"
+                className="input-linear pl-8 pr-12 py-1 text-xs font-mono text-[#fafafa]"
               />
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-0.5">
+                <span className="kbd-shortcut">⌘K</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => handleOpenChat(null)}
-              className="btn-modern-secondary text-xs"
+              className="btn-linear-secondary text-xs font-mono"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
-              <span className="hidden sm:inline">Research Companion</span>
+              <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline">INSPECT_QUERY</span>
             </button>
 
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 max-w-[150px] sm:max-w-[220px]">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
-              <span className="font-mono text-[11px] truncate text-slate-800" title={user?.email}>{user?.email || 'Authenticated'}</span>
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#121215] border border-[#27272a] text-xs font-mono text-[#a1a1aa] max-w-[150px] sm:max-w-[220px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+              <span className="text-[11px] truncate text-[#fafafa]" title={user?.email}>{user?.email || 'AUTHENTICATED'}</span>
             </div>
 
             <button
               onClick={handleSignOut}
               title="Sign Out"
-              className="p-2 rounded-xl border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-500 transition-all cursor-pointer"
+              className="p-1.5 rounded-md border border-[#27272a] bg-[#121215] hover:bg-rose-950/30 hover:border-rose-500/40 hover:text-rose-300 text-[#71717a] transition-all cursor-pointer"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── Main Studio Dashboard ─────────────────────────────────────────── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
-        {/* Metric Cards Banner (California Modernist White Cards) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="modern-card p-5 bg-white border border-slate-200/90 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
-              <FileText className="w-5 h-5 text-blue-600" />
-            </div>
+      {/* ── Main Command Dashboard ─────────────────────────────────────────── */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-7">
+        {/* Metric Cards Banner (Swiss Minimalist Linear Style) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-7 font-mono">
+          <div className="linear-card p-4 bg-[#121215] border border-[#27272a] flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 font-medium">Documents</p>
-              <p className="text-xl font-bold text-slate-900 font-mono mt-0.5">{documents.length}</p>
+              <p className="text-[10px] text-[#71717a] uppercase">[01 // VOLUMES]</p>
+              <p className="text-xl font-bold text-[#fafafa] mt-1">{documents.length}</p>
             </div>
+            <FileText className="w-5 h-5 text-cyan-400" />
           </div>
 
-          <div className="modern-card p-5 bg-white border border-slate-200/90 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
-              <Layers className="w-5 h-5 text-indigo-600" />
-            </div>
+          <div className="linear-card p-4 bg-[#121215] border border-[#27272a] flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 font-medium">Readable Sections</p>
-              <p className="text-xl font-bold text-slate-900 font-mono mt-0.5">{totalChunks}</p>
+              <p className="text-[10px] text-[#71717a] uppercase">[02 // SECTIONS]</p>
+              <p className="text-xl font-bold text-[#fafafa] mt-1">{totalChunks}</p>
             </div>
+            <Layers className="w-5 h-5 text-cyan-400/80" />
           </div>
 
-          <div className="modern-card p-5 bg-white border border-slate-200/90 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
-              <BookmarkCheck className="w-5 h-5 text-sky-600" />
-            </div>
+          <div className="linear-card p-4 bg-[#121215] border border-[#27272a] flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 font-medium">Source Citations</p>
-              <p className="text-sm font-semibold text-slate-900 mt-0.5">Verified References</p>
+              <p className="text-[10px] text-[#71717a] uppercase">[03 // CITATIONS]</p>
+              <p className="text-xs font-semibold text-cyan-400 mt-1">EXACT_LINE_BOUNDS</p>
             </div>
+            <BookmarkCheck className="w-5 h-5 text-cyan-400" />
           </div>
 
-          <div className="modern-card p-5 bg-white border border-slate-200/90 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-              <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            </div>
+          <div className="linear-card p-4 bg-[#121215] border border-[#27272a] flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 font-medium">Workspace Privacy</p>
-              <p className="text-sm font-semibold text-emerald-600 mt-0.5">Account Isolated</p>
+              <p className="text-[10px] text-[#71717a] uppercase">[04 // ACCESS]</p>
+              <p className="text-xs font-semibold text-emerald-400 mt-1">ISOLATED_RLS</p>
             </div>
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
           </div>
         </div>
 
         {/* Action Header & Buttons */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Document Studio</h1>
-            <p className="text-xs text-slate-500 mt-0.5 font-normal">
-              Browse documents, inquire with verified paragraph citations, or co-author live notes.
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-semibold text-[#fafafa] tracking-tight font-mono">REPOSITORY_REGISTRY</h1>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#18181b] border border-[#27272a] text-cyan-400">
+                ACTIVE_INDEX
+              </span>
+            </div>
+            <p className="text-xs text-[#71717a] mt-0.5 font-normal">
+              Direct vector embeddings, paragraph citations, and concurrent multi-editor synchronization.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 font-mono">
             <button
               onClick={() => {
                 const newId = 'doc-' + Date.now().toString(36);
                 navigate(`/doc/${newId}`);
               }}
-              className="btn-modern-secondary"
+              className="btn-linear-secondary text-xs"
             >
-              <Edit3 className="w-3.5 h-3.5 text-slate-600" />
-              <span>New Note</span>
+              <Edit3 className="w-3.5 h-3.5 text-[#a1a1aa]" />
+              <span>NEW_NOTE</span>
             </button>
 
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="btn-cobalt"
+              className="btn-cyan text-xs"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Upload Document</span>
+              <Plus className="w-3.5 h-3.5 text-[#041014]" />
+              <span>INGEST_VOLUME</span>
             </button>
           </div>
         </div>
 
-        {/* Document Grid (California Modernist Cards) */}
+        {/* Document Grid (Linear Style Graphite Cards) */}
         {filteredDocs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-mono">
             {filteredDocs.map((doc) => {
               const previewSnippet = doc.chunks?.[0]?.content 
                 ? doc.chunks[0].content.slice(0, 150) + '…' 
@@ -341,44 +342,44 @@ export default function Dashboard() {
                   layout
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="modern-card modern-card-interactive p-6 bg-white border border-slate-200/90 flex flex-col justify-between group cursor-default"
+                  className="linear-card linear-card-interactive p-5 bg-[#121215] border border-[#27272a] flex flex-col justify-between group cursor-default"
                 >
                   <div>
                     {/* Top document label & delete */}
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0">
-                          <FileText className="w-4 h-4" />
+                        <div className="w-7 h-7 rounded-md bg-[#18181b] border border-[#27272a] flex items-center justify-center text-cyan-400 shrink-0">
+                          <Binary className="w-3.5 h-3.5" />
                         </div>
-                        <span className="px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-mono text-slate-700 uppercase font-semibold">
-                          {doc.file_type?.includes('pdf') ? 'PDF Document' : 'Manuscript'}
+                        <span className="px-1.5 py-0.5 rounded bg-[#18181b] border border-[#27272a] text-[9px] text-cyan-400 uppercase">
+                          {doc.file_type?.includes('pdf') ? 'PDF_NODE' : 'MD_SPEC'}
                         </span>
                       </div>
 
                       <button
                         onClick={(e) => handleDeleteDocument(doc.id, e)}
                         title="Delete volume"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
+                        className="p-1.5 rounded text-[#52525b] hover:text-rose-400 hover:bg-rose-950/20 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
                     {/* Document Title */}
-                    <h3 className="text-base font-bold text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-sm font-semibold text-[#fafafa] font-sans line-clamp-1 group-hover:text-cyan-300 transition-colors">
                       {doc.title}
                     </h3>
 
                     {/* Document Excerpt Preview Snippet */}
-                    <p className="mt-2.5 text-xs text-slate-600 leading-relaxed line-clamp-3 text-[13px] bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 italic font-normal">
+                    <p className="mt-2 text-xs text-[#a1a1aa] leading-relaxed line-clamp-3 text-[12px] bg-[#09090b] p-3 rounded-md border border-[#1f1f23] italic font-sans">
                       "{previewSnippet}"
                     </p>
 
-                    {/* Metadata line */}
-                    <div className="mt-3.5 flex items-center gap-3 text-xs text-slate-500 font-mono text-[11px]">
-                      <span className="flex items-center gap-1">
-                        <Layers className="w-3 h-3 text-blue-600" />
-                        <span>{doc.chunk_count || 0} sections</span>
+                    {/* Telemetry line */}
+                    <div className="mt-3 flex items-center gap-3 text-[11px] text-[#52525b]">
+                      <span className="flex items-center gap-1 text-cyan-400/90">
+                        <Layers className="w-3 h-3" />
+                        <span>{doc.chunk_count || 0} NODES</span>
                       </span>
                       <span>&bull;</span>
                       <span>{((doc.file_size || 1024) / 1024).toFixed(1)} KB</span>
@@ -386,8 +387,8 @@ export default function Dashboard() {
                   </div>
 
                   {/* Bottom Action Footer */}
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400 font-mono">
+                  <div className="pt-3.5 mt-3.5 border-t border-[#1f1f23] flex items-center justify-between">
+                    <span className="text-[10px] text-[#52525b]">
                       {new Date(doc.created_at || Date.now()).toLocaleDateString(undefined, {
                         month: 'short',
                         day: 'numeric',
@@ -395,22 +396,22 @@ export default function Dashboard() {
                       })}
                     </span>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => navigate(`/doc/${doc.id}`)}
                         title="Open Document & Notes"
-                        className="btn-modern-secondary text-xs py-1.5 px-3 flex items-center gap-1"
+                        className="btn-linear-secondary text-xs py-1 px-2.5 flex items-center gap-1"
                       >
-                        <Edit3 className="w-3 h-3 text-slate-500" />
-                        <span>Read</span>
+                        <Edit3 className="w-3 h-3 text-[#71717a]" />
+                        <span>OPEN</span>
                       </button>
 
                       <button
                         onClick={() => handleOpenChat(doc.id)}
-                        className="btn-cobalt text-xs py-1.5 px-3 flex items-center gap-1 shadow-xs"
+                        className="btn-cyan text-xs py-1 px-2.5 flex items-center gap-1 shadow-xs"
                       >
-                        <MessageSquare className="w-3 h-3" />
-                        <span>Inquire</span>
+                        <MessageSquare className="w-3 h-3 text-[#041014]" />
+                        <span>QUERY</span>
                       </button>
                     </div>
                   </div>
@@ -419,25 +420,25 @@ export default function Dashboard() {
             })}
           </div>
         ) : (
-          /* Empty Library State */
-          <div className="modern-card border-dashed border-2 border-slate-200 rounded-2xl p-14 text-center bg-white space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto">
-              <FileUp className="w-6 h-6 stroke-[2.2]" />
+          /* Empty Repository State */
+          <div className="linear-card border-dashed border border-[#27272a] rounded-xl p-14 text-center bg-[#121215] space-y-3 font-mono">
+            <div className="w-10 h-10 rounded-lg bg-[#18181b] border border-[#27272a] text-cyan-400 flex items-center justify-center mx-auto">
+              <FileUp className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Your document studio is quiet</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed text-[14px]">
+              <h3 className="text-sm font-semibold text-[#fafafa] font-sans">REPOSITORY IS EMPTY</h3>
+              <p className="text-xs text-[#71717a] max-w-sm mx-auto mt-1 leading-relaxed font-sans">
                 {searchFilter
-                  ? 'No documents matched your search filter.'
-                  : 'Upload your first research report, PDF volume, or manuscript to begin reading and taking notes.'}
+                  ? 'No indexed volumes matched the search query.'
+                  : 'Ingest research manuscripts, PDF documents, or notes to initialize vector bounds.'}
               </p>
             </div>
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="btn-cobalt mt-2"
+              className="btn-cyan mt-2 text-xs"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Upload First Document</span>
+              <Plus className="w-3.5 h-3.5 text-[#041014]" />
+              <span>INGEST FIRST VOLUME</span>
             </button>
           </div>
         )}

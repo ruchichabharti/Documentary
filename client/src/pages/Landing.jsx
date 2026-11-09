@@ -2,54 +2,75 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  BookOpen, 
+  Terminal, 
   ArrowRight, 
   Search, 
   FileText, 
-  Sparkles, 
+  Cpu, 
   Users, 
   CheckCircle2, 
   Layers, 
   ShieldCheck,
-  ChevronRight,
+  Command,
+  CornerDownLeft,
+  Binary,
   BookmarkCheck,
-  Cpu
+  Sparkles
 } from 'lucide-react';
 
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] selection:bg-blue-100 selection:text-blue-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-cyan-950 selection:text-cyan-300 flex flex-col font-sans">
       {/* ── Top Navigation Bar ────────────────────────────────────────────── */}
-      <header className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-40 transition-all">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 no-underline">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm shadow-blue-500/20">
-              <BookOpen className="w-4 h-4 stroke-[2.5]" />
+      <header className="border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2.5 no-underline text-[#fafafa]">
+            <div className="w-7 h-7 rounded-md bg-[#16161a] border border-[#27272a] text-cyan-400 flex items-center justify-center font-mono font-bold text-xs shadow-xs">
+              DM
             </div>
-            <span className="font-bold text-base tracking-tight text-slate-900">DocMind</span>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm tracking-tight text-[#fafafa]">DocMind</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#18181b] border border-[#27272a] text-[#71717a]">
+                v2.6.4
+              </span>
+            </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-600">
-            <a href="#features" className="hover:text-blue-600 transition-colors">Workspace</a>
-            <a href="#citations" className="hover:text-blue-600 transition-colors">Source Grounding</a>
-            <a href="#collab" className="hover:text-blue-600 transition-colors">Live Collaboration</a>
+          <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-[#a1a1aa]">
+            <a href="#features" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+              <span>//</span>
+              <span>INDEX</span>
+            </a>
+            <a href="#kernel" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+              <span>//</span>
+              <span>KERNEL</span>
+            </a>
+            <a href="#grounding" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+              <span>//</span>
+              <span>CITATIONS</span>
+            </a>
           </nav>
 
           <div className="flex items-center gap-3">
+            <div className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-[#71717a] bg-[#121215] px-2 py-1 rounded border border-[#27272a]">
+              <Command className="w-3 h-3 text-[#52525b]" />
+              <span>K</span>
+            </div>
+
             <Link
               to="/auth"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 transition-colors"
+              className="text-xs font-medium text-[#a1a1aa] hover:text-[#fafafa] px-2 py-1 transition-colors"
             >
               Sign In
             </Link>
             <button
               onClick={() => navigate('/auth')}
-              className="btn-cobalt text-xs"
+              className="btn-cyan text-xs"
             >
-              <span>Get Started Free</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Initialize Workspace</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#041014]" />
             </button>
           </div>
         </div>
@@ -57,221 +78,228 @@ export default function Landing() {
 
       {/* ── Hero Section ──────────────────────────────────────────────────── */}
       <main className="flex-1 max-w-5xl mx-auto px-6 pt-16 pb-20">
-        <div className="text-center max-w-3xl mx-auto space-y-6">
+        <div className="text-center max-w-3xl mx-auto space-y-5">
           <motion.div 
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/80 border border-blue-200/80 text-xs font-semibold text-blue-700 shadow-xs"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#121215] border border-[#27272a] text-[11px] font-mono text-[#a1a1aa]"
           >
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-            <span>California Modernist Studio &bull; Precision &amp; Grounded Clarity</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-cyan-400">[00 // SYSTEM READY]</span>
+            <span className="text-[#52525b]">&bull;</span>
+            <span>SWISS HIGH-TECH MINIMALIST ENGINE</span>
           </motion.div>
 
           <motion.h1 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 leading-[1.15]"
+            className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#fafafa] leading-[1.1]"
           >
-            The modern workspace for reading, research, and collaborative thinking.
+            High-density document engine for research and precision thought.
           </motion.h1>
 
           <motion.p 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal"
+            className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed max-w-2xl mx-auto font-normal"
           >
-            Upload technical research, PDF volumes, and manuscripts. Inquire across texts with verified paragraph citations, and co-author live notes in real time.
+            Semantic pgvector embedding ingestion, verified zero-hallucination paragraph citations, and concurrent multi-author Operational Transformation.
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2"
           >
             <button
               onClick={() => navigate('/auth')}
-              className="btn-cobalt w-full sm:w-auto px-6 py-3 text-sm shadow-md shadow-blue-500/20"
+              className="btn-cyan w-full sm:w-auto px-6 py-2.5 text-xs font-mono"
             >
-              <span>Open Document Studio</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>ACCESS COMMAND CONSOLE</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#041014]" />
             </button>
             <button
               onClick={() => navigate('/auth')}
-              className="btn-modern-secondary w-full sm:w-auto px-6 py-3 text-sm"
+              className="btn-linear-secondary w-full sm:w-auto px-5 py-2.5 text-xs font-mono text-[#a1a1aa]"
             >
-              <FileText className="w-4 h-4 text-slate-500" />
-              <span>Explore Sample Vault</span>
+              <Terminal className="w-3.5 h-3.5 text-[#71717a]" />
+              <span>EXPLORE SPEC // DEMO</span>
             </button>
           </motion.div>
         </div>
 
-        {/* ── Apple-Style Interactive Studio Preview Window ────────────────── */}
+        {/* ── High-Tech Command Terminal Preview Window (Linear Style) ─────── */}
         <motion.div 
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-14 modern-card p-0 overflow-hidden shadow-2xl shadow-slate-300/50 border border-slate-200"
+          className="mt-14 linear-card p-0 overflow-hidden shadow-2xl border border-[#27272a]"
         >
-          {/* macOS window titlebar */}
-          <div className="h-11 bg-slate-50 border-b border-slate-200 px-4 flex items-center justify-between">
+          {/* Header Bar */}
+          <div className="h-10 bg-[#0d0d10] border-b border-[#27272a] px-4 flex items-center justify-between text-xs font-mono">
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]" />
-              <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24]" />
-              <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-[#3f3f46]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-[#3f3f46]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-[#3f3f46]" />
+              <span className="text-[11px] text-[#71717a] ml-2">KERNEL // SESSION_084</span>
             </div>
-            <div className="text-xs font-semibold text-slate-600 flex items-center gap-2">
-              <BookOpen className="w-3.5 h-3.5 text-blue-600" />
-              <span>Attention_Mechanism_Analysis.pdf &bull; Live Studio</span>
+            <div className="text-[11px] text-cyan-400 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <span>WS // 127.0.0.1:3001 [CONNECTED]</span>
             </div>
-            <div className="text-[11px] font-mono text-slate-500 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>Synced</span>
+            <div className="text-[11px] text-[#71717a] flex items-center gap-2">
+              <span className="kbd-shortcut">ESC</span>
             </div>
           </div>
 
-          {/* Studio body preview */}
-          <div className="grid grid-cols-1 md:grid-cols-12 min-h-[360px] bg-white">
-            {/* Left: Document index shelf */}
-            <div className="md:col-span-4 bg-slate-50/70 border-r border-slate-200 p-4 space-y-3">
-              <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
-                <span>Active Vault</span>
-                <span className="text-slate-500 font-mono">3 Files</span>
+          {/* Terminal / Split Inspection */}
+          <div className="grid grid-cols-1 md:grid-cols-12 min-h-[360px] bg-[#09090b]">
+            {/* Left: Telemetry / Indexed Volumes */}
+            <div className="md:col-span-4 bg-[#0d0d10] border-r border-[#27272a] p-4 space-y-3 font-mono text-xs">
+              <div className="text-[10px] text-[#71717a] uppercase tracking-wider flex items-center justify-between border-b border-[#1f1f23] pb-2">
+                <span>[01 // REPOSITORY]</span>
+                <span className="text-cyan-400">3 VOLUMES</span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="p-2.5 rounded-xl bg-white border border-blue-200 shadow-xs flex items-start gap-2.5">
-                  <FileText className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                <div className="p-2.5 rounded-md bg-[#16161a] border border-cyan-500/40 flex items-start gap-2.5">
+                  <Binary className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-slate-900 truncate">Attention_Mechanism.pdf</p>
-                    <p className="text-[10px] text-slate-600">Indexed &bull; 14 Chunks</p>
+                    <p className="text-[11px] font-semibold text-[#fafafa] truncate">attention_mech.pdf</p>
+                    <p className="text-[10px] text-cyan-400/80">CHUNK_HASH: 7f8a9e &bull; 14 NODES</p>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-transparent hover:bg-slate-100/70 border border-transparent transition-colors flex items-start gap-2.5 cursor-pointer">
-                  <FileText className="w-4 h-4 text-slate-500 mt-0.5 shrink-0" />
+                <div className="p-2.5 rounded-md bg-[#121215] border border-[#27272a] hover:border-[#3f3f46] transition-colors flex items-start gap-2.5 cursor-pointer">
+                  <FileText className="w-4 h-4 text-[#71717a] shrink-0 mt-0.5" />
                   <div className="min-w-0">
-                    <p className="text-xs font-medium text-slate-700 truncate">Quantum_Decoherence.pdf</p>
-                    <p className="text-[10px] text-slate-500">Indexed &bull; 28 Chunks</p>
+                    <p className="text-[11px] text-[#a1a1aa] truncate">quantum_decoherence.pdf</p>
+                    <p className="text-[10px] text-[#52525b]">CHUNK_HASH: 3c4d1f &bull; 28 NODES</p>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-transparent hover:bg-slate-100/70 border border-transparent transition-colors flex items-start gap-2.5 cursor-pointer">
-                  <FileText className="w-4 h-4 text-slate-500 mt-0.5 shrink-0" />
+                <div className="p-2.5 rounded-md bg-[#121215] border border-[#27272a] hover:border-[#3f3f46] transition-colors flex items-start gap-2.5 cursor-pointer">
+                  <FileText className="w-4 h-4 text-[#71717a] shrink-0 mt-0.5" />
                   <div className="min-w-0">
-                    <p className="text-xs font-medium text-slate-700 truncate">Bayesian_Inference.md</p>
-                    <p className="text-[10px] text-slate-500">Live Note &bull; 8 Authors</p>
+                    <p className="text-[11px] text-[#a1a1aa] truncate">bayesian_inference.md</p>
+                    <p className="text-[10px] text-[#52525b]">OT_PEERS: 4 LIVE &bull; 82 OPS</p>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-200">
-                <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-[11px] text-blue-900">
-                  <p className="font-semibold flex items-center gap-1.5 mb-1 text-blue-700">
-                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Grounded Citations</span>
-                  </p>
-                  <p className="text-slate-600 leading-normal">
-                    Queries are strictly bound to vector context embeddings with zero hallucination.
+              <div className="pt-2 border-t border-[#1f1f23]">
+                <div className="p-2.5 rounded-md bg-[#121215] border border-[#27272a] text-[10px] text-[#a1a1aa] space-y-1">
+                  <div className="flex items-center justify-between text-cyan-400">
+                    <span>COSINE SIMILARITY</span>
+                    <span className="font-bold">98.4%</span>
+                  </div>
+                  <p className="text-[#71717a] leading-tight">
+                    Deterministic query grounding. Vector bounds enforced strictly on every generation.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Right: Modern live editor sheet */}
-            <div className="md:col-span-8 p-6 space-y-4 bg-white">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            {/* Right: Modern high-density document sheet */}
+            <div className="md:col-span-8 p-6 space-y-4 bg-[#09090b]">
+              <div className="flex items-center justify-between pb-3 border-b border-[#1f1f23]">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-xs font-semibold text-slate-900">Section 3.2: Scaled Dot-Product Formulation</span>
+                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                  <span className="text-xs font-mono text-[#fafafa]">DOC_ID: attention_mech // SECTION_3.2</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full border border-blue-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                    <span>Sarah K. (Live)</span>
+                <div className="flex items-center gap-2 font-mono text-[11px]">
+                  <span className="px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 text-cyan-300">
+                    PEER: SARAH_K [LIVE]
                   </span>
                 </div>
               </div>
 
-              <div className="text-xs text-slate-700 leading-relaxed space-y-3 font-normal">
+              <div className="text-xs text-[#a1a1aa] leading-relaxed space-y-3 font-normal">
                 <p>
-                  We compute the matrix of outputs as a weighted sum of values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key:
+                  Output matrix computed deterministically through scaled dot-product attention queries:
                 </p>
 
-                {/* KaTeX Math Box in Modern Style */}
-                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center font-mono text-sm text-slate-900">
-                  <span className="font-serif italic font-bold text-blue-600">Attention</span>
-                  <span className="text-slate-700">(Q, K, V) = softmax</span>
-                  <span className="text-slate-500">(</span>
-                  <span className="text-slate-900 font-semibold">QK</span>
-                  <sup className="text-blue-600">T</sup>
-                  <span className="text-slate-500"> / &radic;</span>
-                  <span className="italic text-slate-700">d</span>
-                  <sub className="text-slate-600">k</sub>
-                  <span className="text-slate-500">) </span>
-                  <span className="text-slate-900 font-semibold">V</span>
+                {/* Swiss Minimalist KaTeX Math formulation */}
+                <div className="p-3.5 rounded-md bg-[#0d0d10] border border-[#27272a] text-center font-mono text-sm text-[#fafafa]">
+                  <span className="font-serif italic font-bold text-cyan-400">Attention</span>
+                  <span className="text-[#a1a1aa]">(Q, K, V) = softmax</span>
+                  <span className="text-[#52525b]">(</span>
+                  <span className="text-[#fafafa] font-semibold">QK</span>
+                  <sup className="text-cyan-400">T</sup>
+                  <span className="text-[#52525b]"> / &radic;</span>
+                  <span className="italic text-[#a1a1aa]">d</span>
+                  <sub className="text-[#71717a]">k</sub>
+                  <span className="text-[#52525b]">) </span>
+                  <span className="text-[#fafafa] font-semibold">V</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-2.5 text-[11px] text-amber-950">
-                  <BookmarkCheck className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <p>
-                    <strong className="text-amber-900">Verified Citation:</strong> Vaswani et al., Page 4, Paragraph 2 &mdash; <em>&ldquo;The two most commonly used attention functions are additive attention and dot-product attention.&rdquo;</em>
-                  </p>
+                <div className="p-3 rounded-md bg-[#121215] border border-[#27272a] flex items-start gap-2.5 text-[11px] text-[#a1a1aa] font-mono">
+                  <BookmarkCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-cyan-400 font-semibold">[VERIFIED_SOURCE]</span>
+                    <span className="ml-1 text-[#fafafa]">Vaswani et al., Section 3.2, Page 4</span>
+                    <p className="text-[#71717a] mt-0.5 italic">
+                      &ldquo;The two most commonly used attention functions are additive attention and dot-product attention.&rdquo;
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* ── 3 Craft Pillars (California Modernist Cards) ──────────────────── */}
-        <div id="features" className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="modern-card modern-card-interactive p-6 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
-              <Layers className="w-5 h-5 stroke-[2.2]" />
+        {/* ── 3 Swiss Minimalist Engineering Pillars ────────────────────────── */}
+        <div id="features" className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-5 font-mono">
+          <div className="linear-card linear-card-interactive p-6 space-y-3">
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>[01 // VECTOR STORE]</span>
+              <Layers className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Grounded Source Vault</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              High-throughput chunking and cosine embeddings. Every answer cites exact volume numbers and paragraph spans.
+            <h3 className="text-sm font-semibold text-[#fafafa] font-sans">pgvector Indexing</h3>
+            <p className="text-xs text-[#a1a1aa] leading-relaxed font-sans">
+              High-throughput paragraph chunking with exact line offsets and zero hallucination boundaries.
             </p>
           </div>
 
-          <div className="modern-card modern-card-interactive p-6 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center">
-              <Users className="w-5 h-5 stroke-[2.2]" />
+          <div className="linear-card linear-card-interactive p-6 space-y-3">
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>[02 // CO-OP KERNEL]</span>
+              <Users className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Live Co-Authorship</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Operational Transformation algorithms ensure conflict-free real-time collaboration with cursor presence flags.
+            <h3 className="text-sm font-semibold text-[#fafafa] font-sans">Operational Transform</h3>
+            <p className="text-xs text-[#a1a1aa] leading-relaxed font-sans">
+              Decentralized state machine reconciling concurrent client mutations with zero character collisions.
             </p>
           </div>
 
-          <div className="modern-card modern-card-interactive p-6 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 stroke-[2.2]" />
+          <div className="linear-card linear-card-interactive p-6 space-y-3">
+            <div className="flex items-center justify-between text-xs text-cyan-400">
+              <span>[03 // TYPOGRAPHY]</span>
+              <Cpu className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Native KaTeX &amp; Markdown</h3>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Beautiful LaTeX typography for mathematical proofs, clean code formatting, and US Letter printable output.
+            <h3 className="text-sm font-semibold text-[#fafafa] font-sans">Native KaTeX LaTeX</h3>
+            <p className="text-xs text-[#a1a1aa] leading-relaxed font-sans">
+              Mathematical formulas, matrix equations, and proof trees rendered with KaTeX acceleration.
             </p>
           </div>
         </div>
       </main>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500">
+      <footer className="border-t border-[#27272a] bg-[#09090b] py-8 text-center text-xs text-[#52525b] font-mono">
         <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-slate-700 font-semibold">
-            <BookOpen className="w-4 h-4 text-blue-600" />
-            <span>DocMind Studio</span>
-            <span className="text-slate-400">&bull;</span>
-            <span className="text-slate-500 font-normal">California Modernist Edition</span>
+          <div className="flex items-center gap-2 text-[#a1a1aa]">
+            <span className="text-cyan-400 font-bold">DOCMIND</span>
+            <span>&bull;</span>
+            <span className="text-[#52525b]">SWISS HIGH-TECH MINIMALIST SYSTEM</span>
           </div>
-          <div className="flex items-center gap-5 text-slate-500">
-            <Link to="/auth" className="hover:text-blue-600 transition-colors">Sign In</Link>
-            <Link to="/dashboard" className="hover:text-blue-600 transition-colors">Dashboard</Link>
-            <span>&copy; {new Date().getFullYear()} DocMind</span>
+          <div className="flex items-center gap-5 text-[#71717a]">
+            <Link to="/auth" className="hover:text-cyan-400 transition-colors">LOGIN</Link>
+            <Link to="/dashboard" className="hover:text-cyan-400 transition-colors">DASHBOARD</Link>
+            <span>&copy; {new Date().getFullYear()} DOCMIND INC.</span>
           </div>
         </div>
       </footer>

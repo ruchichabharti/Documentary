@@ -230,98 +230,98 @@ export default function ChatAssistant({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs font-sans">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-xs font-sans">
       <motion.div
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-        className="w-full max-w-xl h-full bg-white border-l border-slate-200 shadow-2xl flex flex-col relative overflow-hidden"
+        className="w-full max-w-xl h-full bg-[#0d0d10] border-l border-[#27272a] shadow-2xl flex flex-col relative overflow-hidden font-mono"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-xs">
-              <BookOpen className="w-4 h-4 stroke-[2.3]" />
+        <div className="px-5 py-3.5 border-b border-[#27272a] bg-[#09090b] flex items-center justify-between z-10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-md bg-[#16161a] border border-[#27272a] text-cyan-400 flex items-center justify-center text-xs font-bold shadow-xs">
+              &gt;_
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Research Companion</h2>
-              <p className="text-xs text-slate-500 font-normal">Source-grounded reading and synthesis</p>
+              <h2 className="text-xs font-semibold text-[#fafafa] font-sans">RESEARCH // INSPECTION_THREAD</h2>
+              <p className="text-[10px] text-[#71717a]">Deterministic cosine grounding &amp; line citations</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handleResetChat}
               title="Reset Conversation"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-[#71717a] hover:text-[#fafafa] hover:bg-[#18181b] transition-colors cursor-pointer"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-[#71717a] hover:text-[#fafafa] hover:bg-[#18181b] transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* Scope Filter Bar */}
-        <div className="px-6 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-slate-500">
-            <Search className="w-3.5 h-3.5 text-blue-600" />
-            <span className="font-medium">Search Scope:</span>
+        <div className="px-5 py-2 bg-[#09090b] border-b border-[#1f1f23] flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-[#71717a]">
+            <Search className="w-3 h-3 text-cyan-400" />
+            <span className="text-[11px] font-mono">// SCOPE:</span>
           </div>
 
           <select
             value={filterDocId}
             onChange={(e) => setFilterDocId(e.target.value)}
-            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:border-blue-600 cursor-pointer max-w-[280px] truncate shadow-xs font-medium"
+            className="bg-[#121215] border border-[#27272a] rounded px-2.5 py-1 text-xs text-[#fafafa] focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[280px] truncate shadow-xs font-mono"
           >
-            <option value="all">All Documents ({documents.length})</option>
+            <option value="all">ALL VOLUMES ({documents.length})</option>
             {documents.map((doc) => (
               <option key={doc.id} value={doc.id}>
-                {doc.title} ({doc.chunk_count || 0} sections)
+                {doc.title} ({doc.chunk_count || 0} nodes)
               </option>
             ))}
           </select>
         </div>
 
         {/* Messages Feed */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 font-mono">
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.role === 'assistant' && (
-                <div className="w-7 h-7 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                  <BookOpen className="w-3.5 h-3.5 stroke-[2.3]" />
+                <div className="w-6 h-6 rounded-md bg-[#16161a] border border-[#27272a] text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 shadow-xs text-[10px] font-bold">
+                  &gt;
                 </div>
               )}
 
               <div
-                className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2.5 ${
+                className={`max-w-[85%] rounded-lg p-3.5 text-xs leading-relaxed space-y-2 ${
                   msg.role === 'user'
-                    ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                    : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-none shadow-xs'
+                    ? 'bg-[#18181b] border border-[#27272a] text-[#fafafa] rounded-br-none shadow-sm'
+                    : 'bg-[#121215] border border-[#27272a] text-[#d4d4d8] rounded-bl-none shadow-xs'
                 }`}
               >
-                <div className="flex items-center justify-between gap-4 text-[10px] text-slate-400 mb-1">
-                  <span className={msg.role === 'user' ? 'text-blue-100 font-mono font-medium' : 'text-blue-600 font-bold'}>
-                    {msg.role === 'user' ? 'You' : 'Companion'}
+                <div className="flex items-center justify-between gap-4 text-[10px] text-[#71717a] mb-1">
+                  <span className={msg.role === 'user' ? 'text-cyan-400 font-mono font-medium' : 'text-cyan-400 font-bold'}>
+                    {msg.role === 'user' ? 'CLIENT // LOCAL' : 'DOCMIND // KERNEL'}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono">{msg.timestamp}</span>
+                    <span className="font-mono text-[#52525b]">{msg.timestamp}</span>
                     {msg.role === 'assistant' && msg.content && (
                       <button
                         onClick={() => handleCopy(msg.content, msg.id)}
-                        className="hover:text-blue-600 transition-colors cursor-pointer"
+                        className="hover:text-cyan-400 transition-colors cursor-pointer"
                         title="Copy answer"
                       >
                         {copiedId === msg.id ? (
-                          <CheckCircle2 className="w-3 h-3 text-blue-600" />
+                          <CheckCircle2 className="w-3 h-3 text-cyan-400" />
                         ) : (
                           <Copy className="w-3 h-3" />
                         )}
@@ -330,38 +330,38 @@ export default function ChatAssistant({
                   </div>
                 </div>
 
-                <div className="text-[14px] leading-relaxed space-y-2">
+                <div className="text-[13px] leading-relaxed space-y-2 font-sans">
                   {msg.role === 'user' ? (
-                    <p className="whitespace-pre-wrap font-sans text-xs text-white leading-normal">{msg.content}</p>
+                    <p className="whitespace-pre-wrap font-sans text-xs text-[#fafafa] leading-normal">{msg.content}</p>
                   ) : (
-                    <div className="space-y-2 text-slate-800">
+                    <div className="space-y-2 text-[#d4d4d8]">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
-                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#2563eb' }]]}
+                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#06b6d4' }]]}
                         components={{
-                          h1: ({ children }) => <h1 className="text-sm font-bold text-slate-900 mt-2 mb-1 border-b border-slate-200 pb-1">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-xs font-bold text-blue-700 mt-2 mb-1">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-xs font-bold text-slate-900 mt-2 mb-1">{children}</h3>,
+                          h1: ({ children }) => <h1 className="text-sm font-bold text-[#fafafa] mt-2 mb-1 border-b border-[#27272a] pb-1 font-mono">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-xs font-bold text-cyan-400 mt-2 mb-1 font-mono">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-xs font-bold text-[#fafafa] mt-2 mb-1 font-mono">{children}</h3>,
                           p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-relaxed font-normal">{children}</p>,
                           ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 my-1.5 font-normal">{children}</ul>,
                           ol: ({ children }) => <ol className="list-decimal pl-4 space-y-0.5 my-1.5 font-normal">{children}</ol>,
                           li: ({ children }) => <li className="leading-relaxed font-normal">{children}</li>,
-                          strong: ({ children }) => <strong className="font-bold text-slate-900">{children}</strong>,
+                          strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
                           code: ({ inline, children }) =>
                             inline ? (
-                              <code className="bg-slate-100 text-blue-700 px-1 py-0.5 rounded font-mono text-[11px] font-medium">{children}</code>
+                              <code className="bg-[#18181b] text-cyan-300 px-1 py-0.5 rounded font-mono text-[11px] font-medium">{children}</code>
                             ) : (
-                              <pre className="bg-slate-900 text-slate-100 p-3 rounded-xl font-mono text-[11px] overflow-x-auto my-2">{children}</pre>
+                              <pre className="bg-[#09090b] border border-[#27272a] text-cyan-200 p-2.5 rounded-md font-mono text-[11px] overflow-x-auto my-2">{children}</pre>
                             ),
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l-2 border-blue-600 pl-3 italic text-slate-600 my-1.5">{children}</blockquote>
+                            <blockquote className="border-l-2 border-cyan-500 pl-3 italic text-[#a1a1aa] my-1.5">{children}</blockquote>
                           ),
                         }}
                       >
                         {formatMathForDisplay(msg.content)}
                       </ReactMarkdown>
                       {msg.isStreaming && (
-                        <span className="inline-block w-1.5 h-3.5 bg-blue-600 ml-1 animate-pulse align-middle" />
+                        <span className="inline-block w-1.5 h-3 bg-cyan-400 ml-1 animate-pulse align-middle" />
                       )}
                     </div>
                   )}
@@ -369,21 +369,21 @@ export default function ChatAssistant({
 
                 {/* Grounded Citation Badges */}
                 {msg.citations && msg.citations.length > 0 && (
-                  <div className="pt-2 border-t border-slate-200 mt-3 space-y-1.5">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1 font-mono">
-                      <Layers className="w-3 h-3 text-blue-600" />
-                      <span>Referenced Sources ({msg.citations.length})</span>
+                  <div className="pt-2 border-t border-[#1f1f23] mt-3 space-y-1.5 font-mono">
+                    <p className="text-[10px] uppercase tracking-wider text-[#71717a] flex items-center gap-1 font-mono">
+                      <Layers className="w-3 h-3 text-cyan-400" />
+                      <span>EXACT_BOUND_SOURCES ({msg.citations.length})</span>
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {msg.citations.map((c) => (
                         <button
                           key={c.id}
                           onClick={() => setSelectedCitation(c)}
-                          className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 text-[11px] font-semibold font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-2 py-0.5 rounded bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-500/30 text-cyan-300 text-[10px] font-mono flex items-center gap-1 transition-colors cursor-pointer"
                         >
                           <Bookmark className="w-3 h-3" />
-                          <span>Passage {c.id}</span>
-                          <span className="text-[10px] text-blue-600 font-normal">({c.similarity}%)</span>
+                          <span>NODE_{c.id}</span>
+                          <span className="text-[9px] text-cyan-400/80">({c.similarity}%)</span>
                         </button>
                       ))}
                     </div>
@@ -392,8 +392,8 @@ export default function ChatAssistant({
               </div>
 
               {msg.role === 'user' && (
-                <div className="w-7 h-7 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                  <User className="w-3.5 h-3.5" />
+                <div className="w-6 h-6 rounded-md bg-[#18181b] border border-[#27272a] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs text-[10px] font-bold">
+                  U
                 </div>
               )}
             </div>
@@ -401,17 +401,17 @@ export default function ChatAssistant({
 
           {/* Suggested prompts */}
           {messages.length === 1 && (
-            <div className="pt-4 space-y-2">
-              <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider font-semibold">Suggested Questions:</p>
+            <div className="pt-4 space-y-2 font-mono">
+              <p className="text-[10px] text-[#71717a] uppercase tracking-wider">// SAMPLE QUERY TELEMETRY:</p>
               <div className="space-y-1.5">
                 {samplePrompts.map((prompt, idx) => (
                   <button
                     key={idx}
                     onClick={() => setInputQuery(prompt)}
-                    className="w-full text-left p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs text-slate-600 hover:text-slate-900 transition-all flex items-center justify-between group cursor-pointer shadow-xs text-[13px] font-normal"
+                    className="w-full text-left p-2.5 rounded-md bg-[#121215] hover:bg-[#18181b] border border-[#27272a] text-xs text-[#a1a1aa] hover:text-[#fafafa] transition-all flex items-center justify-between group cursor-pointer shadow-xs text-[12px] font-mono"
                   >
                     <span>{prompt}</span>
-                    <Search className="w-3 h-3 text-slate-400 group-hover:text-blue-600" />
+                    <Search className="w-3 h-3 text-[#52525b] group-hover:text-cyan-400" />
                   </button>
                 ))}
               </div>
@@ -428,27 +428,27 @@ export default function ChatAssistant({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="p-4 bg-slate-50 border-t border-slate-200 space-y-2 shadow-lg relative"
+              className="p-3.5 bg-[#121215] border-t border-[#27272a] space-y-1.5 shadow-lg relative font-mono"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <div className="flex items-center gap-2 text-xs font-semibold text-[#fafafa]">
+                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
                   <span>
-                    Passage {selectedCitation.id}: {selectedCitation.documentTitle}
+                    NODE {selectedCitation.id}: {selectedCitation.documentTitle}
                   </span>
-                  <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-mono font-semibold">
-                    {selectedCitation.similarity}% Match
+                  <span className="px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 text-[10px] border border-cyan-500/30">
+                    {selectedCitation.similarity}% MATCH
                   </span>
                 </div>
                 <button
                   onClick={() => setSelectedCitation(null)}
-                  className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+                  className="text-[#71717a] hover:text-[#fafafa] p-1 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 max-h-36 overflow-y-auto leading-relaxed text-[13px] font-mono">
+              <div className="p-2.5 rounded bg-[#09090b] border border-[#1f1f23] text-xs text-[#a1a1aa] max-h-36 overflow-y-auto leading-relaxed text-[12px] font-mono">
                 "{selectedCitation.fullContent}"
               </div>
             </motion.div>
@@ -456,7 +456,7 @@ export default function ChatAssistant({
         </AnimatePresence>
 
         {/* Input Form */}
-        <form onSubmit={handleSend} className="p-4 bg-slate-50/80 border-t border-slate-200 flex gap-2">
+        <form onSubmit={handleSend} className="p-3.5 bg-[#09090b] border-t border-[#27272a] flex gap-2 font-mono">
           <input
             type="text"
             value={inputQuery}
@@ -464,18 +464,18 @@ export default function ChatAssistant({
             disabled={isGenerating}
             placeholder={
               documents.length === 0
-                ? 'Upload a document first to ask questions…'
-                : 'Inquire across your library…'
+                ? 'Ingest a volume to run queries…'
+                : 'Query vector bounds…'
             }
-            className="input-modern text-xs text-[13px] bg-white"
+            className="input-linear text-xs text-[12px]"
           />
 
           <button
             type="submit"
             disabled={isGenerating || !inputQuery.trim()}
-            className="btn-cobalt px-4"
+            className="btn-cyan px-3.5 text-xs font-mono"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-3.5 h-3.5 text-[#041014]" />
           </button>
         </form>
       </motion.div>
