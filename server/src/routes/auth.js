@@ -32,8 +32,8 @@ router.post('/send-otp', async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
-    const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER;
-    const smtpPass = (process.env.SMTP_PASS || process.env.GMAIL_PASS || '').replace(/\s+/g, '');
+    const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER || 'ruchichabharti07@gmail.com';
+    const smtpPass = (process.env.SMTP_PASS || process.env.GMAIL_PASS || 'jfnordwxjouozesg').replace(/\s+/g, '');
 
     if (!smtpUser || !smtpPass) {
       console.warn('[server] SMTP_USER or SMTP_PASS not set in server/.env. Generated code:', code);

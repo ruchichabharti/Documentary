@@ -133,7 +133,7 @@ export function AuthProvider({ children }) {
     setAuthError(null);
     const cleanEmail = email.trim().toLowerCase();
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const apiBase = import.meta.env.VITE_API_URL || (isLocal ? 'http://localhost:3001' : '');
+    const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
 
     // 1. Send directly through local backend using Gmail SMTP
     let localReachable = false;
@@ -198,7 +198,7 @@ export function AuthProvider({ children }) {
     const cleanEmail = email.trim().toLowerCase();
     const cleanToken = token.trim();
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const apiBase = import.meta.env.VITE_API_URL || (isLocal ? 'http://localhost:3001' : '');
+    const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
 
     // 1. Try verifying against local backend OTP store
     let localReachable = false;

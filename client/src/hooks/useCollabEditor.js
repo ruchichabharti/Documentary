@@ -21,7 +21,7 @@ const isProd = typeof window !== 'undefined' && window.location.hostname !== 'lo
 const defaultWsUrl = typeof window !== 'undefined'
   ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`
   : 'ws://localhost:3001';
-const WS_URL = rawWsUrl || defaultWsUrl;
+const WS_URL = isProd ? defaultWsUrl : (rawWsUrl || defaultWsUrl);
 const RECONNECT_DELAY_MS = 3000;
 
 export function useCollabEditor(docId, token) {
