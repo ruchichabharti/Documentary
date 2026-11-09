@@ -2,304 +2,218 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Terminal, 
+  BookOpen, 
   ArrowRight, 
   Search, 
   FileText, 
-  Cpu, 
-  Users, 
-  CheckCircle2, 
+  Edit3, 
+  Bookmark, 
+  Check, 
   Layers, 
   ShieldCheck,
-  Command,
-  CornerDownLeft,
-  Binary,
+  Feather,
+  Sparkles,
   BookmarkCheck,
-  Sparkles
+  PenTool
 } from 'lucide-react';
 
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-cyan-950 selection:text-cyan-300 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#faf9f6] text-[#1c1917] selection:bg-[#fed7aa] selection:text-[#7c2d12] flex flex-col font-sans">
       {/* ── Top Navigation Bar ────────────────────────────────────────────── */}
-      <header className="border-b border-[#27272a] bg-[#09090b]/90 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 no-underline text-[#fafafa]">
-            <div className="w-7 h-7 rounded-md bg-[#16161a] border border-[#27272a] text-cyan-400 flex items-center justify-center font-mono font-bold text-xs shadow-xs">
-              DM
+      <header className="border-b border-[#e7e5e4] bg-[#faf9f6]/90 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2.5 no-underline text-[#1c1917]">
+            <div className="w-7 h-7 rounded-md bg-[#ffffff] border border-[#e7e5e4] text-[#c2410c] flex items-center justify-center shadow-xs">
+              <Feather className="w-4 h-4 stroke-[2]" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm tracking-tight text-[#fafafa]">DocMind</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#18181b] border border-[#27272a] text-[#71717a]">
-                v2.6.4
+              <span className="font-semibold text-sm tracking-tight text-[#1c1917] font-serif-editorial text-[17px]">DocMind</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#f5f4f0] border border-[#e7e5e4] text-[#78716c]">
+                Editorial
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-mono text-[#a1a1aa]">
-            <a href="#features" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-              <span>//</span>
-              <span>INDEX</span>
-            </a>
-            <a href="#kernel" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-              <span>//</span>
-              <span>KERNEL</span>
-            </a>
-            <a href="#grounding" className="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-              <span>//</span>
-              <span>CITATIONS</span>
-            </a>
+          <nav className="hidden md:flex items-center gap-6 text-xs text-[#57534e]">
+            <a href="#features" className="hover:text-[#1c1917] transition-colors">Reading Canvas</a>
+            <a href="#citations" className="hover:text-[#1c1917] transition-colors">Source Citations</a>
+            <a href="#collab" className="hover:text-[#1c1917] transition-colors">Collaboration</a>
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-[#71717a] bg-[#121215] px-2 py-1 rounded border border-[#27272a]">
-              <Command className="w-3 h-3 text-[#52525b]" />
-              <span>K</span>
-            </div>
-
             <Link
               to="/auth"
-              className="text-xs font-medium text-[#a1a1aa] hover:text-[#fafafa] px-2 py-1 transition-colors"
+              className="text-xs font-medium text-[#57534e] hover:text-[#1c1917] px-2 py-1 transition-colors"
             >
               Sign In
             </Link>
             <button
               onClick={() => navigate('/auth')}
-              className="btn-cyan text-xs"
+              className="btn-ink text-xs"
             >
-              <span>Initialize Workspace</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#041014]" />
+              <span>Start Writing</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
       </header>
 
       {/* ── Hero Section ──────────────────────────────────────────────────── */}
-      <main className="flex-1 max-w-5xl mx-auto px-6 pt-16 pb-20">
-        <div className="text-center max-w-3xl mx-auto space-y-5">
+      <main className="flex-1 max-w-4xl mx-auto px-6 pt-16 pb-20">
+        <div className="text-center max-w-2xl mx-auto space-y-5">
           <motion.div 
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#121215] border border-[#27272a] text-[11px] font-mono text-[#a1a1aa]"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffffff] border border-[#e7e5e4] text-xs text-[#57534e] shadow-xs"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="text-cyan-400">[00 // SYSTEM READY]</span>
-            <span className="text-[#52525b]">&bull;</span>
-            <span>SWISS HIGH-TECH MINIMALIST ENGINE</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c2410c]" />
+            <span>Notion &amp; Substack Minimalist &bull; Quiet Reading &amp; Thought</span>
           </motion.div>
 
           <motion.h1 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-[#fafafa] leading-[1.1]"
+            className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#1c1917] leading-[1.12]"
           >
-            High-density document engine for research and precision thought.
+            A quiet space for reading, research, and thinking.
           </motion.h1>
 
           <motion.p 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed max-w-2xl mx-auto font-normal"
+            className="text-sm sm:text-base text-[#57534e] leading-relaxed max-w-xl mx-auto font-normal"
           >
-            Semantic pgvector embedding ingestion, verified zero-hallucination paragraph citations, and concurrent multi-author Operational Transformation.
+            Upload technical research, manuscripts, and notes. Ask questions with verified paragraph citations, and co-author longform essays in real time.
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3"
           >
             <button
               onClick={() => navigate('/auth')}
-              className="btn-cyan w-full sm:w-auto px-6 py-2.5 text-xs font-mono"
+              className="btn-ink w-full sm:w-auto px-6 py-2.5 text-xs font-medium"
             >
-              <span>ACCESS COMMAND CONSOLE</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#041014]" />
+              <span>Open Reading Studio</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => navigate('/auth')}
-              className="btn-linear-secondary w-full sm:w-auto px-5 py-2.5 text-xs font-mono text-[#a1a1aa]"
+              className="btn-notion-secondary w-full sm:w-auto px-5 py-2.5 text-xs"
             >
-              <Terminal className="w-3.5 h-3.5 text-[#71717a]" />
-              <span>EXPLORE SPEC // DEMO</span>
+              <FileText className="w-3.5 h-3.5 text-[#78716c]" />
+              <span>Browse Library</span>
             </button>
           </motion.div>
         </div>
 
-        {/* ── High-Tech Command Terminal Preview Window (Linear Style) ─────── */}
+        {/* ── Notion-Style Minimal Reading Preview Card ─────────────────────── */}
         <motion.div 
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-14 linear-card p-0 overflow-hidden shadow-2xl border border-[#27272a]"
+          className="mt-14 notion-card p-0 overflow-hidden shadow-lg border border-[#e7e5e4] bg-[#ffffff]"
         >
-          {/* Header Bar */}
-          <div className="h-10 bg-[#0d0d10] border-b border-[#27272a] px-4 flex items-center justify-between text-xs font-mono">
+          {/* Notion header row */}
+          <div className="h-10 bg-[#faf9f6] border-b border-[#e7e5e4] px-4 flex items-center justify-between text-xs text-[#57534e]">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-[#3f3f46]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-[#3f3f46]" />
-              <span className="w-2.5 h-2.5 rounded-full bg-[#27272a] border border-[#3f3f46]" />
-              <span className="text-[11px] text-[#71717a] ml-2">KERNEL // SESSION_084</span>
+              <span className="text-sm">📝</span>
+              <span className="font-medium text-[#1c1917]">Attention_Mechanism_Analysis.pdf</span>
+              <span className="text-[#a8a29e] font-serif-editorial italic">/ Section 3.2</span>
             </div>
-            <div className="text-[11px] text-cyan-400 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              <span>WS // 127.0.0.1:3001 [CONNECTED]</span>
-            </div>
-            <div className="text-[11px] text-[#71717a] flex items-center gap-2">
-              <span className="kbd-shortcut">ESC</span>
+            <div className="flex items-center gap-1.5 text-[11px] text-[#78716c]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" />
+              <span>Synced</span>
             </div>
           </div>
 
-          {/* Terminal / Split Inspection */}
-          <div className="grid grid-cols-1 md:grid-cols-12 min-h-[360px] bg-[#09090b]">
-            {/* Left: Telemetry / Indexed Volumes */}
-            <div className="md:col-span-4 bg-[#0d0d10] border-r border-[#27272a] p-4 space-y-3 font-mono text-xs">
-              <div className="text-[10px] text-[#71717a] uppercase tracking-wider flex items-center justify-between border-b border-[#1f1f23] pb-2">
-                <span>[01 // REPOSITORY]</span>
-                <span className="text-cyan-400">3 VOLUMES</span>
-              </div>
+          {/* Minimalist document body */}
+          <div className="p-8 space-y-4 max-w-2xl mx-auto">
+            <h2 className="font-serif-editorial text-2xl font-normal text-[#1c1917] tracking-tight">
+              Scaled Dot-Product Attention Formulation
+            </h2>
 
-              <div className="space-y-1.5">
-                <div className="p-2.5 rounded-md bg-[#16161a] border border-cyan-500/40 flex items-start gap-2.5">
-                  <Binary className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold text-[#fafafa] truncate">attention_mech.pdf</p>
-                    <p className="text-[10px] text-cyan-400/80">CHUNK_HASH: 7f8a9e &bull; 14 NODES</p>
-                  </div>
-                </div>
+            <p className="text-xs sm:text-sm text-[#44403c] leading-relaxed font-serif-editorial text-[15px]">
+              We compute the matrix of outputs as a weighted sum of values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key:
+            </p>
 
-                <div className="p-2.5 rounded-md bg-[#121215] border border-[#27272a] hover:border-[#3f3f46] transition-colors flex items-start gap-2.5 cursor-pointer">
-                  <FileText className="w-4 h-4 text-[#71717a] shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] text-[#a1a1aa] truncate">quantum_decoherence.pdf</p>
-                    <p className="text-[10px] text-[#52525b]">CHUNK_HASH: 3c4d1f &bull; 28 NODES</p>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded-md bg-[#121215] border border-[#27272a] hover:border-[#3f3f46] transition-colors flex items-start gap-2.5 cursor-pointer">
-                  <FileText className="w-4 h-4 text-[#71717a] shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] text-[#a1a1aa] truncate">bayesian_inference.md</p>
-                    <p className="text-[10px] text-[#52525b]">OT_PEERS: 4 LIVE &bull; 82 OPS</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-[#1f1f23]">
-                <div className="p-2.5 rounded-md bg-[#121215] border border-[#27272a] text-[10px] text-[#a1a1aa] space-y-1">
-                  <div className="flex items-center justify-between text-cyan-400">
-                    <span>COSINE SIMILARITY</span>
-                    <span className="font-bold">98.4%</span>
-                  </div>
-                  <p className="text-[#71717a] leading-tight">
-                    Deterministic query grounding. Vector bounds enforced strictly on every generation.
-                  </p>
-                </div>
-              </div>
+            {/* Editorial KaTeX math display */}
+            <div className="p-4 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-center font-mono text-sm text-[#1c1917]">
+              <span className="font-serif italic font-bold text-[#c2410c]">Attention</span>
+              <span className="text-[#57534e]">(Q, K, V) = softmax</span>
+              <span className="text-[#78716c]">(</span>
+              <span className="text-[#1c1917] font-semibold">QK</span>
+              <sup className="text-[#c2410c]">T</sup>
+              <span className="text-[#78716c]"> / &radic;</span>
+              <span className="italic text-[#57534e]">d</span>
+              <sub className="text-[#78716c]">k</sub>
+              <span className="text-[#78716c]">) </span>
+              <span className="text-[#1c1917] font-semibold">V</span>
             </div>
 
-            {/* Right: Modern high-density document sheet */}
-            <div className="md:col-span-8 p-6 space-y-4 bg-[#09090b]">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1f1f23]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                  <span className="text-xs font-mono text-[#fafafa]">DOC_ID: attention_mech // SECTION_3.2</span>
-                </div>
-                <div className="flex items-center gap-2 font-mono text-[11px]">
-                  <span className="px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 text-cyan-300">
-                    PEER: SARAH_K [LIVE]
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-xs text-[#a1a1aa] leading-relaxed space-y-3 font-normal">
-                <p>
-                  Output matrix computed deterministically through scaled dot-product attention queries:
-                </p>
-
-                {/* Swiss Minimalist KaTeX Math formulation */}
-                <div className="p-3.5 rounded-md bg-[#0d0d10] border border-[#27272a] text-center font-mono text-sm text-[#fafafa]">
-                  <span className="font-serif italic font-bold text-cyan-400">Attention</span>
-                  <span className="text-[#a1a1aa]">(Q, K, V) = softmax</span>
-                  <span className="text-[#52525b]">(</span>
-                  <span className="text-[#fafafa] font-semibold">QK</span>
-                  <sup className="text-cyan-400">T</sup>
-                  <span className="text-[#52525b]"> / &radic;</span>
-                  <span className="italic text-[#a1a1aa]">d</span>
-                  <sub className="text-[#71717a]">k</sub>
-                  <span className="text-[#52525b]">) </span>
-                  <span className="text-[#fafafa] font-semibold">V</span>
-                </div>
-
-                <div className="p-3 rounded-md bg-[#121215] border border-[#27272a] flex items-start gap-2.5 text-[11px] text-[#a1a1aa] font-mono">
-                  <BookmarkCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-cyan-400 font-semibold">[VERIFIED_SOURCE]</span>
-                    <span className="ml-1 text-[#fafafa]">Vaswani et al., Section 3.2, Page 4</span>
-                    <p className="text-[#71717a] mt-0.5 italic">
-                      &ldquo;The two most commonly used attention functions are additive attention and dot-product attention.&rdquo;
-                    </p>
-                  </div>
-                </div>
+            {/* Substack-style inline citation callout */}
+            <div className="p-3.5 rounded-lg bg-[#fff7ed] border border-[#fed7aa] flex items-start gap-2.5 text-xs text-[#7c2d12]">
+              <BookmarkCheck className="w-4 h-4 text-[#c2410c] shrink-0 mt-0.5" />
+              <div className="font-serif-editorial text-[14px] leading-relaxed">
+                <strong className="font-sans font-semibold text-[#9a3412] text-xs">Verified Source:</strong> Vaswani et al., Section 3.2, Page 4 &mdash; <em>&ldquo;The two most commonly used attention functions are additive attention and dot-product attention.&rdquo;</em>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* ── 3 Swiss Minimalist Engineering Pillars ────────────────────────── */}
-        <div id="features" className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-5 font-mono">
-          <div className="linear-card linear-card-interactive p-6 space-y-3">
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>[01 // VECTOR STORE]</span>
-              <Layers className="w-4 h-4" />
+        {/* ── 3 Notion & Substack Craft Pillars ─────────────────────────────── */}
+        <div id="features" className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="notion-card notion-card-interactive p-6 space-y-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-[#c2410c] flex items-center justify-center">
+              <Feather className="w-4 h-4 stroke-[2]" />
             </div>
-            <h3 className="text-sm font-semibold text-[#fafafa] font-sans">pgvector Indexing</h3>
-            <p className="text-xs text-[#a1a1aa] leading-relaxed font-sans">
-              High-throughput paragraph chunking with exact line offsets and zero hallucination boundaries.
+            <h3 className="font-serif-editorial text-lg text-[#1c1917]">Distraction-Free Reading</h3>
+            <p className="text-xs text-[#57534e] leading-relaxed font-normal">
+              Zero clutter or robotic jargon. A quiet, typographic environment crafted for slow, contemplative reading.
             </p>
           </div>
 
-          <div className="linear-card linear-card-interactive p-6 space-y-3">
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>[02 // CO-OP KERNEL]</span>
-              <Users className="w-4 h-4" />
+          <div className="notion-card notion-card-interactive p-6 space-y-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-[#1c1917] flex items-center justify-center">
+              <Bookmark className="w-4 h-4 stroke-[2]" />
             </div>
-            <h3 className="text-sm font-semibold text-[#fafafa] font-sans">Operational Transform</h3>
-            <p className="text-xs text-[#a1a1aa] leading-relaxed font-sans">
-              Decentralized state machine reconciling concurrent client mutations with zero character collisions.
+            <h3 className="font-serif-editorial text-lg text-[#1c1917]">Grounded Source Citations</h3>
+            <p className="text-xs text-[#57534e] leading-relaxed font-normal">
+              Every synthesized claim is anchored to exact paragraph spans in your uploaded research volumes.
             </p>
           </div>
 
-          <div className="linear-card linear-card-interactive p-6 space-y-3">
-            <div className="flex items-center justify-between text-xs text-cyan-400">
-              <span>[03 // TYPOGRAPHY]</span>
-              <Cpu className="w-4 h-4" />
+          <div className="notion-card notion-card-interactive p-6 space-y-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-[#c2410c] flex items-center justify-center">
+              <PenTool className="w-4 h-4 stroke-[2]" />
             </div>
-            <h3 className="text-sm font-semibold text-[#fafafa] font-sans">Native KaTeX LaTeX</h3>
-            <p className="text-xs text-[#a1a1aa] leading-relaxed font-sans">
-              Mathematical formulas, matrix equations, and proof trees rendered with KaTeX acceleration.
+            <h3 className="font-serif-editorial text-lg text-[#1c1917]">Live Co-Authorship</h3>
+            <p className="text-xs text-[#57534e] leading-relaxed font-normal">
+              Operational Transformation ensures real-time collaborative writing with presence cursors.
             </p>
           </div>
         </div>
       </main>
 
       {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-[#27272a] bg-[#09090b] py-8 text-center text-xs text-[#52525b] font-mono">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-[#a1a1aa]">
-            <span className="text-cyan-400 font-bold">DOCMIND</span>
+      <footer className="border-t border-[#e7e5e4] bg-[#ffffff] py-8 text-center text-xs text-[#78716c]">
+        <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-[#44403c]">
+            <span className="font-serif-editorial text-sm font-semibold text-[#1c1917]">DocMind</span>
             <span>&bull;</span>
-            <span className="text-[#52525b]">SWISS HIGH-TECH MINIMALIST SYSTEM</span>
+            <span className="text-[#78716c]">Clean Editorial Edition</span>
           </div>
-          <div className="flex items-center gap-5 text-[#71717a]">
-            <Link to="/auth" className="hover:text-cyan-400 transition-colors">LOGIN</Link>
-            <Link to="/dashboard" className="hover:text-cyan-400 transition-colors">DASHBOARD</Link>
-            <span>&copy; {new Date().getFullYear()} DOCMIND INC.</span>
+          <div className="flex items-center gap-5 text-[#78716c]">
+            <Link to="/auth" className="hover:text-[#1c1917] transition-colors">Sign In</Link>
+            <Link to="/dashboard" className="hover:text-[#1c1917] transition-colors">Library</Link>
+            <span>&copy; {new Date().getFullYear()} DocMind</span>
           </div>
         </div>
       </footer>

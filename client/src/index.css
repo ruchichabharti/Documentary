@@ -1,28 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Option 1: Swiss High-Tech Minimalist (Linear & Vercel Style) ────────── */
+/* ─── Option 5: Clean Minimal (Notion & Substack Style) Variables ─────────── */
 :root {
-  --bg-primary:     #09090b;   /* Matte deep void black */
-  --bg-secondary:   #121215;   /* Graphite subsurface */
-  --bg-surface:     #16161a;   /* Elevated precision card */
-  --bg-hover:       #202025;   /* High-tech hover */
-  --border:         #27272a;   /* Crisp hairline border */
-  --border-strong:  #3f3f46;   /* Defined zinc border */
-  --text-primary:   #fafafa;   /* High-contrast stark white */
-  --text-secondary: #a1a1aa;   /* Cool zinc */
-  --text-muted:     #52525b;   /* Muted graphite */
-  --accent:         #06b6d4;   /* Electric Cyan */
-  --accent-hover:   #0891b2;   /* Deep Cyan */
-  --accent-light:   rgba(6, 182, 212, 0.12);
-  --accent-glow:    rgba(6, 182, 212, 0.25);
-  --danger:         #f43f5e;
-  --success:        #10b981;
-  --editor-bg:      #ffffff;   /* Pure white document sheet */
-  --editor-text:    #09090b;   /* Deep ink text */
+  --bg-primary:     #faf9f6;   /* Warm bone / Notion canvas */
+  --bg-secondary:   #ffffff;   /* Pure white paper */
+  --bg-surface:     #ffffff;   /* Elevated card surface */
+  --bg-hover:       #f5f4f0;   /* Warm stone hover */
+  --border:         #e7e5e4;   /* Minimal stone border */
+  --border-strong:  #d6d3d1;   /* Defined stone border */
+  --text-primary:   #1c1917;   /* Deep stone ink */
+  --text-secondary: #57534e;   /* Soft graphite stone */
+  --text-muted:     #a8a29e;   /* Muted warm stone */
+  --accent:         #1c1917;   /* Ink action black */
+  --terracotta:     #c2410c;   /* Substack terracotta rust */
+  --terracotta-light: #fff7ed; /* Light rust tint */
+  --danger:         #dc2626;
+  --success:        #15803d;
+  --editor-bg:      #ffffff;   /* Clean white sheet */
+  --editor-text:    #1c1917;   /* Deep ink text */
 }
 
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
@@ -37,120 +36,104 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Monospace Subtext & Shortcuts ───────────────────────────────────────── */
-.font-mono-code {
-  font-family: 'JetBrains Mono', monospace;
+/* ─── Editorial Serif Typography ─────────────────────────────────────────── */
+.font-serif-editorial {
+  font-family: 'Newsreader', Georgia, Cambria, 'Times New Roman', serif;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
 
-/* ─── Swiss Linear-Style Cards ───────────────────────────────────────────── */
-.linear-card {
+/* ─── Notion-Style Minimal Cards ─────────────────────────────────────────── */
+.notion-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.04);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.linear-card-interactive:hover {
-  border-color: #3f3f46;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 1px rgba(6, 182, 212, 0.4);
+.notion-card-interactive:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(28, 25, 23, 0.06);
 }
 
-/* ─── Electric Cyan Buttons (Linear / Vercel Style) ──────────────────────── */
-.btn-cyan {
+/* ─── Ink Buttons (Notion / Substack Minimalist) ──────────────────────────── */
+.btn-ink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%);
-  color: #041014;
-  font-weight: 600;
+  background: #1c1917;
+  color: #faf9f6;
+  font-weight: 500;
   font-size: 13px;
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid #22d3ee;
-  box-shadow: 0 2px 10px rgba(6, 182, 212, 0.25);
+  border: 1px solid #1c1917;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.1);
   transition: all 0.15s ease;
   cursor: pointer;
 }
-.btn-cyan:hover {
-  background: linear-gradient(180deg, #22d3ee 0%, #06b6d4 100%);
-  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.4);
-  transform: translateY(-1px);
+.btn-ink:hover {
+  background: #292524;
+  box-shadow: 0 3px 10px rgba(28, 25, 23, 0.18);
+  transform: translateY(-0.5px);
 }
-.btn-cyan:active {
+.btn-ink:active {
   transform: translateY(0);
 }
-.btn-cyan:disabled {
+.btn-ink:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
 }
 
-.btn-linear-secondary {
+.btn-notion-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #121215;
+  background: #ffffff;
   color: var(--text-primary);
   font-weight: 500;
   font-size: 13px;
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03);
   transition: all 0.15s ease;
   cursor: pointer;
 }
-.btn-linear-secondary:hover {
+.btn-notion-secondary:hover {
   background: var(--bg-hover);
   border-color: var(--border-strong);
-  color: #ffffff;
-}
-
-/* ─── Keyboard Shortcut Badge (KBD) ──────────────────────────────────────── */
-.kbd-shortcut {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 2px 5px;
-  border-radius: 5px;
-  background: #18181b;
-  border: 1px solid #27272a;
-  color: #71717a;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
 }
 
 /* ─── Form Inputs ────────────────────────────────────────────────────────── */
-.input-linear {
+.input-notion {
   width: 100%;
-  background: #0d0d10;
+  background: #ffffff;
   border: 1px solid var(--border);
   color: var(--text-primary);
   border-radius: 8px;
   padding: 9px 12px;
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03) inset;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.input-linear:focus {
+.input-notion:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+  box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.08);
 }
-.input-linear::placeholder { color: var(--text-muted); }
+.input-notion::placeholder { color: var(--text-muted); }
 
-/* ─── Editor Canvas (High-Tech Sheet) ────────────────────────────────────── */
+/* ─── Editor Canvas (Pure Distraction-Free Paper Sheet) ──────────────────── */
 .editor-canvas {
   position: relative;
   background: var(--editor-bg);
@@ -159,9 +142,9 @@ html, body, #root {
   max-width: 820px;
   margin: 0 auto;
   padding: 80px 88px;
-  border-radius: 8px;
-  border: 1px solid #e4e4e7;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgba(28, 25, 23, 0.05);
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   line-height: 1.8;
@@ -172,7 +155,7 @@ html, body, #root {
   min-height: 100%;
   white-space: pre-wrap;
   word-break: break-word;
-  caret-color: #06b6d4;
+  caret-color: #c2410c;
 }
 
 /* ─── Topbar ─────────────────────────────────────────────────────────────── */
@@ -180,11 +163,11 @@ html, body, #root {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(9, 9, 11, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(250, 249, 246, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  padding: 0 20px;
+  padding: 0 24px;
   height: 56px;
   display: flex;
   align-items: center;
@@ -194,7 +177,7 @@ html, body, #root {
 /* ─── Sidebar ────────────────────────────────────────────────────────────── */
 .sidebar {
   width: 260px;
-  background: #0d0d10;
+  background: #ffffff;
   border-left: 1px solid var(--border);
   padding: 20px 16px;
   overflow-y: auto;
@@ -209,10 +192,9 @@ html, body, #root {
   align-items: center;
   gap: 6px;
   padding: 3px 9px;
-  border-radius: 6px;
+  border-radius: 9999px;
   font-size: 11px;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
   border: 1px solid transparent;
 }
 .status-dot {
@@ -221,53 +203,51 @@ html, body, #root {
   border-radius: 9999px;
 }
 .status-connected {
-  background: rgba(6, 182, 212, 0.12);
-  color: #22d3ee;
-  border-color: rgba(6, 182, 212, 0.3);
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
 }
 .status-connected .status-dot {
-  background: #22d3ee;
-  box-shadow: 0 0 6px #22d3ee;
+  background: #16a34a;
 }
 .status-connecting {
-  background: rgba(234, 179, 8, 0.12);
-  color: #facc15;
-  border-color: rgba(234, 179, 8, 0.3);
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
 }
 .status-connecting .status-dot {
-  background: #facc15;
+  background: #d97706;
 }
 .status-disconnected {
-  background: rgba(239, 68, 68, 0.12);
-  color: #f87171;
-  border-color: rgba(239, 68, 68, 0.3);
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 .status-disconnected .status-dot {
-  background: #f87171;
+  background: #dc2626;
 }
 
 /* ─── Presence avatars ───────────────────────────────────────────────────── */
 .presence-avatar {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid #ffffff;
   margin-left: -6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.1);
 }
 .presence-avatar:first-child { margin-left: 0; }
 
-/* ─── KaTeX Math Display Styles (Swiss Graphite & Cyan) ─────────────────── */
+/* ─── KaTeX Math Display Styles (Editorial Ivory Paper) ──────────────────── */
 .katex {
   font-size: 1.05em;
-  color: #fafafa;
+  color: #1c1917;
 }
 
 .katex-display {
@@ -275,18 +255,18 @@ html, body, #root {
   padding: 0.7em 1em;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #0d0d10;
+  background: #f5f4f0;
   border-radius: 8px;
-  border: 1px solid #27272a;
+  border: 1px solid #e7e5e4;
 }
 
 .katex-display > .katex {
   max-width: 100%;
   text-align: center;
-  color: #fafafa;
+  color: #1c1917;
 }
 
 .katex .mord.mathbf {
   font-weight: 700;
-  color: #22d3ee;
+  color: #c2410c;
 }
