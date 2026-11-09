@@ -150,11 +150,22 @@ export function AuthProvider({ children }) {
       }
       throw new Error(data?.error || 'Failed to send OTP code to your email.');
     } catch (localErr) {
-      if (localReachable) {
-        setAuthError(localErr.message);
-        throw localErr;
+      console.warn('[DocMind Auth] Backend mailer error, attempting Supabase OTP fallback:', localErr.message);
+      if (isSupabaseConfigured) {
+        try {
+          const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined;
+          const { data, error } = await supabase.auth.signInWithOtp({
+            email: cleanEmail,
+            options: {
+              shouldCreateUser: true,
+              emailRedirectTo: redirectUrl,
+            },
+          });
+          if (!error) return data;
+        } catch (_) {}
       }
-      console.warn('[DocMind Auth] Backend mailer unreachable, checking Supabase fallback:', localErr.message);
+      setAuthError(localErr.message);
+      throw localErr;
     }
 
     // 2. Fallback to Supabase Auth if backend is unreachable

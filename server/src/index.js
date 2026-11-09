@@ -9,13 +9,23 @@
  *   ws://localhost:3001?docId=...&token=... — WebSocket collaboration
  */
 
-import 'dotenv/config';
+import dotenv   from 'dotenv';
 import http     from 'http';
 import path     from 'path';
 import { fileURLToPath } from 'url';
 import fs       from 'fs';
 import express  from 'express';
 import cors     from 'cors';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure .env is loaded regardless of execution working directory
+dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../client/.env') });
+
 import authRouter from './routes/auth.js';
 import docsRouter from './routes/docs.js';
 import { createWsServer } from './ws/server.js';
@@ -23,9 +33,6 @@ import { createWsServer } from './ws/server.js';
 // Initialize database tables on startup
 import { runMigrations } from './db/db.js';
 await runMigrations();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const candidatePaths = [
   path.resolve(__dirname, '../../client/dist'),
