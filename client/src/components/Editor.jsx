@@ -9,6 +9,7 @@
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { BookOpen } from 'lucide-react';
 import { useCollabEditor } from '../hooks/useCollabEditor.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../lib/api.js';
@@ -64,9 +65,9 @@ export default function Editor({ docId }) {
     <div className="flex flex-col h-screen bg-[--bg-primary]">
       {/* ── Top bar ─────────────────────────────────────────────────── */}
       <header className="topbar">
-        <Link to="/dashboard" className="text-[--accent] font-bold text-lg mr-2 no-underline flex items-center gap-1 hover:opacity-90 transition-opacity">
-          <span>✦</span>
-          <span>DocMind Editor</span>
+        <Link to="/dashboard" className="text-amber-500 font-semibold text-base mr-2 no-underline flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <BookOpen className="w-4 h-4 text-amber-500" />
+          <span>DocMind Studio</span>
         </Link>
         <div className="w-px h-6 bg-[--border]" />
         <input

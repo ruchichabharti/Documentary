@@ -51,15 +51,14 @@ function formatMathForDisplay(text) {
   str = str.replace(/\\\(([\s\S]*?)\\\)/g, '$$1$');
 
   // 3. Fix matrix pipes: KaTeX doesn't support raw '|' inside bmatrix without array spec
-  // Replace ' | ' inside matrices with ' & ' so KaTeX renders clean column blocks
   str = str.replace(/(\\begin\{(?:b|p|v|V)?matrix\}[\s\S]*?\\end\{(?:b|p|v|V)?matrix\})/g, (match) => {
     return match.replace(/\s*\|\s*/g, ' & ');
   });
 
-  // 4. Ensure bare LaTeX environments (\begin{cases}, \begin{aligned}, etc.) are wrapped in $$ ONLY IF NOT already inside math
+  // 4. Ensure bare LaTeX environments are wrapped in $$ ONLY IF NOT already inside math
   str = str.replace(/(\\begin\{(cases|aligned|align\*?|matrix|pmatrix|bmatrix|vmatrix)\}[\s\S]*?\\end\{\2\})/g, (match, p1, env, offset, fullStr) => {
     if (isInsideMath(fullStr, offset)) {
-      return match; // Already inside $ or $$, leave intact!
+      return match;
     }
     return `\n$$\n${match.trim()}\n$$\n`;
   });
@@ -108,16 +107,14 @@ function formatMathForDisplay(text) {
 
     let l = line;
 
-    // Convert parenthesized fractions: ((2 / 7)) -> (\frac{2}{7}), (12 / 49) -> \frac{12}{49}
+    // Convert parenthesized fractions
     l = l.replace(/\(\(([0-9]+)\s*\/\s*([0-9]+)\)\)/g, '(\\frac{$1}{$2})');
     l = l.replace(/\(([0-9]+)\s*\/\s*([0-9]+)\)/g, '\\frac{$1}{$2}');
 
     // If line has standalone LaTeX commands, check if it is pure formula or prose
     const hasLatexCmd = /\\[a-zA-Z]+/.test(l);
     if (hasLatexCmd) {
-      // Count regular English words in this line (2 or more letters)
       const proseWords = l.replace(/\\[a-zA-Z]+(\{[^}]*\})?/g, '').match(/[a-zA-Z]{2,}/g) || [];
-      // If there are ANY prose words (e.g. 'for', 'where', 'let', 'then', 'joint', 'rates'), NEVER wrap in math!
       if (proseWords.length === 0 && /[=><+\-*\\^]/.test(l)) {
         return `$$${l.trim()}$$`;
       }
@@ -140,7 +137,7 @@ export default function ChatAssistant({
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Hello! I am **DocMind**, your AI document assistant. Ask me questions about any of your ingested documents, and I will synthesize grounded answers with verifiable source citations.',
+      content: 'Hello! I am your **DocMind Assistant**. Ask me any question across your uploaded documents, and I will search the text to provide verified, cited answers.',
       citations: [],
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
@@ -259,7 +256,7 @@ export default function ChatAssistant({
       {
         id: 'welcome',
         role: 'assistant',
-        content: 'Chat history cleared. What document would you like to explore?',
+        content: 'Conversation cleared. What would you like to explore next?',
         citations: [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
@@ -268,8 +265,8 @@ export default function ChatAssistant({
 
   const samplePrompts = [
     'Summarize the core takeaways of my documents',
-    'What are the key technical architectural decisions?',
-    'Find any security or compliance requirements mentioned',
+    'What are the key technical concepts described?',
+    'List any actionable recommendations mentioned',
   ];
 
   return (
@@ -279,22 +276,19 @@ export default function ChatAssistant({
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-        className="w-full max-w-2xl h-full bg-[#0d0f17] border-l border-slate-800 shadow-2xl flex flex-col relative overflow-hidden"
+        className="w-full max-w-2xl h-full bg-[#13151b] border-l border-[#21242e] shadow-2xl flex flex-col relative overflow-hidden"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800/90 bg-[#121422]/90 backdrop-blur-md flex items-center justify-between z-10">
+        <div className="px-6 py-4 border-b border-[#21242e] bg-[#171a22] flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-sm">
+              <BookOpen className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span>DocMind Q&A Assistant</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  pgvector RAG
-                </span>
+                <span>DocMind Assistant</span>
               </h2>
-              <p className="text-xs text-slate-400">Grounded semantic search with verified source citations</p>
+              <p className="text-xs text-stone-400">Search and ask questions across your documents</p>
             </div>
           </div>
 
@@ -302,13 +296,13 @@ export default function ChatAssistant({
             <button
               onClick={handleResetChat}
               title="Reset Conversation"
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -316,21 +310,21 @@ export default function ChatAssistant({
         </div>
 
         {/* Scope Filter Bar */}
-        <div className="px-6 py-2.5 bg-[#090b12] border-b border-slate-800/60 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-slate-400">
-            <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+        <div className="px-6 py-2.5 bg-[#0e1015] border-b border-[#21242e] flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2 text-stone-400">
+            <Search className="w-3.5 h-3.5 text-amber-400" />
             <span>Search Scope:</span>
           </div>
 
           <select
             value={filterDocId}
             onChange={(e) => setFilterDocId(e.target.value)}
-            className="bg-[#151726] border border-slate-700/60 rounded-lg px-2.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer max-w-[280px] truncate"
+            className="bg-[#171a22] border border-[#242833] rounded-lg px-2.5 py-1 text-xs text-stone-200 focus:outline-none focus:border-amber-500/80 cursor-pointer max-w-[280px] truncate"
           >
             <option value="all">All Documents ({documents.length})</option>
             {documents.map((doc) => (
               <option key={doc.id} value={doc.id}>
-                {doc.title} ({doc.chunk_count || 0} chunks)
+                {doc.title} ({doc.chunk_count || 0} sections)
               </option>
             ))}
           </select>
@@ -344,28 +338,28 @@ export default function ChatAssistant({
               className={`flex gap-3.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
-                  <Bot className="w-4 h-4" />
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <BookOpen className="w-4 h-4" />
                 </div>
               )}
 
               <div
                 className={`max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed space-y-2.5 ${
                   msg.role === 'user'
-                    ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-br-none shadow-md shadow-indigo-600/20'
-                    : 'bg-[#151726]/90 border border-slate-800/90 text-slate-200 rounded-bl-none shadow-sm'
+                    ? 'bg-[#1f232d] border border-stone-700/60 text-white rounded-br-none shadow-sm'
+                    : 'bg-[#171a22] border border-[#21242e] text-stone-200 rounded-bl-none shadow-sm'
                 }`}
               >
-                <div className="flex items-center justify-between gap-4 text-[10px] text-slate-400 mb-1">
-                  <span className={msg.role === 'user' ? 'text-indigo-200' : 'text-slate-400'}>
-                    {msg.role === 'user' ? 'You' : 'DocMind AI'}
+                <div className="flex items-center justify-between gap-4 text-[10px] text-stone-400 mb-1">
+                  <span className={msg.role === 'user' ? 'text-stone-300 font-medium' : 'text-amber-400/90 font-medium'}>
+                    {msg.role === 'user' ? 'You' : 'DocMind Assistant'}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span>{msg.timestamp}</span>
+                    <span className="font-mono">{msg.timestamp}</span>
                     {msg.role === 'assistant' && msg.content && (
                       <button
                         onClick={() => handleCopy(msg.content, msg.id)}
-                        className="hover:text-white transition-colors"
+                        className="hover:text-white transition-colors cursor-pointer"
                         title="Copy answer"
                       >
                         {copiedId === msg.id ? (
@@ -382,14 +376,14 @@ export default function ChatAssistant({
                   {msg.role === 'user' ? (
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                   ) : (
-                    <div className="space-y-2 text-slate-200">
+                    <div className="space-y-2 text-stone-200">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
-                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#a5b4fc' }]]}
+                        rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false, trust: true, errorColor: '#f59e0b' }]]}
                         components={{
-                          h1: ({ children }) => <h1 className="text-sm font-bold text-white mt-2 mb-1 border-b border-slate-700/60 pb-1">{children}</h1>,
-                          h2: ({ children }) => <h2 className="text-xs font-bold text-indigo-300 mt-2 mb-1">{children}</h2>,
-                          h3: ({ children }) => <h3 className="text-xs font-semibold text-indigo-200 mt-2 mb-1">{children}</h3>,
+                          h1: ({ children }) => <h1 className="text-sm font-bold text-white mt-2 mb-1 border-b border-stone-700/60 pb-1">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-xs font-bold text-amber-300 mt-2 mb-1">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-xs font-semibold text-amber-200 mt-2 mb-1">{children}</h3>,
                           p: ({ children }) => <p className="mb-1.5 last:mb-0 leading-relaxed">{children}</p>,
                           ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 my-1.5">{children}</ul>,
                           ol: ({ children }) => <ol className="list-decimal pl-4 space-y-0.5 my-1.5">{children}</ol>,
@@ -397,19 +391,19 @@ export default function ChatAssistant({
                           strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
                           code: ({ inline, children }) =>
                             inline ? (
-                              <code className="bg-slate-800/80 text-indigo-300 px-1 py-0.5 rounded font-mono text-[11px]">{children}</code>
+                              <code className="bg-stone-800 text-amber-300 px-1 py-0.5 rounded font-mono text-[11px]">{children}</code>
                             ) : (
-                              <pre className="bg-[#0b0d14] border border-slate-800 p-2.5 rounded-lg font-mono text-[11px] overflow-x-auto my-2 text-indigo-200">{children}</pre>
+                              <pre className="bg-[#0b0c0e] border border-[#21242e] p-2.5 rounded-lg font-mono text-[11px] overflow-x-auto my-2 text-stone-200">{children}</pre>
                             ),
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l-2 border-indigo-500 pl-3 italic text-slate-400 my-1.5">{children}</blockquote>
+                            <blockquote className="border-l-2 border-amber-500 pl-3 italic text-stone-400 my-1.5">{children}</blockquote>
                           ),
                         }}
                       >
                         {formatMathForDisplay(msg.content)}
                       </ReactMarkdown>
                       {msg.isStreaming && (
-                        <span className="inline-block w-1.5 h-3.5 bg-indigo-400 ml-1 animate-pulse align-middle" />
+                        <span className="inline-block w-1.5 h-3.5 bg-amber-400 ml-1 animate-pulse align-middle" />
                       )}
                     </div>
                   )}
@@ -417,20 +411,20 @@ export default function ChatAssistant({
 
                 {/* Grounded Citation Badges */}
                 {msg.citations && msg.citations.length > 0 && (
-                  <div className="pt-2 border-t border-slate-800/60 mt-3 space-y-1.5">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-300 flex items-center gap-1">
+                  <div className="pt-2 border-t border-[#21242e] mt-3 space-y-1.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-400/90 flex items-center gap-1">
                       <Layers className="w-3 h-3" />
-                      <span>Verified Source Citations ({msg.citations.length})</span>
+                      <span>Source Citations ({msg.citations.length})</span>
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {msg.citations.map((c) => (
                         <button
                           key={c.id}
                           onClick={() => setSelectedCitation(c)}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-950/40 hover:bg-indigo-900/60 border border-indigo-500/30 text-indigo-300 text-[11px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
-                          <span>Source {c.id}</span>
-                          <span className="text-[10px] text-indigo-400/80 font-mono">({c.similarity}%)</span>
+                          <span>Passage {c.id}</span>
+                          <span className="text-[10px] text-amber-400/70 font-mono">({c.similarity}%)</span>
                         </button>
                       ))}
                     </div>
@@ -439,7 +433,7 @@ export default function ChatAssistant({
               </div>
 
               {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-xl bg-stone-800 text-stone-300 flex items-center justify-center shrink-0 mt-0.5">
                   <User className="w-4 h-4" />
                 </div>
               )}
@@ -449,7 +443,7 @@ export default function ChatAssistant({
           {/* Quick Prompts if only welcome message exists */}
           {messages.length === 1 && (
             <div className="pt-4 space-y-2">
-              <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Suggested Queries:</p>
+              <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wider">Suggested Questions:</p>
               <div className="space-y-1.5">
                 {samplePrompts.map((prompt, idx) => (
                   <button
@@ -457,10 +451,10 @@ export default function ChatAssistant({
                     onClick={() => {
                       setInputQuery(prompt);
                     }}
-                    className="w-full text-left p-2.5 rounded-xl bg-[#151726]/60 hover:bg-indigo-950/30 border border-slate-800 hover:border-indigo-500/30 text-xs text-slate-300 transition-all flex items-center justify-between group cursor-pointer"
+                    className="w-full text-left p-2.5 rounded-xl bg-[#171a22] hover:bg-[#1f232d] border border-[#21242e] hover:border-amber-500/30 text-xs text-stone-300 transition-all flex items-center justify-between group cursor-pointer"
                   >
                     <span>{prompt}</span>
-                    <Sparkles className="w-3 h-3 text-slate-500 group-hover:text-indigo-400" />
+                    <Search className="w-3 h-3 text-stone-500 group-hover:text-amber-400" />
                   </button>
                 ))}
               </div>
@@ -477,13 +471,13 @@ export default function ChatAssistant({
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}
-              className="p-4 bg-[#151829] border-t border-indigo-500/30 space-y-2 shadow-xl relative"
+              className="p-4 bg-[#171a22] border-t border-amber-500/30 space-y-2 shadow-xl relative"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                  <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                  <FileText className="w-3.5 h-3.5 text-amber-400" />
                   <span>
-                    Source {selectedCitation.id}: {selectedCitation.documentTitle}
+                    Passage {selectedCitation.id}: {selectedCitation.documentTitle}
                   </span>
                   <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">
                     {selectedCitation.similarity}% Match
@@ -491,13 +485,13 @@ export default function ChatAssistant({
                 </div>
                 <button
                   onClick={() => setSelectedCitation(null)}
-                  className="text-slate-400 hover:text-white p-1"
+                  className="text-stone-400 hover:text-white p-1 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              <div className="p-2.5 rounded-lg bg-black/40 border border-slate-800 text-[11px] font-mono text-slate-300 max-h-36 overflow-y-auto leading-relaxed">
+              <div className="p-2.5 rounded-lg bg-[#0c0e12] border border-[#21242e] text-[11px] font-mono text-stone-300 max-h-36 overflow-y-auto leading-relaxed">
                 {selectedCitation.fullContent}
               </div>
             </motion.div>
@@ -505,7 +499,7 @@ export default function ChatAssistant({
         </AnimatePresence>
 
         {/* Input Form */}
-        <form onSubmit={handleSend} className="p-4 bg-[#121422] border-t border-slate-800 flex gap-2">
+        <form onSubmit={handleSend} className="p-4 bg-[#171a22] border-t border-[#21242e] flex gap-2">
           <input
             type="text"
             value={inputQuery}
@@ -513,16 +507,16 @@ export default function ChatAssistant({
             disabled={isGenerating}
             placeholder={
               documents.length === 0
-                ? 'Please ingest a document first to ask questions...'
-                : 'Ask anything about your documents (e.g. What is the key conclusion?)...'
+                ? 'Upload a document first to ask questions…'
+                : 'Ask a question about your documents…'
             }
-            className="flex-1 bg-[#1a1c2d] border border-slate-700/60 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+            className="flex-1 bg-[#0c0e12] border border-[#242833] rounded-xl px-4 py-2.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-500/80 transition-colors disabled:opacity-50"
           />
 
           <button
             type="submit"
             disabled={isGenerating || !inputQuery.trim()}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-40 disabled:pointer-events-none text-white transition-all shadow-md shadow-indigo-600/20 flex items-center justify-center cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:pointer-events-none text-stone-950 font-semibold transition-all shadow-sm flex items-center justify-center cursor-pointer"
           >
             <Send className="w-4 h-4" />
           </button>

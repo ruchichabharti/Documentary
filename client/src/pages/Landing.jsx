@@ -2,18 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Sparkles, 
   FileText, 
   Search, 
-  Cpu, 
-  Database, 
-  ShieldCheck, 
-  Zap, 
-  CheckCircle2, 
+  Shield, 
+  Check, 
   ArrowRight,
-  Layers,
-  BrainCircuit,
-  Lock
+  BookOpen,
+  Edit3,
+  Users,
+  Compass
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -21,147 +18,144 @@ export default function Landing() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-indigo-600/15 via-purple-600/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-96 right-10 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
-
+    <div className="min-h-screen bg-[#0b0c0e] text-[#f5f5f7] flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       {/* Navigation */}
-      <header className="w-full max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative z-10">
+      <header className="w-full max-w-6xl mx-auto px-6 h-20 flex items-center justify-between border-b border-[#1f232b]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
-            <BrainCircuit className="w-5 h-5 text-white" />
+          <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <BookOpen className="w-4 h-4" />
           </div>
-          <span className="font-bold text-xl tracking-tight text-white">
-            Doc<span className="text-indigo-400">Mind</span>
-          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="font-semibold text-lg tracking-tight text-white">DocMind</span>
+            <span className="text-xs text-[#828896] font-normal">Studio</span>
+          </div>
         </div>
 
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-3">
           {user ? (
             <Link
               to="/dashboard"
-              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all shadow-md shadow-indigo-600/25 flex items-center gap-2"
+              className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5"
             >
-              <span>Go to Dashboard</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Go to Workspace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           ) : (
             <Link
               to="/auth"
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-sm font-medium transition-all shadow-md shadow-indigo-600/20 flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
             >
-              <span>Get Started</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Sign In</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           )}
         </nav>
       </header>
 
       {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-20 max-w-5xl mx-auto text-center relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-16 pb-20 max-w-4xl mx-auto text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-8"
+          transition={{ duration: 0.4 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#181a22] border border-[#262a36] text-[#b3b8c5] text-xs font-medium mb-6"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Real-time Semantic Search & RAG Q&A Engine</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+          <span>Private Document Workspace &bull; Live Co-Authoring</span>
         </motion.div>
 
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl leading-[1.15]"
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white max-w-3xl leading-[1.12]"
         >
-          Chat with your documents using <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-200 bg-clip-text text-transparent">precision vectors</span> & grounded AI.
+          A thoughtful workspace for your documents and team notes.
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl leading-relaxed"
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="mt-6 text-base sm:text-lg text-[#9da2af] max-w-2xl leading-relaxed"
         >
-          DocMind extracts, chunks, embeds, and indexes your PDFs and files into Supabase Postgres using <code className="text-indigo-300 font-mono text-base">pgvector</code>. Query anything with zero hallucinations.
+          Read, query, and co-write across your PDF handbooks, research papers, and working documents — with instant verifiable citations and real-time collaboration.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-10 flex flex-col sm:flex-row items-center gap-4"
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="mt-9 flex flex-col sm:flex-row items-center gap-3.5"
         >
           <Link
             to="/auth"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium text-base shadow-xl shadow-indigo-600/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Launch DocMind Free</span>
+            <span>Open Your Workspace</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
-          <div className="text-xs text-slate-500 flex items-center gap-1.5 px-3">
-            <Lock className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Real Email OTP &bull; Supabase RLS Protected</span>
+          <div className="text-xs text-[#717684] flex items-center gap-1.5 px-3">
+            <Check className="w-3.5 h-3.5 text-amber-400" />
+            <span>Fast Email OTP &bull; Completely Private</span>
           </div>
         </motion.div>
 
-        {/* Technical Architecture Feature Cards */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 text-left w-full">
+        {/* Feature Cards */}
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-5 text-left w-full">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="p-6 rounded-2xl bg-[#12131c]/80 border border-slate-800/80 backdrop-blur-sm hover:border-slate-700 transition-all group"
+            transition={{ duration: 0.3 }}
+            className="p-6 rounded-xl bg-[#13151b] border border-[#21242e] hover:border-[#2d3240] transition-colors"
           >
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-105 transition-transform">
-              <Database className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-[#1c1f28] border border-[#272b38] flex items-center justify-center text-amber-400 mb-4">
+              <FileText className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-semibold text-white mb-2">Supabase pgvector</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Native cosine similarity search stored directly in PostgreSQL. High throughput vector indexing with IVFFlat or HNSW.
+            <h3 className="text-sm font-semibold text-white mb-1.5">Document Library</h3>
+            <p className="text-xs text-[#8c92a0] leading-relaxed">
+              Upload study guides, technical PDFs, and notes into an organized library with automatic passage extraction.
             </p>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="p-6 rounded-2xl bg-[#12131c]/80 border border-slate-800/80 backdrop-blur-sm hover:border-slate-700 transition-all group"
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="p-6 rounded-xl bg-[#13151b] border border-[#21242e] hover:border-[#2d3240] transition-colors"
           >
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4 group-hover:scale-105 transition-transform">
-              <Layers className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-[#1c1f28] border border-[#272b38] flex items-center justify-center text-amber-400 mb-4">
+              <Compass className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-semibold text-white mb-2">Smart Chunking & Embeddings</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Context-aware chunking with token overlaps to maintain semantic continuity. Real vector embeddings for every paragraph.
+            <h3 className="text-sm font-semibold text-white mb-1.5">Grounded Answers</h3>
+            <p className="text-xs text-[#8c92a0] leading-relaxed">
+              Ask direct questions and receive clear, detailed solutions with exact passage and formula source citations.
             </p>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="p-6 rounded-2xl bg-[#12131c]/80 border border-slate-800/80 backdrop-blur-sm hover:border-slate-700 transition-all group"
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="p-6 rounded-xl bg-[#13151b] border border-[#21242e] hover:border-[#2d3240] transition-colors"
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-105 transition-transform">
-              <ShieldCheck className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-[#1c1f28] border border-[#272b38] flex items-center justify-center text-amber-400 mb-4">
+              <Edit3 className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-semibold text-white mb-2">Row Level Security (RLS)</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Bulletproof database security policies. Users can only query, index, or retrieve their own private documents.
+            <h3 className="text-sm font-semibold text-white mb-1.5">Live Co-Authoring</h3>
+            <p className="text-xs text-[#8c92a0] leading-relaxed">
+              Open a live blank document and write alongside team members in real time without conflicting edits.
             </p>
           </motion.div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-900 py-6 text-center text-xs text-slate-500 relative z-10">
-        DocMind Platform &copy; 2026 &bull; Real Architecture &bull; Supabase &bull; pgvector
+      <footer className="w-full border-t border-[#1a1d24] py-6 text-center text-xs text-[#636875]">
+        DocMind Studio &bull; Private, collaborative document workspace
       </footer>
     </div>
   );

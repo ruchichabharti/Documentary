@@ -7,8 +7,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Layers, 
-  Cpu, 
-  Database,
   ArrowRight,
   FileCode,
   Sparkles
@@ -94,7 +92,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         fileType = selectedFile.type || 'text/plain';
 
         setCurrentStep(1);
-        setStepMessage(`Reading "${title}"...`);
+        setStepMessage(`Reading "${title}"…`);
         setProgressPercent(20);
         textContent = await readFileAsText(selectedFile);
       } else {
@@ -102,22 +100,22 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
           throw new Error('Please provide a title for your document.');
         }
         if (!pastedText.trim()) {
-          throw new Error('Please paste or write document content.');
+          throw new Error('Please paste document content.');
         }
         title = pastedTitle.trim();
         textContent = pastedText.trim();
         fileSize = new Blob([textContent]).size;
         fileType = 'text/plain';
         setCurrentStep(1);
-        setStepMessage('Preparing pasted text...');
+        setStepMessage('Preparing text content…');
         setProgressPercent(20);
       }
 
       const docId = crypto.randomUUID();
 
-      // Step 2: Chunk Document
+      // Step 2: Split text into sections
       setCurrentStep(2);
-      setStepMessage('Splitting into overlapping contextual chunks...');
+      setStepMessage('Extracting readable sections…');
       setProgressPercent(40);
       await new Promise((r) => setTimeout(r, 200));
 
@@ -129,15 +127,15 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
       });
 
       if (chunks.length === 0) {
-        throw new Error('Could not extract valid text chunks from this input.');
+        throw new Error('Could not extract valid text content from this file.');
       }
 
-      setStepMessage(`Generated ${chunks.length} chunks with ${chunkOverlap} char overlap.`);
+      setStepMessage(`Prepared ${chunks.length} sections.`);
       setProgressPercent(60);
 
-      // Step 3: Generate Vector Embeddings
+      // Step 3: Index vectors for search
       setCurrentStep(3);
-      setStepMessage(`Generating 1536d vector embeddings for ${chunks.length} chunks...`);
+      setStepMessage(`Indexing ${chunks.length} sections for fast search…`);
       setProgressPercent(75);
 
       const chunkDataWithVectors = [];
@@ -158,9 +156,9 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         setProgressPercent(75 + Math.floor(((i + 1) / chunks.length) * 15));
       }
 
-      // Step 4: Persist into Supabase / Local Workspace Store
+      // Step 4: Save to database & workspace
       setCurrentStep(4);
-      setStepMessage('Saving document & vector chunks to database...');
+      setStepMessage('Saving to your library…');
       setProgressPercent(95);
 
       const newDocRecord = {
@@ -229,37 +227,37 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         chunks: chunkDataWithVectors,
       });
     } catch (err) {
-      console.error('[DocMind Ingestion Error]', err);
-      setErrorMsg(err.message || 'An unexpected error occurred during ingestion.');
+      console.error('[DocMind Upload Error]', err);
+      setErrorMsg(err.message || 'An error occurred during file upload.');
     } finally {
       setIsIngesting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        initial={{ opacity: 0, scale: 0.97, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-2xl bg-[#10121d] border border-slate-800/90 rounded-2xl shadow-2xl shadow-indigo-950/40 overflow-hidden flex flex-col"
+        exit={{ opacity: 0, scale: 0.97 }}
+        className="w-full max-w-2xl bg-[#13151b] border border-[#21242e] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800/80 flex items-center justify-between bg-[#151726]/80">
+        <div className="px-6 py-4 border-b border-[#21242e] flex items-center justify-between bg-[#171a22]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400">
               <UploadCloud className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-white">Ingest New Document</h2>
-              <p className="text-xs text-slate-400">Parse, chunk, and index vectors for grounded Q&A</p>
+              <h2 className="text-sm font-semibold text-white">Upload Document</h2>
+              <p className="text-xs text-stone-400">Index text for grounded search and question answering</p>
             </div>
           </div>
 
           <button
             onClick={handleClose}
             disabled={isIngesting}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors disabled:opacity-50 cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-800 transition-colors disabled:opacity-50 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -269,46 +267,45 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         <div className="p-6 space-y-6">
           {successDoc ? (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-center space-y-3"
+              className="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-3"
             >
               <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Document Ingested Successfully!</h3>
-              <p className="text-sm text-slate-300">
-                <span className="font-semibold text-white">"{successDoc.title}"</span> was split into{' '}
-                <span className="text-indigo-300 font-mono font-medium">{successDoc.chunk_count} chunks</span> with
-                1536-dimensional vector embeddings and indexed for semantic similarity search.
+              <h3 className="text-base font-semibold text-white">Document Added Successfully</h3>
+              <p className="text-xs text-stone-300 leading-relaxed">
+                <span className="font-semibold text-white">"{successDoc.title}"</span> is ready with{' '}
+                <span className="text-amber-300 font-mono font-medium">{successDoc.chunk_count} searchable sections</span>.
               </p>
 
               <div className="pt-3 flex justify-center gap-3">
                 <button
                   onClick={resetState}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-medium text-stone-200 transition-colors cursor-pointer"
                 >
-                  Upload Another Document
+                  Upload Another File
                 </button>
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-medium text-white transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-xs font-semibold text-stone-950 transition-colors cursor-pointer"
                 >
-                  View in Dashboard
+                  View Library
                 </button>
               </div>
             </motion.div>
           ) : (
             <>
               {/* Tabs */}
-              <div className="flex rounded-xl bg-slate-900/90 p-1 border border-slate-800">
+              <div className="flex rounded-xl bg-[#0c0e12] p-1 border border-[#21242e]">
                 <button
                   onClick={() => setActiveTab('file')}
                   disabled={isIngesting}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${
                     activeTab === 'file'
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#1e222d] text-stone-100 shadow-sm border border-stone-700/50'
+                      : 'text-stone-400 hover:text-stone-200'
                   }`}
                 >
                   <FileText className="w-3.5 h-3.5" />
@@ -319,8 +316,8 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   disabled={isIngesting}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${
                     activeTab === 'text'
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#1e222d] text-stone-100 shadow-sm border border-stone-700/50'
+                      : 'text-stone-400 hover:text-stone-200'
                   }`}
                 >
                   <FileCode className="w-3.5 h-3.5" />
@@ -336,8 +333,8 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   onClick={() => !isIngesting && fileInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
                     selectedFile
-                      ? 'border-indigo-500/50 bg-indigo-950/20'
-                      : 'border-slate-800 hover:border-indigo-500/40 bg-[#121420]/50 hover:bg-[#151726]/60'
+                      ? 'border-amber-500/50 bg-amber-500/10'
+                      : 'border-[#242833] hover:border-amber-500/40 bg-[#0c0e12]/60 hover:bg-[#0c0e12]'
                   }`}
                 >
                   <input
@@ -350,25 +347,25 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
 
                   {selectedFile ? (
                     <div className="flex items-center justify-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
                         <FileText className="w-5 h-5" />
                       </div>
                       <div className="text-left">
                         <p className="text-sm font-semibold text-white">{selectedFile.name}</p>
-                        <p className="text-xs text-slate-400 font-mono">
+                        <p className="text-xs text-stone-400 font-mono">
                           {(selectedFile.size / 1024).toFixed(1)} KB • {selectedFile.type || 'Document'}
                         </p>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-400 flex items-center justify-center mx-auto">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
                         <UploadCloud className="w-5 h-5" />
                       </div>
-                      <p className="text-sm font-medium text-slate-200">
-                        Drag and drop your document here, or <span className="text-indigo-400 underline">browse</span>
+                      <p className="text-sm font-medium text-stone-200">
+                        Drag and drop your file here, or <span className="text-amber-400 underline underline-offset-2">browse</span>
                       </p>
-                      <p className="text-xs text-slate-500">Supports PDF (.pdf), .txt, .md, .csv, .json, notes & question banks</p>
+                      <p className="text-xs text-stone-500">Supports PDF (.pdf), .txt, .md, .csv, and notes</p>
                     </div>
                   )}
                 </div>
@@ -378,110 +375,62 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
               {activeTab === 'text' && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Document Title</label>
+                    <label className="block text-xs font-medium text-stone-300 mb-1">Document Title</label>
                     <input
                       type="text"
                       disabled={isIngesting}
                       value={pastedTitle}
                       onChange={(e) => setPastedTitle(e.target.value)}
-                      placeholder="e.g. Q3 Financial Report or Architecture Guidelines"
-                      className="w-full bg-[#121420] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                      placeholder="e.g. Research Brief or Meeting Summary"
+                      className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl px-3.5 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-500/80 transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Document Content</label>
+                    <label className="block text-xs font-medium text-stone-300 mb-1">Document Content</label>
                     <textarea
                       rows={6}
                       disabled={isIngesting}
                       value={pastedText}
                       onChange={(e) => setPastedText(e.target.value)}
-                      placeholder="Paste full text, policies, documentation, or technical guides here..."
-                      className="w-full bg-[#121420] border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none font-mono"
+                      placeholder="Paste text, notes, or articles here..."
+                      className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl p-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-500/80 transition-colors resize-none font-mono"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Chunking Engine Parameters */}
-              <div className="p-4 rounded-xl bg-[#121420]/70 border border-slate-800/80 space-y-3">
-                <div className="flex items-center justify-between text-xs text-slate-300 font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>Chunking Strategy: Recursive Overlap</span>
-                  </div>
-                  <span className="text-slate-400 font-mono text-[11px]">
-                    Size: {chunkSize}c | Overlap: {chunkOverlap}c
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="flex justify-between text-[11px] text-slate-400 mb-1">
-                      <span>Chunk Size (chars)</span>
-                      <span className="font-mono text-slate-300">{chunkSize}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={400}
-                      max={2400}
-                      step={100}
-                      disabled={isIngesting}
-                      value={chunkSize}
-                      onChange={(e) => setChunkSize(Number(e.target.value))}
-                      className="w-full accent-indigo-500 cursor-pointer"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-[11px] text-slate-400 mb-1">
-                      <span>Chunk Overlap (chars)</span>
-                      <span className="font-mono text-slate-300">{chunkOverlap}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min={50}
-                      max={500}
-                      step={25}
-                      disabled={isIngesting}
-                      value={chunkOverlap}
-                      onChange={(e) => setChunkOverlap(Number(e.target.value))}
-                      className="w-full accent-indigo-500 cursor-pointer"
-                    />
-                  </div>
-                </div>
-              </div>
-
               {/* Ingestion Progress State */}
               {isIngesting && (
-                <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 space-y-3">
+                <div className="p-4 rounded-xl bg-[#171a22] border border-amber-500/25 space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 text-indigo-300 font-medium">
-                      <div className="w-3 h-3 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+                    <div className="flex items-center gap-2 text-amber-300 font-medium">
+                      <div className="w-3 h-3 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
                       <span>{stepMessage}</span>
                     </div>
-                    <span className="text-indigo-400 font-mono">{progressPercent}%</span>
+                    <span className="text-amber-400 font-mono">{progressPercent}%</span>
                   </div>
 
-                  <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-stone-800 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                      className="h-full bg-amber-500"
                       style={{ width: `${progressPercent}%` }}
                       transition={{ ease: 'easeOut', duration: 0.2 }}
                     />
                   </div>
 
-                  <div className="grid grid-cols-4 gap-1 pt-1 text-[10px] text-slate-400 text-center">
-                    <span className={currentStep >= 1 ? 'text-indigo-300 font-medium' : ''}>1. Read</span>
-                    <span className={currentStep >= 2 ? 'text-indigo-300 font-medium' : ''}>2. Chunk</span>
-                    <span className={currentStep >= 3 ? 'text-indigo-300 font-medium' : ''}>3. Embed</span>
-                    <span className={currentStep >= 4 ? 'text-indigo-300 font-medium' : ''}>4. Index</span>
+                  <div className="grid grid-cols-4 gap-1 pt-1 text-[10px] text-stone-400 text-center">
+                    <span className={currentStep >= 1 ? 'text-amber-300 font-medium' : ''}>1. Read</span>
+                    <span className={currentStep >= 2 ? 'text-amber-300 font-medium' : ''}>2. Split</span>
+                    <span className={currentStep >= 3 ? 'text-amber-300 font-medium' : ''}>3. Index</span>
+                    <span className={currentStep >= 4 ? 'text-amber-300 font-medium' : ''}>4. Save</span>
                   </div>
                 </div>
               )}
 
               {/* Error Alert */}
               {errorMsg && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-rose-300 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-2.5 text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
                   <span>{errorMsg}</span>
                 </div>
               )}
@@ -492,7 +441,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   type="button"
                   onClick={handleClose}
                   disabled={isIngesting}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -500,10 +449,10 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   type="button"
                   onClick={handleStartIngestion}
                   disabled={isIngesting || (activeTab === 'file' && !selectedFile) || (activeTab === 'text' && !pastedText)}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 disabled:pointer-events-none text-white text-xs font-semibold shadow-lg shadow-indigo-600/25 flex items-center gap-2 cursor-pointer transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:pointer-events-none text-stone-950 text-xs font-semibold shadow-sm flex items-center gap-2 cursor-pointer transition-all"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isIngesting ? 'Ingesting...' : 'Index & Ingest'}</span>
+                  <span>{isIngesting ? 'Uploading…' : 'Add to Library'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </>
