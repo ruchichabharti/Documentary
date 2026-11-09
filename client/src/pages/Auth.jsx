@@ -11,8 +11,7 @@ import {
   AlertCircle, 
   ArrowLeft, 
   CheckCircle2, 
-  Lock, 
-  ExternalLink 
+  Lock 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -57,7 +56,7 @@ export default function Auth() {
             particleCount: 70,
             spread: 60,
             origin: { y: 0.6 },
-            colors: ['#f59e0b', '#d97706', '#fbbf24', '#10b981', '#f3f4f6'],
+            colors: ['#c2410c', '#1c1917', '#78716c', '#fed7aa', '#15803d'],
           });
           setTimeout(() => {
             navigate('/dashboard', { replace: true });
@@ -89,7 +88,7 @@ export default function Auth() {
     }
   }, [step]);
 
-  // Handle email submission (OTP / Magic Link)
+  // Handle email submission (OTP)
   const handleSendOtp = async (e) => {
     e?.preventDefault();
 
@@ -161,7 +160,7 @@ export default function Auth() {
         particleCount: 70,
         spread: 60,
         origin: { y: 0.6 },
-        colors: ['#f59e0b', '#d97706', '#fbbf24', '#10b981', '#f3f4f6'],
+        colors: ['#c2410c', '#1c1917', '#78716c', '#fed7aa', '#15803d'],
       });
       setTimeout(() => {
         navigate('/dashboard', { replace: true });
@@ -239,7 +238,7 @@ export default function Auth() {
     e.preventDefault();
     const rawData = e.clipboardData.getData('text').trim();
 
-    // If user pasted a confirmation URL instead of a raw number
+    // If user pasted a confirmation URL
     if (rawData.includes('http') || rawData.includes('token') || rawData.includes('code')) {
       setPastedLink(rawData);
       handleVerifyLink(rawData);
@@ -269,7 +268,7 @@ export default function Auth() {
     }
   };
 
-  // Handle OTP verification (accepts either 6-digit or 8-digit codes)
+  // Handle OTP verification
   const handleVerifyOtp = async (codeToVerify) => {
     const fullCode = typeof codeToVerify === 'string' ? codeToVerify : otp.join('');
     if (fullCode.length !== 6 && fullCode.length !== 8) {
@@ -288,7 +287,7 @@ export default function Auth() {
         particleCount: 70,
         spread: 60,
         origin: { y: 0.6 },
-        colors: ['#f59e0b', '#d97706', '#fbbf24', '#10b981', '#f3f4f6'],
+        colors: ['#c2410c', '#1c1917', '#78716c', '#fed7aa', '#15803d'],
       });
       setTimeout(() => {
         navigate('/dashboard', { replace: true });
@@ -320,7 +319,7 @@ export default function Auth() {
         particleCount: 70,
         spread: 60,
         origin: { y: 0.6 },
-        colors: ['#f59e0b', '#d97706', '#fbbf24', '#10b981', '#f3f4f6'],
+        colors: ['#c2410c', '#1c1917', '#78716c', '#fed7aa', '#15803d'],
       });
       setTimeout(() => {
         navigate('/dashboard', { replace: true });
@@ -334,47 +333,38 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0c0e] text-stone-100 flex flex-col justify-center items-center px-4 py-8 relative overflow-hidden">
-      {/* Subtle hairline background texture */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)',
-          backgroundSize: '32px 32px'
-        }}
-      />
-
+    <div className="min-h-screen bg-[#f8f6f1] text-[#1c1917] flex flex-col justify-center items-center px-4 py-8 relative selection:bg-[#fed7aa] selection:text-[#7c2d12]">
       {/* Supabase unconfigured warning banner */}
       {!isSupabaseConfigured && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md mb-6 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 backdrop-blur-md text-amber-200 text-xs flex items-start gap-3 shadow-sm"
+          className="w-full max-w-md mb-6 p-4 rounded-xl border border-[#fed7aa] bg-[#fff7ed] text-[#7c2d12] text-xs flex items-start gap-3 shadow-xs"
         >
-          <AlertCircle className="w-5 h-5 flex-shrink-0 text-amber-400 mt-0.5" />
+          <AlertCircle className="w-5 h-5 flex-shrink-0 text-[#c2410c] mt-0.5" />
           <div>
-            <span className="font-semibold text-amber-300 block mb-1">Configuration Note</span>
-            Set your <code className="bg-amber-950/60 px-1 py-0.5 rounded text-amber-100 font-mono">VITE_SUPABASE_URL</code> and <code className="bg-amber-950/60 px-1 py-0.5 rounded text-amber-100 font-mono">VITE_SUPABASE_ANON_KEY</code> in environment settings to enable live email delivery.
+            <span className="font-semibold text-[#9a3412] block mb-1">Configuration Note</span>
+            Provide your <code className="bg-[#ffedd5] px-1 py-0.5 rounded text-[#7c2d12] font-mono">VITE_SUPABASE_URL</code> and <code className="bg-[#ffedd5] px-1 py-0.5 rounded text-[#7c2d12] font-mono">VITE_SUPABASE_ANON_KEY</code> in environment variables for live cloud auth.
           </div>
         </motion.div>
       )}
 
-      {/* Main Card */}
+      {/* Main Paper Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
-        className="w-full max-w-md bg-[#13151b] border border-[#21242e] rounded-2xl p-8 shadow-2xl relative z-10"
+        transition={{ duration: 0.2 }}
+        className="w-full max-w-md bg-white border border-[#e5e0d4] rounded-2xl p-8 shadow-sm relative z-10"
       >
         {/* Brand Header */}
-        <div className="flex flex-col items-center mb-7 text-center">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 mb-3.5 shadow-sm">
+        <div className="flex flex-col items-center mb-6 text-center">
+          <div className="w-12 h-12 rounded-xl bg-[#1c1917] text-[#f8f6f1] flex items-center justify-center mb-3.5 shadow-xs">
             <BookOpen className="w-5 h-5" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-white flex items-center gap-2">
-            <span>DocMind Studio</span>
+          <h1 className="text-xl font-normal font-serif-title tracking-tight text-[#1c1917]">
+            DocMind Studio
           </h1>
-          <p className="text-stone-400 text-xs mt-1.5 leading-relaxed">
+          <p className="text-[#57534e] text-xs mt-1.5 leading-relaxed font-normal">
             Sign in to access your document library and shared notes
           </p>
         </div>
@@ -386,9 +376,9 @@ export default function Auth() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="mb-5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center gap-2"
+              className="mb-5 p-3 rounded-xl bg-[#fef2f2] border border-[#fecaca] text-[#b91c1c] text-xs flex items-center gap-2"
             >
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-[#dc2626]" />
               <span>{error}</span>
             </motion.div>
           )}
@@ -399,23 +389,23 @@ export default function Auth() {
           {step === 'EMAIL' ? (
             <motion.div
               key="step-email"
-              initial={{ opacity: 0, x: -15 }}
+              initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 15 }}
+              exit={{ opacity: 0, x: 10 }}
               className="space-y-4"
             >
               {user ? (
                 /* Already Signed In */
                 <div className="space-y-4 text-center py-2">
-                  <div className="p-4 rounded-xl bg-[#171a22] border border-[#242833] text-stone-300 text-xs">
-                    <span className="text-stone-400">Currently signed in as:</span>
-                    <div className="font-semibold text-white font-mono text-sm mt-1">{user.email}</div>
+                  <div className="p-4 rounded-xl bg-[#fbfaf8] border border-[#e5e0d4] text-[#57534e] text-xs">
+                    <span>Currently signed in as:</span>
+                    <div className="font-semibold text-[#1c1917] font-mono text-sm mt-1">{user.email}</div>
                   </div>
                   <div className="flex flex-col gap-2.5">
                     <button
                       type="button"
                       onClick={() => navigate('/dashboard', { replace: true })}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-sm transition-all shadow-sm cursor-pointer"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#1c1917] hover:bg-[#2e2a27] text-white font-medium text-sm transition-all shadow-xs cursor-pointer"
                     >
                       <span>Continue to Library</span>
                       <ArrowRight className="w-4 h-4" />
@@ -427,23 +417,23 @@ export default function Auth() {
                         setEmail('');
                         setStep('EMAIL');
                       }}
-                      className="w-full py-2 px-4 rounded-xl border border-stone-800 hover:bg-stone-800/60 text-stone-300 hover:text-white text-xs font-medium transition-all cursor-pointer"
+                      className="w-full py-2 px-4 rounded-xl border border-[#e5e0d4] hover:bg-[#f2eee5] text-[#57534e] hover:text-[#1c1917] text-xs font-medium transition-all cursor-pointer"
                     >
-                      Sign Out & Use Another Email
+                      Sign Out &amp; Use Another Email
                     </button>
                   </div>
                 </div>
               ) : (
                 <>
                   {/* Tab Selector */}
-                  <div className="flex bg-[#0c0e12] p-1 rounded-xl border border-[#21242e]">
+                  <div className="flex bg-[#f2eee5] p-1 rounded-xl border border-[#e5e0d4]">
                     <button
                       type="button"
                       onClick={() => { setAuthMode('OTP'); setError(''); }}
                       className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                         authMode === 'OTP'
-                          ? 'bg-[#1e222d] text-stone-100 shadow-sm border border-stone-700/50'
-                          : 'text-stone-400 hover:text-stone-200'
+                          ? 'bg-white text-[#1c1917] shadow-xs'
+                          : 'text-[#78716c] hover:text-[#1c1917]'
                       }`}
                     >
                       Email Code
@@ -453,8 +443,8 @@ export default function Auth() {
                       onClick={() => { setAuthMode('PASSWORD'); setError(''); }}
                       className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                         authMode === 'PASSWORD'
-                          ? 'bg-[#1e222d] text-stone-100 shadow-sm border border-stone-700/50'
-                          : 'text-stone-400 hover:text-stone-200'
+                          ? 'bg-white text-[#1c1917] shadow-xs'
+                          : 'text-[#78716c] hover:text-[#1c1917]'
                       }`}
                     >
                       Password
@@ -462,14 +452,14 @@ export default function Auth() {
                   </div>
 
                   {authMode === 'OTP' ? (
-                    /* OTP / Magic Link Mode */
+                    /* OTP Mode */
                     <form onSubmit={handleSendOtp} className="space-y-4">
                       <div>
-                        <label className="block text-xs font-medium text-stone-300 mb-1.5">
+                        <label className="block text-xs font-medium text-[#44403c] mb-1.5">
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a8a29e]">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
@@ -481,7 +471,7 @@ export default function Auth() {
                             autoFocus
                             required
                             disabled={isLoading}
-                            className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500/70 transition-all"
+                            className="w-full bg-[#fbfaf8] border border-[#e5e0d4] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1c1917] placeholder-[#a8a29e] focus:outline-none focus:border-[#1c1917] focus:bg-white transition-all shadow-2xs"
                           />
                         </div>
                       </div>
@@ -490,11 +480,11 @@ export default function Auth() {
                         type="submit"
                         id="send-otp-btn"
                         disabled={isLoading || !email}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#1c1917] hover:bg-[#2e2a27] text-white font-medium text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs"
                       >
                         {isLoading ? (
                           <>
-                            <RefreshCw className="w-4 h-4 animate-spin text-stone-950" />
+                            <RefreshCw className="w-4 h-4 animate-spin text-white" />
                             <span>Sending verification code…</span>
                           </>
                         ) : (
@@ -509,11 +499,11 @@ export default function Auth() {
                     /* Password Mode */
                     <form onSubmit={handlePasswordAuth} className="space-y-3.5">
                       <div>
-                        <label className="block text-xs font-medium text-stone-300 mb-1.5">
+                        <label className="block text-xs font-medium text-[#44403c] mb-1.5">
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a8a29e]">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
@@ -523,17 +513,17 @@ export default function Auth() {
                             placeholder="name@company.com"
                             required
                             disabled={isLoading}
-                            className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500/70 transition-all"
+                            className="w-full bg-[#fbfaf8] border border-[#e5e0d4] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1c1917] placeholder-[#a8a29e] focus:outline-none focus:border-[#1c1917] focus:bg-white transition-all shadow-2xs"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-medium text-stone-300 mb-1.5">
+                        <label className="block text-xs font-medium text-[#44403c] mb-1.5">
                           Password
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-500">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a8a29e]">
                             <Lock className="w-4 h-4" />
                           </div>
                           <input
@@ -543,17 +533,17 @@ export default function Auth() {
                             placeholder="••••••••"
                             required
                             disabled={isLoading}
-                            className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl pl-10 pr-4 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500/70 transition-all"
+                            className="w-full bg-[#fbfaf8] border border-[#e5e0d4] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1c1917] placeholder-[#a8a29e] focus:outline-none focus:border-[#1c1917] focus:bg-white transition-all shadow-2xs"
                           />
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs text-stone-400">
-                        <span>{isSignUp ? 'Already registered?' : 'Need an account?'}</span>
+                      <div className="flex items-center justify-between text-xs text-[#78716c]">
+                        <span>{isSignUp ? 'Already have an account?' : 'Need an account?'}</span>
                         <button
                           type="button"
                           onClick={() => setIsSignUp(!isSignUp)}
-                          className="text-amber-400 hover:text-amber-300 font-medium cursor-pointer"
+                          className="text-[#c2410c] hover:underline font-medium cursor-pointer"
                         >
                           {isSignUp ? 'Sign in' : 'Create an account'}
                         </button>
@@ -562,11 +552,11 @@ export default function Auth() {
                       <button
                         type="submit"
                         disabled={isLoading || !email || !password}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#1c1917] hover:bg-[#2e2a27] text-white font-medium text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs"
                       >
                         {isLoading ? (
                           <>
-                            <RefreshCw className="w-4 h-4 animate-spin text-stone-950" />
+                            <RefreshCw className="w-4 h-4 animate-spin text-white" />
                             <span>Authenticating…</span>
                           </>
                         ) : (
@@ -579,9 +569,9 @@ export default function Auth() {
                     </form>
                   )}
 
-                  <div className="pt-3 border-t border-[#21242e] text-center">
-                    <p className="text-[11px] text-stone-500 flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="pt-3 border-t border-[#f2eee5] text-center">
+                    <p className="text-[11px] text-[#78716c] flex items-center justify-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#15803d]" />
                       Encrypted authentication &amp; private document workspace
                     </p>
                   </div>
@@ -591,20 +581,20 @@ export default function Auth() {
           ) : (
             <motion.div
               key="step-otp"
-              initial={{ opacity: 0, x: 15 }}
+              initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -15 }}
+              exit={{ opacity: 0, x: -10 }}
               className="space-y-4"
             >
               {/* Header */}
               <div className="text-center">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#171a22] border border-[#242833] text-xs text-stone-300 mb-2">
-                  <Mail className="w-3.5 h-3.5 text-amber-400" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fbfaf8] border border-[#e5e0d4] text-xs text-[#57534e] mb-2">
+                  <Mail className="w-3.5 h-3.5 text-[#c2410c]" />
                   <span>Code sent to:</span>
-                  <strong className="text-stone-200 font-medium font-mono">{email}</strong>
+                  <strong className="text-[#1c1917] font-medium font-mono">{email}</strong>
                 </div>
-                <h3 className="text-base font-semibold text-white">Enter {otpLength}-Digit Code</h3>
-                <p className="text-xs text-stone-400 mt-0.5">
+                <h3 className="text-base font-serif-title font-medium text-[#1c1917]">Enter {otpLength}-Digit Code</h3>
+                <p className="text-xs text-[#78716c] mt-0.5">
                   Check your inbox for the one-time verification passcode
                 </p>
               </div>
@@ -622,10 +612,10 @@ export default function Auth() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     disabled={isLoading || isSuccess}
-                    className={`${otpLength === 8 ? 'w-10 h-13 text-lg' : 'w-12 h-14 text-xl'} text-center font-bold font-mono rounded-xl bg-[#0c0e12] border transition-all duration-150 outline-none ${
+                    className={`${otpLength === 8 ? 'w-10 h-13 text-lg' : 'w-12 h-14 text-xl'} text-center font-bold font-mono rounded-xl bg-[#fbfaf8] border transition-all duration-150 outline-none ${
                       digit
-                        ? 'border-amber-500 bg-amber-500/10 text-amber-300 ring-2 ring-amber-500/20'
-                        : 'border-[#242833] text-stone-100 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'
+                        ? 'border-[#1c1917] bg-white text-[#1c1917] shadow-xs'
+                        : 'border-[#e5e0d4] text-[#1c1917] focus:border-[#1c1917] focus:bg-white'
                     }`}
                   />
                 ))}
@@ -636,7 +626,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => handleToggleOtpLength()}
-                  className="text-[11px] text-amber-400 hover:text-amber-300 font-medium transition-colors cursor-pointer"
+                  className="text-[11px] text-[#c2410c] hover:underline font-medium transition-colors cursor-pointer"
                 >
                   {otpLength === 6 ? 'Have an 8-digit code? Click here →' : 'Switch back to 6 digits →'}
                 </button>
@@ -648,16 +638,16 @@ export default function Auth() {
                 id="verify-otp-btn"
                 onClick={() => handleVerifyOtp()}
                 disabled={isLoading || otp.some((d) => !d) || isSuccess}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#1c1917] hover:bg-[#2e2a27] text-white font-medium text-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs"
               >
                 {isLoading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-stone-950" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
                     <span>Verifying Code…</span>
                   </>
                 ) : isSuccess ? (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-800" />
+                    <CheckCircle2 className="w-4 h-4 text-[#15803d]" />
                     <span>{successMessage || 'Verified! Redirecting…'}</span>
                   </>
                 ) : (
@@ -669,7 +659,7 @@ export default function Auth() {
               </button>
 
               {/* Actions & Resend */}
-              <div className="flex items-center justify-between text-xs text-stone-400 pt-2 border-t border-[#21242e]">
+              <div className="flex items-center justify-between text-xs text-[#78716c] pt-2 border-t border-[#f2eee5]">
                 <button
                   type="button"
                   onClick={() => {
@@ -678,7 +668,7 @@ export default function Auth() {
                     setPastedLink('');
                     setError('');
                   }}
-                  className="flex items-center gap-1 text-stone-400 hover:text-stone-200 transition-colors cursor-pointer"
+                  className="flex items-center gap-1 text-[#57534e] hover:text-[#1c1917] transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Change Email</span>
@@ -686,14 +676,14 @@ export default function Auth() {
 
                 <div>
                   {resendCooldown > 0 ? (
-                    <span className="text-stone-500 font-mono">
+                    <span className="text-[#a8a29e] font-mono">
                       Resend in {resendCooldown}s
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      className="text-amber-400 hover:text-amber-300 font-medium cursor-pointer"
+                      className="text-[#c2410c] hover:underline font-medium cursor-pointer"
                     >
                       Resend Email
                     </button>
@@ -706,7 +696,7 @@ export default function Auth() {
       </motion.div>
 
       {/* Human, minimal footer */}
-      <div className="mt-8 text-center text-xs text-stone-500 relative z-10">
+      <div className="mt-8 text-center text-xs text-[#78716c] relative z-10">
         DocMind Studio &bull; Private &amp; Collaborative Workspace
       </div>
     </div>

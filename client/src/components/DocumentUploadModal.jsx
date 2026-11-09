@@ -9,7 +9,7 @@ import {
   Layers, 
   ArrowRight,
   FileCode,
-  Sparkles
+  BookOpen
 } from 'lucide-react';
 import { chunkDocumentText, readFileAsText } from '../lib/chunker.js';
 import { createEmbedding } from '../lib/rag.js';
@@ -29,7 +29,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
 
   // Ingestion lifecycle state
   const [isIngesting, setIsIngesting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0); // 1: Read, 2: Chunk, 3: Embed, 4: Persist
+  const [currentStep, setCurrentStep] = useState(0);
   const [stepMessage, setStepMessage] = useState('');
   const [progressPercent, setProgressPercent] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
@@ -183,7 +183,6 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
       );
 
       if (isRealAuthUser) {
-        // Insert into Supabase documents table
         const { error: docError } = await supabase.from('documents').insert({
           id: docId,
           user_id: user.id,
@@ -198,7 +197,6 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
         if (docError) {
           console.warn('[DocMind] Could not insert to Supabase documents table:', docError.message);
         } else {
-          // Insert chunks into document_chunks
           const chunkInserts = chunkDataWithVectors.map((c) => ({
             document_id: docId,
             user_id: user.id,
@@ -235,61 +233,61 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1c1917]/40 backdrop-blur-xs">
       <motion.div
-        initial={{ opacity: 0, scale: 0.97, y: 10 }}
+        initial={{ opacity: 0, scale: 0.98, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.97 }}
-        className="w-full max-w-2xl bg-[#13151b] border border-[#21242e] rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        exit={{ opacity: 0, scale: 0.98 }}
+        className="w-full max-w-xl bg-white border border-[#e5e0d4] rounded-2xl shadow-xl overflow-hidden flex flex-col"
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#21242e] flex items-center justify-between bg-[#171a22]">
+        <div className="px-6 py-4 border-b border-[#e5e0d4] flex items-center justify-between bg-[#f8f6f1]">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400">
-              <UploadCloud className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-lg bg-[#1c1917] text-white flex items-center justify-center">
+              <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-white">Upload Document</h2>
-              <p className="text-xs text-stone-400">Index text for grounded search and question answering</p>
+              <h2 className="text-base font-serif-title font-medium text-[#1c1917]">Add to Library</h2>
+              <p className="text-xs text-[#78716c]">Index text for grounded reading and verifiable questions</p>
             </div>
           </div>
 
           <button
             onClick={handleClose}
             disabled={isIngesting}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-800 transition-colors disabled:opacity-50 cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#78716c] hover:text-[#1c1917] hover:bg-[#eae5d9] transition-colors disabled:opacity-50 cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-5">
           {successDoc ? (
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-3"
+              className="p-6 rounded-xl bg-[#fbfaf8] border border-[#e5e0d4] text-center space-y-3"
             >
-              <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-[#f0fdf4] text-[#15803d] flex items-center justify-center mx-auto border border-[#bbf7d0]">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-semibold text-white">Document Added Successfully</h3>
-              <p className="text-xs text-stone-300 leading-relaxed">
-                <span className="font-semibold text-white">"{successDoc.title}"</span> is ready with{' '}
-                <span className="text-amber-300 font-mono font-medium">{successDoc.chunk_count} searchable sections</span>.
+              <h3 className="text-base font-serif-title font-medium text-[#1c1917]">Added to Your Library</h3>
+              <p className="text-xs text-[#57534e] leading-relaxed font-serif-title text-[14px]">
+                <span className="font-semibold text-[#1c1917]">"{successDoc.title}"</span> is ready with{' '}
+                <span className="text-[#c2410c] font-mono font-medium">{successDoc.chunk_count} searchable sections</span>.
               </p>
 
               <div className="pt-3 flex justify-center gap-3">
                 <button
                   onClick={resetState}
-                  className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-medium text-stone-200 transition-colors cursor-pointer"
+                  className="btn-paper"
                 >
                   Upload Another File
                 </button>
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-xs font-semibold text-stone-950 transition-colors cursor-pointer"
+                  className="btn-ink"
                 >
                   View Library
                 </button>
@@ -298,14 +296,14 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
           ) : (
             <>
               {/* Tabs */}
-              <div className="flex rounded-xl bg-[#0c0e12] p-1 border border-[#21242e]">
+              <div className="flex rounded-xl bg-[#f2eee5] p-1 border border-[#e5e0d4]">
                 <button
                   onClick={() => setActiveTab('file')}
                   disabled={isIngesting}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${
                     activeTab === 'file'
-                      ? 'bg-[#1e222d] text-stone-100 shadow-sm border border-stone-700/50'
-                      : 'text-stone-400 hover:text-stone-200'
+                      ? 'bg-white text-[#1c1917] shadow-xs'
+                      : 'text-[#78716c] hover:text-[#1c1917]'
                   }`}
                 >
                   <FileText className="w-3.5 h-3.5" />
@@ -316,8 +314,8 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   disabled={isIngesting}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-medium transition-all ${
                     activeTab === 'text'
-                      ? 'bg-[#1e222d] text-stone-100 shadow-sm border border-stone-700/50'
-                      : 'text-stone-400 hover:text-stone-200'
+                      ? 'bg-white text-[#1c1917] shadow-xs'
+                      : 'text-[#78716c] hover:text-[#1c1917]'
                   }`}
                 >
                   <FileCode className="w-3.5 h-3.5" />
@@ -331,10 +329,10 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
                   onClick={() => !isIngesting && fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+                  className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
                     selectedFile
-                      ? 'border-amber-500/50 bg-amber-500/10'
-                      : 'border-[#242833] hover:border-amber-500/40 bg-[#0c0e12]/60 hover:bg-[#0c0e12]'
+                      ? 'border-[#c2410c] bg-[#fff7ed]'
+                      : 'border-[#d6cfc0] hover:border-[#1c1917] bg-[#fbfaf8] hover:bg-[#f8f6f1]'
                   }`}
                 >
                   <input
@@ -347,25 +345,25 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
 
                   {selectedFile ? (
                     <div className="flex items-center justify-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-[#fff7ed] text-[#c2410c] flex items-center justify-center">
                         <FileText className="w-5 h-5" />
                       </div>
                       <div className="text-left">
-                        <p className="text-sm font-semibold text-white">{selectedFile.name}</p>
-                        <p className="text-xs text-stone-400 font-mono">
+                        <p className="text-sm font-medium text-[#1c1917]">{selectedFile.name}</p>
+                        <p className="text-xs text-[#78716c] font-mono">
                           {(selectedFile.size / 1024).toFixed(1)} KB • {selectedFile.type || 'Document'}
                         </p>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
-                        <UploadCloud className="w-5 h-5" />
+                      <div className="w-10 h-10 rounded-lg bg-[#f2eee5] text-[#57534e] flex items-center justify-center mx-auto">
+                        <UploadCloud className="w-5 h-5 text-[#1c1917]" />
                       </div>
-                      <p className="text-sm font-medium text-stone-200">
-                        Drag and drop your file here, or <span className="text-amber-400 underline underline-offset-2">browse</span>
+                      <p className="text-sm font-medium text-[#1c1917]">
+                        Drag and drop your file here, or <span className="text-[#c2410c] underline">browse files</span>
                       </p>
-                      <p className="text-xs text-stone-500">Supports PDF (.pdf), .txt, .md, .csv, and notes</p>
+                      <p className="text-xs text-[#a8a29e]">Supports PDF (.pdf), .txt, .md, research reports, and notes</p>
                     </div>
                   )}
                 </div>
@@ -375,62 +373,55 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
               {activeTab === 'text' && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-stone-300 mb-1">Document Title</label>
+                    <label className="block text-xs font-medium text-[#44403c] mb-1">Document Title</label>
                     <input
                       type="text"
                       disabled={isIngesting}
                       value={pastedTitle}
                       onChange={(e) => setPastedTitle(e.target.value)}
-                      placeholder="e.g. Research Brief or Meeting Summary"
-                      className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl px-3.5 py-2 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-500/80 transition-colors"
+                      placeholder="e.g. Chapter Summary or Working Notes"
+                      className="input-editorial text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-stone-300 mb-1">Document Content</label>
+                    <label className="block text-xs font-medium text-[#44403c] mb-1">Document Content</label>
                     <textarea
                       rows={6}
                       disabled={isIngesting}
                       value={pastedText}
                       onChange={(e) => setPastedText(e.target.value)}
-                      placeholder="Paste text, notes, or articles here..."
-                      className="w-full bg-[#0c0e12] border border-[#242833] rounded-xl p-3 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-amber-500/80 transition-colors resize-none font-mono"
+                      placeholder="Paste text, articles, or reference notes here…"
+                      className="input-editorial text-xs resize-none font-serif-title leading-relaxed"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Ingestion Progress State */}
+              {/* Progress State */}
               {isIngesting && (
-                <div className="p-4 rounded-xl bg-[#171a22] border border-amber-500/25 space-y-3">
+                <div className="p-4 rounded-xl bg-[#fbfaf8] border border-[#e5e0d4] space-y-2.5">
                   <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2 text-amber-300 font-medium">
-                      <div className="w-3 h-3 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+                    <div className="flex items-center gap-2 text-[#1c1917] font-medium">
+                      <div className="w-3 h-3 rounded-full border-2 border-[#1c1917] border-t-transparent animate-spin" />
                       <span>{stepMessage}</span>
                     </div>
-                    <span className="text-amber-400 font-mono">{progressPercent}%</span>
+                    <span className="text-[#78716c] font-mono">{progressPercent}%</span>
                   </div>
 
-                  <div className="w-full h-1.5 rounded-full bg-stone-800 overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-[#e5e0d4] overflow-hidden">
                     <motion.div
-                      className="h-full bg-amber-500"
+                      className="h-full bg-[#1c1917]"
                       style={{ width: `${progressPercent}%` }}
                       transition={{ ease: 'easeOut', duration: 0.2 }}
                     />
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-1 pt-1 text-[10px] text-stone-400 text-center">
-                    <span className={currentStep >= 1 ? 'text-amber-300 font-medium' : ''}>1. Read</span>
-                    <span className={currentStep >= 2 ? 'text-amber-300 font-medium' : ''}>2. Split</span>
-                    <span className={currentStep >= 3 ? 'text-amber-300 font-medium' : ''}>3. Index</span>
-                    <span className={currentStep >= 4 ? 'text-amber-300 font-medium' : ''}>4. Save</span>
                   </div>
                 </div>
               )}
 
               {/* Error Alert */}
               {errorMsg && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-2.5 text-rose-300 text-xs">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
+                <div className="p-3 rounded-xl bg-[#fef2f2] border border-[#fecaca] flex items-start gap-2.5 text-[#b91c1c] text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#dc2626]" />
                   <span>{errorMsg}</span>
                 </div>
               )}
@@ -441,7 +432,7 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   type="button"
                   onClick={handleClose}
                   disabled={isIngesting}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer disabled:opacity-50"
+                  className="btn-paper"
                 >
                   Cancel
                 </button>
@@ -449,9 +440,9 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
                   type="button"
                   onClick={handleStartIngestion}
                   disabled={isIngesting || (activeTab === 'file' && !selectedFile) || (activeTab === 'text' && !pastedText)}
-                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:pointer-events-none text-stone-950 text-xs font-semibold shadow-sm flex items-center gap-2 cursor-pointer transition-all"
+                  className="btn-ink"
                 >
-                  <span>{isIngesting ? 'Uploading…' : 'Add to Library'}</span>
+                  <span>{isIngesting ? 'Adding…' : 'Add to Library'}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

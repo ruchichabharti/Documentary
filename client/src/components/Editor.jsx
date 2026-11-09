@@ -65,8 +65,10 @@ export default function Editor({ docId }) {
     <div className="flex flex-col h-screen bg-[--bg-primary]">
       {/* ── Top bar ─────────────────────────────────────────────────── */}
       <header className="topbar">
-        <Link to="/dashboard" className="text-amber-500 font-semibold text-base mr-2 no-underline flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <BookOpen className="w-4 h-4 text-amber-500" />
+        <Link to="/dashboard" className="text-[#1c1917] font-semibold text-base mr-2 no-underline flex items-center gap-2 hover:opacity-80 transition-opacity font-serif-title">
+          <div className="w-6 h-6 rounded bg-[#1c1917] text-white flex items-center justify-center">
+            <BookOpen className="w-3.5 h-3.5" />
+          </div>
           <span>DocMind Studio</span>
         </Link>
         <div className="w-px h-6 bg-[--border]" />
@@ -74,7 +76,7 @@ export default function Editor({ docId }) {
           type="text"
           value={localTitle}
           onChange={onTitleChange}
-          className="flex-1 bg-transparent text-[--text-primary] font-medium text-sm outline-none border-b border-transparent hover:border-[--border] focus:border-[--accent] transition-colors px-2 py-1 max-w-xs"
+          className="flex-1 bg-transparent text-[#1c1917] font-medium font-serif-title text-sm outline-none border-b border-transparent hover:border-[#d6cfc0] focus:border-[#1c1917] transition-colors px-2 py-1 max-w-xs"
           placeholder="Document title"
         />
         <div className="ml-auto flex items-center gap-3">
@@ -98,7 +100,7 @@ export default function Editor({ docId }) {
       {/* ── Main content area ────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
         {/* Editor column */}
-        <main className="flex-1 overflow-y-auto bg-[#e8e8e8] py-8 px-4">
+        <main className="flex-1 overflow-y-auto bg-[#f2eee5] py-8 px-4">
           <div className="editor-canvas">
             <div
               ref={editorRef}
