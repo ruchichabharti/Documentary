@@ -4,26 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Option 3: Nordic Forest & Dark Slate Theme Variables ─────────────────── */
+/* ─── Option 2: California Modernist (Stripe & Apple Style) Variables ──────── */
 :root {
-  --bg-primary:     #0a1110;   /* Deep dark pine / slate-moss */
-  --bg-secondary:   #0f1917;   /* Slate pine secondary */
-  --bg-surface:     #14221f;   /* Elevated forest card */
-  --bg-hover:       #1b2e2a;   /* Hover state */
-  --border:         #233a34;   /* Hairline moss border */
-  --border-strong:  #2f4f47;   /* Defined pine border */
-  --text-primary:   #f2f7f5;   /* Frosted mist ivory */
-  --text-secondary: #8ca89f;   /* Soft sage / lichen */
-  --text-muted:     #526f67;   /* Dark forest moss */
-  --accent:         #10b981;   /* Vibrant forest emerald */
-  --accent-hover:   #059669;   /* Deep emerald */
-  --accent-light:   rgba(16, 185, 129, 0.15);
-  --accent-glow:    rgba(16, 185, 129, 0.25);
-  --gold:           #facc15;   /* Lichen gold */
-  --danger:         #f43f5e;
+  --bg-primary:     #f8fafc;   /* Soft alabaster canvas */
+  --bg-secondary:   #ffffff;   /* Pure crisp white surface */
+  --bg-surface:     #ffffff;   /* Elevated white card */
+  --bg-hover:       #f1f5f9;   /* Subtle slate hover */
+  --border:         #e2e8f0;   /* Smooth slate hairline border */
+  --border-strong:  #cbd5e1;   /* Defined slate border */
+  --text-primary:   #0f172a;   /* Deep slate ink */
+  --text-secondary: #475569;   /* Slate graphite */
+  --text-muted:     #94a3b8;   /* Muted silver slate */
+  --accent:         #2563eb;   /* Deep Royal Cobalt Blue */
+  --accent-hover:   #1d4ed8;   /* Rich cobalt hover */
+  --accent-light:   #eff6ff;   /* Soft cobalt tint */
+  --accent-glow:    rgba(37, 99, 235, 0.20); /* Focus glow */
+  --danger:         #ef4444;
   --success:        #10b981;
-  --editor-bg:      #fbfdfc;   /* Crisp paper */
-  --editor-text:    #0e1a17;   /* Deep pine ink */
+  --editor-bg:      #ffffff;   /* Crisp paper */
+  --editor-text:    #0f172a;   /* Deep slate ink */
 }
 
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
@@ -41,101 +40,112 @@ html, body, #root {
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #233a34; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #2f4f47; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* ─── Nordic Forest Cards ─────────────────────────────────────────────────── */
-.nordic-card {
+/* ─── California Modernist Cards ─────────────────────────────────────────── */
+.modern-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.nordic-card-interactive:hover {
-  border-color: #3b6359;
+.modern-card-interactive:hover {
+  border-color: #cbd5e1;
   transform: translateY(-2px);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4), 0 0 1px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(37, 99, 235, 0.08);
 }
 
-/* ─── Forest Emerald Buttons ─────────────────────────────────────────────── */
-.btn-emerald {
+/* ─── Royal Cobalt Buttons (Stripe / Apple Style) ────────────────────────── */
+.btn-cobalt {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #051410;
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
   font-weight: 600;
   font-size: 13px;
   padding: 9px 18px;
-  border-radius: 8px;
-  border: 1px solid #34d399;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25);
-  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  border-radius: 10px;
+  border: 1px solid #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25), 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
   cursor: pointer;
 }
-.btn-emerald:hover {
-  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+.btn-cobalt:hover {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35), 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
-.btn-emerald:active { transform: scale(0.98); }
-.btn-emerald:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-cobalt:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.2);
+}
+.btn-cobalt:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
 
-.btn-nordic-secondary {
+.btn-modern-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #0f1917;
-  color: #f2f7f5;
+  background: #ffffff;
+  color: var(--text-primary);
   font-weight: 500;
   font-size: 13px;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: all 0.15s ease;
   cursor: pointer;
 }
-.btn-nordic-secondary:hover {
+.btn-modern-secondary:hover {
   background: var(--bg-hover);
   border-color: var(--border-strong);
-  color: #ffffff;
+  color: #0f172a;
+}
+.btn-modern-secondary:active {
+  transform: scale(0.99);
 }
 
 /* ─── Form Inputs ────────────────────────────────────────────────────────── */
-.input-nordic {
+.input-modern {
   width: 100%;
-  background: #0d1715;
+  background: #ffffff;
   border: 1px solid var(--border);
   color: var(--text-primary);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 14px;
   font-size: 14px;
   outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.input-nordic:focus {
+.input-modern:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
-.input-nordic::placeholder { color: var(--text-muted); }
+.input-modern::placeholder { color: var(--text-muted); }
 
-/* ─── Editor Canvas (Parchment Paper on Dark Pine Desk) ───────────────────── */
+/* ─── Editor Canvas (Pure White Sheet on Alabaster Desk) ─────────────────── */
 .editor-canvas {
   position: relative;
   background: var(--editor-bg);
   color: var(--editor-text);
   min-height: calc(100vh - 120px);
-  max-width: 800px;
+  max-width: 820px;
   margin: 0 auto;
   padding: 80px 88px;
-  border-radius: 8px;
-  border: 1px solid #dbe4df;
-  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.55);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px;
   line-height: 1.8;
@@ -146,7 +156,61 @@ html, body, #root {
   min-height: 100%;
   white-space: pre-wrap;
   word-break: break-word;
-  caret-color: #10b981;
+  caret-color: #2563eb;
+}
+
+/* ─── Sidebar ────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-left: 1px solid var(--border);
+  padding: 20px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ─── Status Badge ───────────────────────────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+}
+.status-connected {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+.status-connected .status-dot {
+  background: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
+}
+.status-connecting {
+  background: #fefce8;
+  color: #ca8a04;
+  border-color: #fef08a;
+}
+.status-connecting .status-dot {
+  background: #eab308;
+}
+.status-disconnected {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.status-disconnected .status-dot {
+  background: #ef4444;
 }
 
 /* ─── Topbar ─────────────────────────────────────────────────────────────── */
@@ -154,12 +218,12 @@ html, body, #root {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(10, 17, 16, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
-  height: 58px;
+  height: 60px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -167,8 +231,8 @@ html, body, #root {
 
 /* ─── Presence avatars ───────────────────────────────────────────────────── */
 .presence-avatar {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -176,35 +240,35 @@ html, body, #root {
   font-size: 12px;
   font-weight: 600;
   color: white;
-  border: 2px solid var(--bg-primary);
-  margin-left: -6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffffff;
+  margin-left: -8px;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
 }
 .presence-avatar:first-child { margin-left: 0; }
 
-/* ─── KaTeX Math Display Styles (Nordic Forest) ───────────────────────────── */
+/* ─── KaTeX Math Display Styles (Modern Slate & Cobalt) ──────────────────── */
 .katex {
   font-size: 1.05em;
-  color: #f2f7f5;
+  color: #0f172a;
 }
 
 .katex-display {
   margin: 0.85em 0;
-  padding: 0.6em 0.85em;
+  padding: 0.7em 1em;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #0f1a18;
-  border-radius: 8px;
-  border: 1px solid #28423c;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
 }
 
 .katex-display > .katex {
   max-width: 100%;
   text-align: center;
-  color: #f2f7f5;
+  color: #0f172a;
 }
 
 .katex .mord.mathbf {
   font-weight: 700;
-  color: #34d399;
+  color: #2563eb;
 }

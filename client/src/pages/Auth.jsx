@@ -52,10 +52,10 @@ export default function Auth() {
           setIsSuccess(true);
           setSuccessMessage('Verified via link! Redirecting to Workspace…');
           confetti({
-            particleCount: 75,
-            spread: 65,
+            particleCount: 80,
+            spread: 70,
             origin: { y: 0.6 },
-            colors: ['#10b981', '#34d399', '#059669', '#a7f3d0', '#f2f7f5'],
+            colors: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'],
           });
           setTimeout(() => {
             navigate('/dashboard', { replace: true });
@@ -98,79 +98,22 @@ export default function Auth() {
     setError('');
 
     try {
-      const activeSession = localStorage.getItem('docmind_auth_session');
-      if (activeSession) {
-        const parsed = JSON.parse(activeSession);
-        if (parsed?.user?.email && parsed.user.email.toLowerCase() !== cleanInputEmail) {
-          localStorage.removeItem('docmind_auth_session');
-          localStorage.removeItem('collab_token');
-          localStorage.removeItem('collab_user');
-          localStorage.removeItem('docmind_auth_token');
-          if (isSupabaseConfigured) {
-            await supabase.auth.signOut().catch(() => {});
-          }
-        }
-      }
-    } catch (_) {}
-
-    try {
       await sendOtp(cleanInputEmail);
       setStep('OTP');
       setResendCooldown(60);
     } catch (err) {
-      console.error('OTP Send Error:', err);
-      setError(err.message || 'Failed to send verification email. Please check your email and try again.');
+      console.warn('[DocMind Auth] Send OTP caught error:', err);
+      const msg = err.message || 'Failed to dispatch verification email.';
+      setError(msg);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePasswordAuth = async (e) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-
-    try {
-      if (isSignUp) {
-        await signUpWithPassword(email, password);
-        setIsSuccess(true);
-        setSuccessMessage('Account created! Redirecting to Workspace…');
-      } else {
-        await signInWithPassword(email, password);
-        setIsSuccess(true);
-        setSuccessMessage('Welcome back! Redirecting…');
-      }
-
-      confetti({
-        particleCount: 75,
-        spread: 65,
-        origin: { y: 0.6 },
-        colors: ['#10b981', '#34d399', '#059669', '#a7f3d0', '#f2f7f5'],
-      });
-      setTimeout(() => {
-        navigate('/dashboard', { replace: true });
-      }, 1000);
-    } catch (err) {
-      console.error('Password Auth Error:', err);
-      setError(err.message || 'Authentication failed. Please check your credentials.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleToggleOtpLength = (targetLen) => {
-    const nextLen = targetLen || (otpLength === 6 ? 8 : 6);
-    setOtpLength(nextLen);
-    setOtp(new Array(nextLen).fill(''));
+  const handleToggleOtpLength = () => {
+    const newLen = otpLength === 6 ? 8 : 6;
+    setOtpLength(newLen);
+    setOtp(Array(newLen).fill(''));
     setError('');
     setTimeout(() => {
       otpInputsRef.current[0]?.focus();
@@ -178,47 +121,49 @@ export default function Auth() {
   };
 
   const handleOtpChange = (index, value) => {
-    const sanitized = value.replace(/[^0-9]/g, '');
-    if (!sanitized && value !== '') return;
+    const val = value.replace(/\D/g, '');
+    if (!val && value !== '') return;
 
     const newOtp = [...otp];
 
-    if (sanitized.length > 1) {
-      const targetLen = sanitized.length >= 8 ? 8 : (otpLength === 8 ? 8 : 6);
-      if (targetLen !== otpLength) {
-        setOtpLength(targetLen);
+    if (val.length > 1) {
+      const digits = val.slice(0, otpLength).split('');
+      for (let i = 0; i < otpLength; i++) {
+        newOtp[i] = digits[i] || '';
       }
-      const adjustedOtp = new Array(targetLen).fill('');
-      const pastedChars = sanitized.slice(0, targetLen).split('');
-      pastedChars.forEach((char, i) => {
-        adjustedOtp[i] = char;
-      });
-      setOtp(adjustedOtp);
-      const nextIndex = Math.min(pastedChars.length, targetLen - 1);
-      otpInputsRef.current[nextIndex]?.focus();
-
-      if (adjustedOtp.every((digit) => digit !== '')) {
-        handleVerifyOtp(adjustedOtp.join(''));
+      setOtp(newOtp);
+      const nextIdx = Math.min(digits.length, otpLength - 1);
+      otpInputsRef.current[nextIdx]?.focus();
+      if (digits.length >= otpLength) {
+        handleAutoVerify(newOtp.join(''));
       }
       return;
     }
 
-    newOtp[index] = sanitized;
+    newOtp[index] = val;
     setOtp(newOtp);
 
-    if (sanitized && index < otpLength - 1) {
+    if (val && index < otpLength - 1) {
       otpInputsRef.current[index + 1]?.focus();
     }
 
-    if (sanitized && index === otpLength - 1 && newOtp.every((digit) => digit !== '')) {
-      handleVerifyOtp(newOtp.join(''));
+    const fullCode = newOtp.join('');
+    if (fullCode.length === otpLength && !newOtp.some((d) => !d)) {
+      handleAutoVerify(fullCode);
     }
   };
 
   const handleKeyDown = (index, e) => {
     if (e.key === 'Backspace') {
       if (!otp[index] && index > 0) {
+        const newOtp = [...otp];
+        newOtp[index - 1] = '';
+        setOtp(newOtp);
         otpInputsRef.current[index - 1]?.focus();
+      } else if (otp[index]) {
+        const newOtp = [...otp];
+        newOtp[index] = '';
+        setOtp(newOtp);
       }
     } else if (e.key === 'ArrowLeft' && index > 0) {
       otpInputsRef.current[index - 1]?.focus();
@@ -229,72 +174,109 @@ export default function Auth() {
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const rawData = e.clipboardData.getData('text').trim();
+    const pastedData = e.clipboardData.getData('text').trim();
 
-    if (rawData.includes('http') || rawData.includes('token') || rawData.includes('code')) {
-      setPastedLink(rawData);
-      handleVerifyLink(rawData);
+    if (
+      pastedData.startsWith('http://') ||
+      pastedData.startsWith('https://') ||
+      pastedData.includes('token=') ||
+      pastedData.includes('code=')
+    ) {
+      setPastedLink(pastedData);
+      handleLinkVerification(pastedData);
       return;
     }
 
-    const pastedData = rawData.replace(/[^0-9]/g, '');
-    if (!pastedData) return;
+    const numericOnly = pastedData.replace(/\D/g, '');
+    if (!numericOnly) return;
 
-    const targetLen = pastedData.length >= 8 ? 8 : 6;
-    if (targetLen !== otpLength) {
-      setOtpLength(targetLen);
+    let targetLen = otpLength;
+    if (numericOnly.length === 8 && otpLength === 6) {
+      setOtpLength(8);
+      targetLen = 8;
+    } else if (numericOnly.length === 6 && otpLength === 8) {
+      setOtpLength(6);
+      targetLen = 6;
     }
 
-    const digits = pastedData.slice(0, targetLen).split('');
-    const newOtp = new Array(targetLen).fill('');
-    digits.forEach((digit, i) => {
-      newOtp[i] = digit;
-    });
+    const digits = numericOnly.slice(0, targetLen).split('');
+    const newOtp = Array(targetLen).fill('');
+    for (let i = 0; i < digits.length; i++) {
+      newOtp[i] = digits[i];
+    }
     setOtp(newOtp);
 
-    const focusTarget = Math.min(digits.length, targetLen - 1);
-    otpInputsRef.current[focusTarget]?.focus();
+    const focusIdx = Math.min(digits.length, targetLen - 1);
+    otpInputsRef.current[focusIdx]?.focus();
 
-    if (newOtp.every((d) => d !== '')) {
-      handleVerifyOtp(newOtp.join(''));
+    if (digits.length >= targetLen) {
+      handleAutoVerify(newOtp.join(''));
     }
   };
 
-  const handleVerifyOtp = async (codeToVerify) => {
-    const fullCode = typeof codeToVerify === 'string' ? codeToVerify : otp.join('');
-    if (fullCode.length !== 6 && fullCode.length !== 8) {
-      setError(`Please enter the complete ${otpLength}-digit verification code.`);
-      return;
-    }
-
+  const handleAutoVerify = async (codeToVerify) => {
     setIsLoading(true);
     setError('');
 
     try {
-      await verifyOtp(email, fullCode);
+      await verifyOtp(email, codeToVerify);
       setIsSuccess(true);
-      setSuccessMessage('Verified! Entering Library Vault…');
+      setSuccessMessage('Code verified! Entering workspace…');
       confetti({
-        particleCount: 75,
-        spread: 65,
+        particleCount: 80,
+        spread: 70,
         origin: { y: 0.6 },
-        colors: ['#10b981', '#34d399', '#059669', '#a7f3d0', '#f2f7f5'],
+        colors: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'],
       });
       setTimeout(() => {
         navigate('/dashboard', { replace: true });
-      }, 1000);
+      }, 900);
     } catch (err) {
-      console.error('OTP Verification Error:', err);
-      setError(err.message || 'Invalid or expired code. Please verify and try again.');
+      console.warn('[DocMind Auth] Verification error:', err);
+      setError(err.message || 'Invalid or expired verification code.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleVerifyLink = async (customLink) => {
-    const linkToVerify = typeof customLink === 'string' ? customLink : pastedLink;
-    if (!linkToVerify || !linkToVerify.trim()) {
-      setError('Please paste the confirmation link from your email.');
+  const handleVerifyOtp = async (e) => {
+    e?.preventDefault();
+    const code = otp.join('');
+    if (code.length < otpLength) {
+      setError(`Please enter the complete ${otpLength}-digit verification code.`);
+      return;
+    }
+    await handleAutoVerify(code);
+  };
+
+  const handleLinkVerification = async (linkText) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      await verifyLinkOrCode(linkText);
+      setIsSuccess(true);
+      setSuccessMessage('Confirmed! Entering workspace…');
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'],
+      });
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true });
+      }, 900);
+    } catch (err) {
+      setError(err.message || 'Failed to authenticate with that link.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePasswordAuth = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Please provide both email and password.');
       return;
     }
 
@@ -302,60 +284,66 @@ export default function Auth() {
     setError('');
 
     try {
-      await verifyLinkOrCode(linkToVerify, email);
-      setIsSuccess(true);
-      setSuccessMessage('Verified via link! Entering Library Vault…');
+      if (isSignUp) {
+        await signUpWithPassword(email, password);
+        setIsSuccess(true);
+        setSuccessMessage('Account created! Entering workspace…');
+      } else {
+        await signInWithPassword(email, password);
+        setIsSuccess(true);
+        setSuccessMessage('Welcome back! Entering workspace…');
+      }
+
       confetti({
-        particleCount: 75,
-        spread: 65,
+        particleCount: 80,
+        spread: 70,
         origin: { y: 0.6 },
-        colors: ['#10b981', '#34d399', '#059669', '#a7f3d0', '#f2f7f5'],
+        colors: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#1d4ed8'],
       });
       setTimeout(() => {
         navigate('/dashboard', { replace: true });
-      }, 1000);
+      }, 900);
     } catch (err) {
-      console.error('Link Verification Error:', err);
-      setError(err.message || 'Could not verify link. Please click the link directly in your email.');
+      setError(err.message || 'Authentication failed. Please check credentials.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a1110] text-[#f2f7f5] flex flex-col justify-center items-center px-4 py-8 relative selection:bg-[#064e3b] selection:text-[#a7f3d0]">
-      {/* Supabase unconfigured warning banner */}
+    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-col justify-center items-center px-4 py-8 relative selection:bg-blue-100 selection:text-blue-900 font-sans">
+      {/* Supabase notice banner if unconfigured */}
       {!isSupabaseConfigured && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md mb-6 p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/20 text-emerald-200 text-xs flex items-start gap-3 shadow-md"
+          className="w-full max-w-md mb-6 p-4 rounded-xl border border-blue-200 bg-blue-50/70 text-blue-900 text-xs flex items-start gap-3 shadow-xs"
         >
-          <AlertCircle className="w-5 h-5 flex-shrink-0 text-emerald-400 mt-0.5" />
+          <AlertCircle className="w-5 h-5 flex-shrink-0 text-blue-600 mt-0.5" />
           <div>
-            <span className="font-semibold text-emerald-300 block mb-1">Configuration Notice</span>
-            Provide your <code className="bg-emerald-900/40 px-1 py-0.5 rounded text-emerald-100 font-mono">VITE_SUPABASE_URL</code> and <code className="bg-emerald-900/40 px-1 py-0.5 rounded text-emerald-100 font-mono">VITE_SUPABASE_ANON_KEY</code> in environment settings for live email dispatch.
+            <span className="font-semibold text-blue-900 block mb-1">Configuration Notice</span>
+            Provide your <code className="bg-blue-100/70 px-1 py-0.5 rounded text-blue-800 font-mono">VITE_SUPABASE_URL</code> and <code className="bg-blue-100/70 px-1 py-0.5 rounded text-blue-800 font-mono">VITE_SUPABASE_ANON_KEY</code> for live Supabase session support.
           </div>
         </motion.div>
       )}
 
-      {/* Main Nordic Forest Card */}
+      {/* Main California Modernist Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.2 }}
-        className="w-full max-w-md bg-[#14221f] border border-[#233a34] rounded-2xl p-8 shadow-2xl relative z-10"
+        className="w-full max-w-md bg-white border border-slate-200/90 rounded-2xl p-8 shadow-xl shadow-slate-200/60 relative z-10"
       >
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-6 text-center">
-          <div className="w-12 h-12 rounded-xl bg-[#1a2d29] border border-[#2e4d45] text-emerald-400 flex items-center justify-center mb-3.5 shadow-sm">
-            <BookOpen className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mb-3.5 shadow-xs">
+            <BookOpen className="w-5 h-5 stroke-[2.3]" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-[#f2f7f5]">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
             DocMind Studio
           </h1>
-          <p className="text-[#8ca89f] text-xs mt-1.5 leading-relaxed font-normal">
-            Sign in to access your library vault and notes
+          <p className="text-slate-500 text-xs mt-1.5 leading-relaxed font-normal">
+            Sign in to access your document studio and shared notes
           </p>
         </div>
 
@@ -366,9 +354,9 @@ export default function Auth() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="mb-5 p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2"
+              className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2"
             >
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600" />
               <span>{error}</span>
             </motion.div>
           )}
@@ -387,18 +375,18 @@ export default function Auth() {
               {user ? (
                 /* Already Signed In */
                 <div className="space-y-4 text-center py-2">
-                  <div className="p-4 rounded-xl bg-[#0d1715] border border-[#1f342f] text-[#8ca89f] text-xs">
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 text-xs">
                     <span>Currently signed in as:</span>
-                    <div className="font-semibold text-[#f2f7f5] font-mono text-sm mt-1">{user.email}</div>
+                    <div className="font-semibold text-slate-900 font-mono text-sm mt-1">{user.email}</div>
                   </div>
                   <div className="flex flex-col gap-2.5">
                     <button
                       type="button"
                       onClick={() => navigate('/dashboard', { replace: true })}
-                      className="btn-emerald w-full py-2.5"
+                      className="btn-cobalt w-full py-2.5"
                     >
-                      <span>Continue to Library Vault</span>
-                      <ArrowRight className="w-4 h-4 text-[#051410]" />
+                      <span>Continue to Studio</span>
+                      <ArrowRight className="w-4 h-4" />
                     </button>
                     <button
                       type="button"
@@ -407,7 +395,7 @@ export default function Auth() {
                         setEmail('');
                         setStep('EMAIL');
                       }}
-                      className="btn-nordic-secondary w-full py-2"
+                      className="btn-modern-secondary w-full py-2"
                     >
                       Sign Out &amp; Use Another Email
                     </button>
@@ -416,14 +404,14 @@ export default function Auth() {
               ) : (
                 <>
                   {/* Tab Selector */}
-                  <div className="flex bg-[#0d1715] p-1 rounded-xl border border-[#1f342f]">
+                  <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
                     <button
                       type="button"
                       onClick={() => { setAuthMode('OTP'); setError(''); }}
-                      className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                      className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                         authMode === 'OTP'
-                          ? 'bg-[#1a2d29] text-emerald-300 shadow-sm border border-[#2e4d45]'
-                          : 'text-[#526f67] hover:text-[#8ca89f]'
+                          ? 'bg-white text-blue-600 shadow-xs'
+                          : 'text-slate-500 hover:text-slate-800'
                       }`}
                     >
                       Email Passcode
@@ -431,10 +419,10 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => { setAuthMode('PASSWORD'); setError(''); }}
-                      className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                      className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                         authMode === 'PASSWORD'
-                          ? 'bg-[#1a2d29] text-emerald-300 shadow-sm border border-[#2e4d45]'
-                          : 'text-[#526f67] hover:text-[#8ca89f]'
+                          ? 'bg-white text-blue-600 shadow-xs'
+                          : 'text-slate-500 hover:text-slate-800'
                       }`}
                     >
                       Password
@@ -445,11 +433,11 @@ export default function Auth() {
                     /* OTP Mode */
                     <form onSubmit={handleSendOtp} className="space-y-4">
                       <div>
-                        <label className="block text-xs font-medium text-[#8ca89f] mb-1.5">
+                        <label className="block text-xs font-medium text-slate-700 mb-1.5">
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#526f67]">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
@@ -461,7 +449,7 @@ export default function Auth() {
                             autoFocus
                             required
                             disabled={isLoading}
-                            className="input-nordic pl-10"
+                            className="input-modern pl-10"
                           />
                         </div>
                       </div>
@@ -470,17 +458,17 @@ export default function Auth() {
                         type="submit"
                         id="send-otp-btn"
                         disabled={isLoading || !email}
-                        className="btn-emerald w-full py-2.5"
+                        className="btn-cobalt w-full py-2.5"
                       >
                         {isLoading ? (
                           <>
-                            <RefreshCw className="w-4 h-4 animate-spin text-[#051410]" />
+                            <RefreshCw className="w-4 h-4 animate-spin" />
                             <span>Sending verification code…</span>
                           </>
                         ) : (
                           <>
                             <span>Send Verification Code</span>
-                            <ArrowRight className="w-4 h-4 text-[#051410]" />
+                            <ArrowRight className="w-4 h-4" />
                           </>
                         )}
                       </button>
@@ -489,11 +477,11 @@ export default function Auth() {
                     /* Password Mode */
                     <form onSubmit={handlePasswordAuth} className="space-y-3.5">
                       <div>
-                        <label className="block text-xs font-medium text-[#8ca89f] mb-1.5">
+                        <label className="block text-xs font-medium text-slate-700 mb-1.5">
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#526f67]">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
@@ -503,17 +491,17 @@ export default function Auth() {
                             placeholder="name@company.com"
                             required
                             disabled={isLoading}
-                            className="input-nordic pl-10"
+                            className="input-modern pl-10"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-medium text-[#8ca89f] mb-1.5">
+                        <label className="block text-xs font-medium text-slate-700 mb-1.5">
                           Password
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#526f67]">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <Lock className="w-4 h-4" />
                           </div>
                           <input
@@ -523,17 +511,17 @@ export default function Auth() {
                             placeholder="••••••••"
                             required
                             disabled={isLoading}
-                            className="input-nordic pl-10"
+                            className="input-modern pl-10"
                           />
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs text-[#526f67]">
+                      <div className="flex items-center justify-between text-xs text-slate-500">
                         <span>{isSignUp ? 'Already registered?' : 'Need an account?'}</span>
                         <button
                           type="button"
                           onClick={() => setIsSignUp(!isSignUp)}
-                          className="text-emerald-400 hover:text-emerald-300 font-medium cursor-pointer"
+                          className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
                         >
                           {isSignUp ? 'Sign in' : 'Create an account'}
                         </button>
@@ -542,27 +530,27 @@ export default function Auth() {
                       <button
                         type="submit"
                         disabled={isLoading || !email || !password}
-                        className="btn-emerald w-full py-2.5"
+                        className="btn-cobalt w-full py-2.5"
                       >
                         {isLoading ? (
                           <>
-                            <RefreshCw className="w-4 h-4 animate-spin text-[#051410]" />
+                            <RefreshCw className="w-4 h-4 animate-spin" />
                             <span>Authenticating…</span>
                           </>
                         ) : (
                           <>
                             <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
-                            <ArrowRight className="w-4 h-4 text-[#051410]" />
+                            <ArrowRight className="w-4 h-4" />
                           </>
                         )}
                       </button>
                     </form>
                   )}
 
-                  <div className="pt-3 border-t border-[#1f342f] text-center">
-                    <p className="text-[11px] text-[#526f67] flex items-center justify-center gap-1.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      Encrypted authentication &amp; private library vault
+                  <div className="pt-3 border-t border-slate-100 text-center">
+                    <p className="text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                      Encrypted authentication &amp; private workspace
                     </p>
                   </div>
                 </>
@@ -578,13 +566,13 @@ export default function Auth() {
             >
               {/* Header */}
               <div className="text-center">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0d1715] border border-[#1f342f] text-xs text-[#8ca89f] mb-2">
-                  <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-xs text-blue-700 mb-2">
+                  <Mail className="w-3.5 h-3.5 text-blue-600" />
                   <span>Code sent to:</span>
-                  <strong className="text-[#f2f7f5] font-medium font-mono">{email}</strong>
+                  <strong className="text-slate-900 font-semibold font-mono">{email}</strong>
                 </div>
-                <h3 className="text-base font-semibold text-[#f2f7f5]">Enter {otpLength}-Digit Code</h3>
-                <p className="text-xs text-[#526f67] mt-0.5">
+                <h3 className="text-base font-bold text-slate-900">Enter {otpLength}-Digit Code</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
                   Check your inbox for the one-time verification passcode
                 </p>
               </div>
@@ -602,10 +590,10 @@ export default function Auth() {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     disabled={isLoading || isSuccess}
-                    className={`${otpLength === 8 ? 'w-10 h-13 text-lg' : 'w-12 h-14 text-xl'} text-center font-bold font-mono rounded-xl bg-[#0d1715] border transition-all duration-150 outline-none ${
+                    className={`${otpLength === 8 ? 'w-10 h-13 text-lg' : 'w-12 h-14 text-xl'} text-center font-bold font-mono rounded-xl bg-white border transition-all duration-150 outline-none ${
                       digit
-                        ? 'border-emerald-500 bg-emerald-950/20 text-emerald-300 ring-2 ring-emerald-500/20'
-                        : 'border-[#233a34] text-[#f2f7f5] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'
+                        ? 'border-blue-600 bg-blue-50/50 text-blue-700 ring-2 ring-blue-100'
+                        : 'border-slate-200 text-slate-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-100'
                     }`}
                   />
                 ))}
@@ -616,7 +604,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => handleToggleOtpLength()}
-                  className="text-[11px] text-emerald-400 hover:text-emerald-300 font-medium transition-colors cursor-pointer"
+                  className="text-[11px] text-blue-600 hover:text-blue-700 font-medium transition-colors cursor-pointer"
                 >
                   {otpLength === 6 ? 'Have an 8-digit code? Click here →' : 'Switch back to 6 digits →'}
                 </button>
@@ -628,17 +616,17 @@ export default function Auth() {
                 id="verify-otp-btn"
                 onClick={() => handleVerifyOtp()}
                 disabled={isLoading || otp.some((d) => !d) || isSuccess}
-                className="btn-emerald w-full py-3"
+                className="btn-cobalt w-full py-3"
               >
                 {isLoading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#051410]" />
+                    <RefreshCw className="w-4 h-4 animate-spin" />
                     <span>Verifying Code…</span>
                   </>
                 ) : isSuccess ? (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-950" />
-                    <span>{successMessage || 'Verified! Entering Library Vault…'}</span>
+                    <CheckCircle2 className="w-4 h-4 text-white" />
+                    <span>{successMessage || 'Verified! Entering Workspace…'}</span>
                   </>
                 ) : (
                   <>
@@ -649,7 +637,7 @@ export default function Auth() {
               </button>
 
               {/* Actions & Resend */}
-              <div className="flex items-center justify-between text-xs text-[#526f67] pt-2 border-t border-[#1f342f]">
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => {
@@ -658,7 +646,7 @@ export default function Auth() {
                     setPastedLink('');
                     setError('');
                   }}
-                  className="flex items-center gap-1 text-[#8ca89f] hover:text-[#f2f7f5] transition-colors cursor-pointer"
+                  className="flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>Change Email</span>
@@ -666,14 +654,14 @@ export default function Auth() {
 
                 <div>
                   {resendCooldown > 0 ? (
-                    <span className="text-[#526f67] font-mono">
+                    <span className="text-slate-400 font-mono">
                       Resend in {resendCooldown}s
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      className="text-emerald-400 hover:text-emerald-300 font-medium cursor-pointer"
+                      className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer"
                     >
                       Resend Email
                     </button>
@@ -686,8 +674,8 @@ export default function Auth() {
       </motion.div>
 
       {/* Human, minimal footer */}
-      <div className="mt-8 text-center text-xs text-[#526f67] relative z-10">
-        DocMind Studio &bull; Private &amp; Collaborative Vault
+      <div className="mt-8 text-center text-xs text-slate-400 relative z-10">
+        DocMind Studio &bull; Private &amp; Collaborative Workspace
       </div>
     </div>
   );

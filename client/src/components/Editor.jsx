@@ -62,21 +62,21 @@ export default function Editor({ docId }) {
   }, [handleKeyDown, editorRef]);
 
   return (
-    <div className="flex flex-col h-screen bg-[--bg-primary]">
+    <div className="flex flex-col h-screen bg-[#f8fafc] text-[#0f172a] font-sans">
       {/* ── Top bar ─────────────────────────────────────────────────── */}
       <header className="topbar">
-        <Link to="/dashboard" className="text-[#f2f7f5] font-semibold text-base mr-2 no-underline flex items-center gap-2.5 hover:opacity-85 transition-opacity">
-          <div className="w-7 h-7 rounded-lg bg-[#14221f] border border-[#2f4f47] text-emerald-400 flex items-center justify-center">
-            <BookOpen className="w-3.5 h-3.5" />
+        <Link to="/dashboard" className="text-slate-900 font-bold text-base mr-2 no-underline flex items-center gap-2.5 hover:opacity-85 transition-opacity">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-xs">
+            <BookOpen className="w-4 h-4 stroke-[2.3]" />
           </div>
           <span>DocMind Studio</span>
         </Link>
-        <div className="w-px h-6 bg-[--border]" />
+        <div className="w-px h-6 bg-slate-200" />
         <input
           type="text"
           value={localTitle}
           onChange={onTitleChange}
-          className="flex-1 bg-transparent text-[#f2f7f5] font-medium text-sm outline-none border-b border-transparent hover:border-[#2f4f47] focus:border-emerald-500 transition-colors px-2 py-1 max-w-xs"
+          className="flex-1 bg-transparent text-slate-900 font-semibold text-sm outline-none border-b border-transparent hover:border-slate-300 focus:border-blue-600 transition-colors px-2 py-1 max-w-xs"
           placeholder="Document title"
         />
         <div className="ml-auto flex items-center gap-3">
@@ -100,7 +100,7 @@ export default function Editor({ docId }) {
       {/* ── Main content area ────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
         {/* Editor column */}
-        <main className="flex-1 overflow-y-auto bg-[#0d1715] py-8 px-4">
+        <main className="flex-1 overflow-y-auto bg-slate-100/70 py-8 px-4">
           <div className="editor-canvas">
             <div
               ref={editorRef}
@@ -115,8 +115,6 @@ export default function Editor({ docId }) {
               role="textbox"
               aria-multiline="true"
             />
-            {/* Remote cursor overlays are complex with contentEditable;
-                in this version, presence is shown in the sidebar */}
           </div>
         </main>
 
