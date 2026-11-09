@@ -4,25 +4,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Warm Paper & Editorial Theme Variables ─────────────────────────────── */
+/* ─── Espresso & Cognac Luxury Theme Variables ───────────────────────────── */
 :root {
-  --bg-primary:     #f8f6f1;   /* Warm alabaster paper */
-  --bg-secondary:   #f2eee5;   /* Warm bone */
-  --bg-surface:     #ffffff;   /* Pure card white */
-  --bg-hover:       #eae5d9;   /* Hover state */
-  --border:         #e5e0d4;   /* Hairline warm linen border */
-  --border-strong:  #d6cfc0;   /* Defined border */
-  --text-primary:   #1c1917;   /* Deep charcoal ink */
-  --text-secondary: #57534e;   /* Warm stone */
-  --text-muted:     #8c8479;   /* Muted warm pencil gray */
-  --accent:         #1c1917;   /* Tactile deep ink for primary actions */
-  --accent-hover:   #292524;
-  --accent-warm:    #c2410c;   /* Terracotta / cedar accent */
-  --accent-warm-bg: #fff7ed;   /* Soft warm cream tint */
-  --danger:         #dc2626;
-  --success:        #15803d;
-  --editor-bg:      #ffffff;
-  --editor-text:    #1c1917;
+  --bg-primary:     #120f0d;   /* Deep roasted coffee */
+  --bg-secondary:   #181310;   /* Dark espresso */
+  --bg-surface:     #1f1915;   /* Rich warm leather card */
+  --bg-hover:       #29211c;   /* Elevated hover */
+  --border:         #332922;   /* Warm bronze hairline border */
+  --border-strong:  #483a30;   /* Defined umber border */
+  --text-primary:   #f7f2eb;   /* Cream parchment */
+  --text-secondary: #a89888;   /* Soft warm hazelnut */
+  --text-muted:     #736557;   /* Muted roasted coffee */
+  --accent:         #d97706;   /* Rich honey amber */
+  --accent-hover:   #b45309;   /* Cognac */
+  --accent-light:   rgba(217, 119, 6, 0.15);
+  --cognac:         #c2410c;   /* Rich burnt terracotta / cognac */
+  --gold:           #fbbf24;
+  --danger:         #f43f5e;
+  --success:        #10b981;
+  --editor-bg:      #fcf9f2;   /* Parchment letter paper */
+  --editor-text:    #1a1512;   /* Deep charcoal ink */
 }
 
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
@@ -37,119 +38,108 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.font-serif-title {
+.font-serif-luxury {
   font-family: 'Newsreader', 'Georgia', Cambria, serif;
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #dcd6c8; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #b8b09f; }
+::-webkit-scrollbar-thumb { background: #332922; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #483a30; }
 
-/* ─── Paper Cards ────────────────────────────────────────────────────────── */
-.paper-card {
+/* ─── Luxury Cards ───────────────────────────────────────────────────────── */
+.luxury-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.04), 0 2px 8px rgba(28, 25, 23, 0.02);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.paper-card-interactive:hover {
-  border-color: var(--border-strong);
+.luxury-card-interactive:hover {
+  border-color: #5a493c;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(28, 25, 23, 0.06), 0 1px 3px rgba(28, 25, 23, 0.04);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 1px rgba(217, 119, 6, 0.3);
 }
 
-/* ─── Tactile Buttons ────────────────────────────────────────────────────── */
-.btn-ink {
+/* ─── Cognac & Amber Buttons ─────────────────────────────────────────────── */
+.btn-cognac {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #1c1917;
-  color: #fcfbf9;
-  font-weight: 500;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  color: #120f0d;
+  font-weight: 600;
   font-size: 13px;
-  padding: 8px 16px;
+  padding: 9px 18px;
   border-radius: 8px;
-  border: 1px solid #1c1917;
-  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08);
-  transition: background 0.15s, transform 0.1s;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
   cursor: pointer;
 }
-.btn-ink:hover { background: #2e2a27; }
-.btn-ink:active { transform: scale(0.98); }
-.btn-ink:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-cognac:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+}
+.btn-cognac:active { transform: scale(0.98); }
+.btn-cognac:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.btn-paper {
+.btn-luxury-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #ffffff;
-  color: var(--text-primary);
+  background: #181310;
+  color: #f7f2eb;
   font-weight: 500;
   font-size: 13px;
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   cursor: pointer;
 }
-.btn-paper:hover { background: var(--bg-secondary); border-color: var(--border-strong); }
-
-.btn-terracotta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--accent-warm);
+.btn-luxury-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
   color: #ffffff;
-  font-weight: 500;
-  font-size: 13px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--accent-warm);
-  box-shadow: 0 1px 2px rgba(194, 65, 12, 0.15);
-  transition: background 0.15s;
-  cursor: pointer;
 }
-.btn-terracotta:hover { background: #9a3412; }
 
 /* ─── Form Inputs ────────────────────────────────────────────────────────── */
-.input-editorial {
+.input-luxury {
   width: 100%;
-  background: #ffffff;
+  background: #15100e;
   border: 1px solid var(--border);
   color: var(--text-primary);
   border-radius: 8px;
-  padding: 9px 12px;
+  padding: 10px 14px;
   font-size: 14px;
   outline: none;
-  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.02) inset;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) inset;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.input-editorial:focus {
-  border-color: #1c1917;
-  box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.08);
+.input-luxury:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
 }
-.input-editorial::placeholder { color: var(--text-muted); }
+.input-luxury::placeholder { color: var(--text-muted); }
 
-/* ─── Editor Canvas ──────────────────────────────────────────────────────── */
+/* ─── Editor Canvas (US Letter Parchment on Dark Mahogany) ─────────────────── */
 .editor-canvas {
   position: relative;
-  background: #ffffff;
-  color: #1c1917;
+  background: var(--editor-bg);
+  color: var(--editor-text);
   min-height: calc(100vh - 120px);
   max-width: 800px;
   margin: 0 auto;
   padding: 80px 88px;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 16px rgba(28, 25, 23, 0.05);
+  border: 1px solid #e7ded0;
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.6);
   font-family: 'Newsreader', Georgia, serif;
   font-size: 17px;
   line-height: 1.8;
@@ -160,7 +150,7 @@ html, body, #root {
   min-height: 100%;
   white-space: pre-wrap;
   word-break: break-word;
-  caret-color: var(--accent-warm);
+  caret-color: #b45309;
 }
 
 /* ─── Topbar ─────────────────────────────────────────────────────────────── */
@@ -168,12 +158,12 @@ html, body, #root {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(248, 246, 241, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(18, 15, 13, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
-  height: 56px;
+  height: 58px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -190,35 +180,35 @@ html, body, #root {
   font-size: 12px;
   font-weight: 600;
   color: white;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--bg-primary);
   margin-left: -6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 .presence-avatar:first-child { margin-left: 0; }
 
-/* ─── KaTeX Math Display Styles (Editorial) ──────────────────────────────── */
+/* ─── KaTeX Math Display Styles (Luxury Espresso) ────────────────────────── */
 .katex {
   font-size: 1.05em;
-  color: #1c1917;
+  color: #f7f2eb;
 }
 
 .katex-display {
   margin: 0.85em 0;
-  padding: 0.6em 0.8em;
+  padding: 0.6em 0.85em;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #fdfcf9;
-  border-radius: 6px;
-  border: 1px solid #e7e2d6;
+  background: #17120f;
+  border-radius: 8px;
+  border: 1px solid #3d3129;
 }
 
 .katex-display > .katex {
   max-width: 100%;
   text-align: center;
-  color: #1c1917;
+  color: #f7f2eb;
 }
 
 .katex .mord.mathbf {
   font-weight: 700;
-  color: #c2410c;
+  color: var(--gold);
 }
