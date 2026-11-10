@@ -151,7 +151,7 @@ export default function Dashboard() {
 
   const handleDeleteDocument = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm('Delete this volume from your library?')) return;
+    if (!window.confirm('Delete this document from your library?')) return;
 
     try {
       try {
@@ -220,7 +220,7 @@ export default function Dashboard() {
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                placeholder="Search across reading volumes and notes…"
+                placeholder="Search across documents and notes…"
                 className="input-notion pl-8.5 py-1 text-xs text-[#1c1917] bg-[#ffffff]"
               />
             </div>
@@ -232,7 +232,7 @@ export default function Dashboard() {
               className="btn-notion-secondary text-xs"
             >
               <MessageSquare className="w-3.5 h-3.5 text-[#c2410c]" />
-              <span className="hidden sm:inline">Reading Companion</span>
+              <span className="hidden sm:inline">Ask AI Assistant</span>
             </button>
 
             <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[#ffffff] border border-[#e7e5e4] text-xs text-[#57534e] max-w-[150px] sm:max-w-[200px]">
@@ -260,7 +260,7 @@ export default function Dashboard() {
               <FileText className="w-4 h-4 text-[#c2410c]" />
             </div>
             <div>
-              <p className="text-xs text-[#78716c]">Volumes</p>
+              <p className="text-xs text-[#78716c]">Documents</p>
               <p className="text-lg font-bold text-[#1c1917] font-mono mt-0.5">{documents.length}</p>
             </div>
           </div>
@@ -270,7 +270,7 @@ export default function Dashboard() {
               <Layers className="w-4 h-4 text-[#57534e]" />
             </div>
             <div>
-              <p className="text-xs text-[#78716c]">Sections</p>
+              <p className="text-xs text-[#78716c]">Indexed Sections</p>
               <p className="text-lg font-bold text-[#1c1917] font-mono mt-0.5">{totalChunks}</p>
             </div>
           </div>
@@ -291,7 +291,7 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="text-xs text-[#78716c]">Privacy</p>
-              <p className="text-xs font-semibold text-[#16a34a] mt-0.5">Isolated</p>
+              <p className="text-xs font-semibold text-[#16a34a] mt-0.5">Protected</p>
             </div>
           </div>
         </div>
@@ -299,9 +299,9 @@ export default function Dashboard() {
         {/* Action Header & Buttons */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="font-serif-editorial text-2xl font-normal text-[#1c1917] tracking-tight">The Reading Library</h1>
+            <h1 className="font-serif-editorial text-2xl font-normal text-[#1c1917] tracking-tight">My Documents</h1>
             <p className="text-xs text-[#78716c] mt-0.5">
-              Read research papers, inquire with paragraph citations, or co-author longform notes.
+              Upload documents, ask questions with real page references, or take notes together.
             </p>
           </div>
 
@@ -322,7 +322,7 @@ export default function Dashboard() {
               className="btn-ink text-xs"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Upload Volume</span>
+              <span>Upload Document</span>
             </button>
           </div>
         </div>
@@ -355,7 +355,7 @@ export default function Dashboard() {
 
                       <button
                         onClick={(e) => handleDeleteDocument(doc.id, e)}
-                        title="Delete volume"
+                        title="Delete document"
                         className="p-1.5 rounded-md text-[#a8a29e] hover:text-rose-600 hover:bg-rose-50 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -435,7 +435,7 @@ export default function Dashboard() {
               className="btn-ink mt-2 text-xs"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Upload First Volume</span>
+              <span>Upload First Document</span>
             </button>
           </div>
         )}

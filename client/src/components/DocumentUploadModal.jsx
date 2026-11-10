@@ -373,18 +373,18 @@ export default function DocumentUploadModal({ isOpen, onClose, onDocumentAdded }
               {activeTab === 'text' && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-[#44403c] mb-1">Volume Title</label>
+                    <label className="block text-xs font-medium text-[#44403c] mb-1">Document Title</label>
                     <input
                       type="text"
                       disabled={isIngesting}
                       value={pastedTitle}
                       onChange={(e) => setPastedTitle(e.target.value)}
-                      placeholder="e.g. Chapter Summary or Reading Notes"
+                      placeholder="e.g. Project Notes or Chapter Summary"
                       className="input-notion text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[#44403c] mb-1">Text Payload</label>
+                    <label className="block text-xs font-medium text-[#44403c] mb-1">Document Content</label>
                     <textarea
                       rows={6}
                       disabled={isIngesting}

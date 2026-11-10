@@ -102,7 +102,7 @@ export default function ChatAssistant({
     {
       id: 'welcome',
       role: 'assistant',
-      content: 'Welcome to your **Research Companion**. Inquire across your volumes, and I will search the texts to synthesize answers with verified source passage citations.',
+      content: 'Hi! Ask me any question about your uploaded documents, and I will give you clear answers with exact page citations so you can verify the facts.',
       citations: [],
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
@@ -216,7 +216,7 @@ export default function ChatAssistant({
       {
         id: 'welcome',
         role: 'assistant',
-        content: 'Conversation cleared. Which volume would you like to inquire about next?',
+        content: 'Conversation reset. What would you like to ask about next?',
         citations: [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
@@ -224,9 +224,9 @@ export default function ChatAssistant({
   };
 
   const samplePrompts = [
-    'Summarize the core thesis and conclusions',
-    'What key methodologies are described?',
-    'List actionable takeaways from this text',
+    'Summarize the main points of this document',
+    'What are the key takeaways and conclusions?',
+    'Explain the most important findings step-by-step',
   ];
 
   return (
@@ -245,8 +245,8 @@ export default function ChatAssistant({
               <BookOpen className="w-4 h-4 stroke-[2]" />
             </div>
             <div>
-              <h2 className="font-serif-editorial text-base text-[#1c1917]">Reading Companion</h2>
-              <p className="text-xs text-[#78716c]">Source-grounded synthesis &amp; paragraph citations</p>
+              <h2 className="font-serif-editorial text-base text-[#1c1917]">DocMind Assistant</h2>
+              <p className="text-xs text-[#78716c]">Ask questions and get verified answers with page citations</p>
             </div>
           </div>
 
@@ -279,7 +279,7 @@ export default function ChatAssistant({
             onChange={(e) => setFilterDocId(e.target.value)}
             className="bg-[#ffffff] border border-[#e7e5e4] rounded-lg px-2.5 py-1 text-xs text-[#1c1917] focus:outline-none focus:border-[#1c1917] cursor-pointer max-w-[280px] truncate shadow-xs font-serif-editorial text-[13px]"
           >
-            <option value="all">All Volumes ({documents.length})</option>
+            <option value="all">All Documents ({documents.length})</option>
             {documents.map((doc) => (
               <option key={doc.id} value={doc.id}>
                 {doc.title} ({doc.chunk_count || 0} sections)
@@ -372,7 +372,7 @@ export default function ChatAssistant({
                   <div className="pt-2 border-t border-[#f5f4f0] mt-3 space-y-1.5">
                     <p className="text-[10px] uppercase tracking-wider text-[#78716c] flex items-center gap-1 font-mono">
                       <Layers className="w-3 h-3 text-[#c2410c]" />
-                      <span>Referenced Sources ({msg.citations.length})</span>
+                      <span>Verified Sources ({msg.citations.length})</span>
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {msg.citations.map((c) => (

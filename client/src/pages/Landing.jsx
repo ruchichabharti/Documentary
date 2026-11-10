@@ -38,13 +38,16 @@ export default function Landing() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [supportName, setSupportName] = useState('');
   const [supportEmail, setSupportEmail] = useState('');
-  const [supportCategory, setSupportCategory] = useState('General Inquiry');
+  const [supportCategory, setSupportCategory] = useState('General Question');
   const [supportMessage, setSupportMessage] = useState('');
   const [supportSubmitted, setSupportSubmitted] = useState(false);
   const [supportLoading, setSupportLoading] = useState(false);
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState(0); // First item open by default
+
+  // Interactive Document Preview Mode ('notes' or 'math')
+  const [previewMode, setPreviewMode] = useState('notes');
 
   const handleSupportSubmit = (e) => {
     e.preventDefault();
@@ -66,101 +69,101 @@ export default function Landing() {
 
   const faqs = [
     {
-      q: 'How does source grounding prevent AI hallucinations?',
-      a: 'DocMind extracts your text into overlapping semantic passages and stores high-dimensional embeddings in Supabase Postgres pgvector. When you inquire, only passages passing strict cosine-similarity thresholds are supplied to the language model. Every answer is bound strictly to cited paragraph bounds with exact page and section numbers.',
+      q: 'How does DocMind make sure answers are accurate?',
+      a: 'DocMind reads your uploaded document and finds the exact paragraphs that match your question. Every answer includes a clickable source card showing the exact page and paragraph so you can verify the facts yourself.',
     },
     {
-      q: 'Can multiple researchers edit the same note concurrently?',
-      a: 'Yes. DocMind uses client-server Operational Transformation (OT) over WebSockets. Every keystroke is transformed against concurrent operations in real time, guaranteeing consistent document states and zero character loss even during rapid simultaneous co-authoring.',
+      q: 'Can my teammates and I edit notes together at the same time?',
+      a: 'Yes! Just like Google Docs or Notion, multiple people can edit the same document simultaneously. Changes sync in real-time with live collaborator avatars so nobody overwrites anyone else.',
     },
     {
-      q: 'What file formats can I upload into the library vault?',
-      a: 'DocMind natively ingests technical PDF documents (.pdf), Markdown notes (.md), plain text manuscripts (.txt), research code, and structured JSON files. You can also paste raw text buffers directly into the studio.',
+      q: 'What types of files can I upload?',
+      a: 'You can upload PDF files (.pdf), Markdown notes (.md), plain text files (.txt), and code files. You can also paste text directly into the editor.',
     },
     {
-      q: 'How does mathematical formula rendering (KaTeX) work?',
-      a: 'Equations enclosed in standard LaTeX delimiters ($...$ for inline or $$...$$ / \\begin{aligned} for display blocks) are rendered natively into crisp typographic formulas accelerated by KaTeX, ensuring complex matrices and proofs render with print-grade clarity.',
+      q: 'Can it render math equations and formulas?',
+      a: 'Yes. DocMind has full built-in support for math equations using LaTeX and KaTeX. From simple fractions to complex matrices and physics formulas, everything displays with clean textbook quality.',
     },
     {
-      q: 'Are my research documents and notes kept private?',
-      a: 'Absolutely. Every document chunk and note is protected by PostgreSQL Row Level Security (RLS) bound to your unique authenticated session. Your private research is never pooled, shared, or used to train third-party machine learning models.',
+      q: 'Is my data safe and private?',
+      a: 'Yes. Your uploaded documents and notes are stored in your private, encrypted account. We never share your data, and your documents are never used to train external AI models.',
     },
     {
       q: 'Is DocMind free to use?',
-      a: 'Yes. You can immediately upload documents, run grounded vector queries, and collaborate on shared notes free of charge with complete account isolation.',
+      a: 'Yes! You can sign up, upload documents, search across them, and collaborate on notes completely free.',
     },
   ];
 
   const workflowSteps = [
     {
       step: '01',
-      title: 'Upload & Parse',
-      desc: 'Drag and drop research PDFs, manuscripts, or notes. DocMind extracts text and creates token-aware chunk boundaries with zero formatting loss.',
+      title: 'Upload your document',
+      desc: 'Drag and drop any PDF, research paper, or text file. DocMind reads and organizes the content in seconds.',
       icon: <FileText className="w-5 h-5 text-[#c2410c]" />,
     },
     {
       step: '02',
-      title: 'Index & Vector Embed',
-      desc: 'High-dimensional embeddings are generated for every paragraph and indexed with cosine distance metrics for instantaneous lookup.',
+      title: 'Smart indexing',
+      desc: 'Every paragraph is indexed so you can find any topic, definition, or data point instantly.',
       icon: <Layers className="w-5 h-5 text-[#c2410c]" />,
     },
     {
       step: '03',
-      title: 'Inquire with Verified Citations',
-      desc: 'Synthesize insights across your library. The companion highlights exact quoted passages and paragraph references for every response.',
+      title: 'Ask questions & get citations',
+      desc: 'Ask any question in plain English. Get clear answers with direct links to the exact page and paragraph.',
       icon: <BookmarkCheck className="w-5 h-5 text-[#c2410c]" />,
     },
     {
       step: '04',
-      title: 'Live Collaborative Co-Editing',
-      desc: 'Write technical papers, literature reviews, and notes together in real time with Operational Transformation and presence cursors.',
+      title: 'Write & collaborate live',
+      desc: 'Take notes, summarize findings, and write reports together with your team in real time.',
       icon: <PenTool className="w-5 h-5 text-[#c2410c]" />,
     },
   ];
 
   const comparisonItems = [
     {
-      feature: 'Source Attribution',
-      docmind: 'Exact paragraph & page citation bounds',
-      traditional: 'Vague summaries or unverified guesses',
+      feature: 'Answers with proof',
+      docmind: 'Exact page & paragraph references you can check',
+      traditional: 'Summaries that might make things up',
     },
     {
-      feature: 'Real-Time Co-Authoring',
-      docmind: 'Conflict-free Operational Transformation',
-      traditional: 'Static read-only export or lockouts',
+      feature: 'Live team editing',
+      docmind: 'Real-time multi-person collaborative editor',
+      traditional: 'Static chat window with no shared editor',
     },
     {
-      feature: 'Mathematical Typography',
-      docmind: 'Native KaTeX formula acceleration',
-      traditional: 'Raw broken LaTeX code strings',
+      feature: 'Math & formula display',
+      docmind: 'Clean textbook-style math formulas (KaTeX)',
+      traditional: 'Messy raw code that is hard to read',
     },
     {
-      feature: 'Data Privacy & Isolation',
-      docmind: 'Postgres Row Level Security (RLS)',
-      traditional: 'Shared model training logs',
+      feature: 'Privacy & security',
+      docmind: '100% private to your account (Row Level Security)',
+      traditional: 'Data often logged or shared with third parties',
     },
     {
-      feature: 'Reading Environment',
-      docmind: 'Distraction-free typographic ivory canvas',
-      traditional: 'Cluttered dashboard with neon banners',
+      feature: 'Reading experience',
+      docmind: 'Clean, distraction-free writing space',
+      traditional: 'Cluttered screens full of ads and popups',
     },
   ];
 
   const testimonials = [
     {
-      quote: 'DocMind replaced our fragmented research stack. Having verified paragraph citations side-by-side with a collaborative editor saves our lab dozens of hours every week.',
-      author: 'Dr. Elena Rostova',
-      role: 'Principal Researcher, Institute for Computational Biology',
+      quote: 'DocMind makes reading long research papers so much faster. Being able to see the exact page reference for every answer gives me total confidence in the facts.',
+      author: 'Elena Rostova',
+      role: 'Research Scientist',
     },
     {
-      quote: 'The absence of AI clichés and distractions is a breath of fresh air. It feels like writing in Notion or Substack, but with the rigor of a grounded academic database.',
+      quote: 'It feels as clean as Notion, but it actually knows everything inside my PDF files. Our team uses it every day to prepare project documentation.',
       author: 'Marcus Vance',
-      role: 'Technical Author & Systems Engineer',
+      role: 'Software Engineer & Writer',
     },
     {
-      quote: 'Being able to co-author math proofs with live KaTeX rendering and instant source citations is genuinely transformative for technical peer review.',
+      quote: 'The collaborative editor is brilliant. My study group and I can review complex math papers and write our shared notes together at the same time.',
       author: 'Aria Chen',
-      role: 'Doctoral Fellow in Theoretical Physics',
+      role: 'Graduate Student',
     },
   ];
 
@@ -183,7 +186,7 @@ export default function Landing() {
 
           <nav className="hidden md:flex items-center gap-6 text-xs text-[#57534e]">
             <a href="#workflow" className="hover:text-[#1c1917] transition-colors">How It Works</a>
-            <a href="#comparison" className="hover:text-[#1c1917] transition-colors">Comparison</a>
+            <a href="#comparison" className="hover:text-[#1c1917] transition-colors">Why DocMind</a>
             <a href="#faq" className="hover:text-[#1c1917] transition-colors">FAQ</a>
             <button
               onClick={() => setIsSupportOpen(true)}
@@ -213,7 +216,7 @@ export default function Landing() {
               onClick={() => navigate('/auth')}
               className="btn-ink text-xs"
             >
-              <span>Start Writing</span>
+              <span>Get Started</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -229,7 +232,7 @@ export default function Landing() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffffff] border border-[#e7e5e4] text-xs text-[#57534e] shadow-xs"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#c2410c]" />
-            <span>Quiet Reading &bull; Grounded Citations &bull; Real-Time Notes</span>
+            <span>Upload PDFs &bull; Get Verified Answers &bull; Take Notes Together</span>
           </motion.div>
 
           <motion.h1 
@@ -238,7 +241,7 @@ export default function Landing() {
             transition={{ delay: 0.1 }}
             className="font-serif-editorial text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#1c1917] leading-[1.12]"
           >
-            A quiet space for reading, research, and thinking.
+            A simple, smart workspace for your documents.
           </motion.h1>
 
           <motion.p 
@@ -247,7 +250,7 @@ export default function Landing() {
             transition={{ delay: 0.15 }}
             className="text-sm sm:text-base text-[#57534e] leading-relaxed max-w-xl mx-auto font-normal"
           >
-            Upload technical research, manuscripts, and notes. Ask questions with verified paragraph citations, and co-author longform essays in real time.
+            Upload your PDFs and documents. Ask questions and get clear, accurate answers with exact page references, then write and collaborate on notes in real time.
           </motion.p>
 
           <motion.div 
@@ -260,7 +263,7 @@ export default function Landing() {
               onClick={() => navigate('/auth')}
               className="btn-ink w-full sm:w-auto px-6 py-2.5 text-xs font-medium"
             >
-              <span>Open Reading Studio</span>
+              <span>Get Started Free</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
@@ -273,71 +276,146 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        {/* ── Notion-Style Minimal Reading Preview Card ─────────────────────── */}
+        {/* ── Document Preview Card ─────────────────────────────────────────── */}
         <motion.div 
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="mt-14 notion-card p-0 overflow-hidden shadow-lg border border-[#e7e5e4] bg-[#ffffff] text-left"
         >
-          {/* Notion header row */}
-          <div className="h-10 bg-[#faf9f6] border-b border-[#e7e5e4] px-4 flex items-center justify-between text-xs text-[#57534e]">
+          {/* Header row with sample switcher */}
+          <div className="h-11 bg-[#faf9f6] border-b border-[#e7e5e4] px-4 flex items-center justify-between text-xs text-[#57534e]">
             <div className="flex items-center gap-2">
-              <span className="text-sm">📝</span>
-              <span className="font-medium text-[#1c1917]">Attention_Mechanism_Analysis.pdf</span>
-              <span className="text-[#a8a29e] font-serif-editorial italic">/ Section 3.2</span>
+              <span className="text-sm">📄</span>
+              <span className="font-medium text-[#1c1917]">
+                {previewMode === 'notes' ? 'Product_Launch_Plan.pdf' : 'Physics_Research_Paper.pdf'}
+              </span>
+              <span className="text-[#a8a29e] font-serif-editorial italic">
+                {previewMode === 'notes' ? '/ Page 3' : '/ Page 12'}
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-[#78716c]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" />
-              <span>Synced</span>
+
+            {/* Mode Switcher Tabs */}
+            <div className="flex items-center gap-1 bg-[#f5f4f0] p-1 rounded-md border border-[#e7e5e4]">
+              <button
+                type="button"
+                onClick={() => setPreviewMode('notes')}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
+                  previewMode === 'notes'
+                    ? 'bg-[#ffffff] text-[#c2410c] shadow-xs'
+                    : 'text-[#78716c] hover:text-[#1c1917]'
+                }`}
+              >
+                Project Notes
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('math')}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
+                  previewMode === 'math'
+                    ? 'bg-[#ffffff] text-[#c2410c] shadow-xs'
+                    : 'text-[#78716c] hover:text-[#1c1917]'
+                }`}
+              >
+                Math &amp; Formulas
+              </button>
             </div>
           </div>
 
-          {/* Minimalist document body */}
-          <div className="p-8 space-y-4 max-w-2xl mx-auto">
-            <h2 className="font-serif-editorial text-2xl font-normal text-[#1c1917] tracking-tight">
-              Scaled Dot-Product Attention Formulation
-            </h2>
+          {/* Document body */}
+          <div className="p-6 sm:p-8 space-y-4 max-w-2xl mx-auto">
+            {previewMode === 'notes' ? (
+              <>
+                <div className="flex items-center justify-between pb-2 border-b border-[#f5f4f0]">
+                  <h2 className="font-serif-editorial text-2xl font-normal text-[#1c1917] tracking-tight">
+                    Product Launch Milestones &amp; Schedule
+                  </h2>
+                  <div className="flex items-center gap-1.5 text-[11px] text-[#16a34a] font-medium bg-[#f0fdf4] px-2 py-0.5 rounded-full border border-[#bbf7d0]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" />
+                    <span>2 online</span>
+                  </div>
+                </div>
 
-            <p className="text-xs sm:text-sm text-[#44403c] leading-relaxed font-serif-editorial text-[15px]">
-              We compute the matrix of outputs as a weighted sum of values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key:
-            </p>
+                {/* Plain English question asked */}
+                <div className="p-3 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-xs text-[#57534e]">
+                  <span className="font-semibold text-[#1c1917]">Question asked: </span>
+                  &ldquo;When is the public launch and what needs to be finished first?&rdquo;
+                </div>
 
-            {/* Editorial KaTeX math display */}
-            <div className="p-4 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-center font-mono text-sm text-[#1c1917]">
-              <span className="font-serif italic font-bold text-[#c2410c]">Attention</span>
-              <span className="text-[#57534e]">(Q, K, V) = softmax</span>
-              <span className="text-[#78716c]">(</span>
-              <span className="text-[#1c1917] font-semibold">QK</span>
-              <sup className="text-[#c2410c]">T</sup>
-              <span className="text-[#78716c]"> / &radic;</span>
-              <span className="italic text-[#57534e]">d</span>
-              <sub className="text-[#78716c]">k</sub>
-              <span className="text-[#78716c]">) </span>
-              <span className="text-[#1c1917] font-semibold">V</span>
-            </div>
+                {/* Verified Answer with accurate facts */}
+                <div className="text-xs sm:text-sm text-[#292524] leading-relaxed font-serif-editorial text-[15px]">
+                  Beta testing is scheduled to finish on <strong>August 15</strong>. The public release will launch on <strong>September 1</strong>, followed by customer onboarding webinars during the first week of September.
+                </div>
 
-            {/* Substack-style inline citation callout */}
-            <div className="p-3.5 rounded-lg bg-[#fff7ed] border border-[#fed7aa] flex items-start gap-2.5 text-xs text-[#7c2d12]">
-              <BookmarkCheck className="w-4 h-4 text-[#c2410c] shrink-0 mt-0.5" />
-              <div className="font-serif-editorial text-[14px] leading-relaxed">
-                <strong className="font-sans font-semibold text-[#9a3412] text-xs">Verified Source:</strong> Vaswani et al., Section 3.2, Page 4 &mdash; <em>&ldquo;The two most commonly used attention functions are additive attention and dot-product attention.&rdquo;</em>
-              </div>
-            </div>
+                {/* Direct Citation Box with page proof */}
+                <div className="p-3.5 rounded-lg bg-[#fff7ed] border border-[#fed7aa] flex items-start gap-2.5 text-xs text-[#7c2d12]">
+                  <BookmarkCheck className="w-4 h-4 text-[#c2410c] shrink-0 mt-0.5" />
+                  <div className="font-serif-editorial text-[14px] leading-relaxed">
+                    <strong className="font-sans font-semibold text-[#9a3412] text-xs">Verified Source:</strong> Page 3, Section 2.1 &mdash; <em>&ldquo;Beta testing concludes August 15, followed by public launch on September 1.&rdquo;</em>
+                  </div>
+                </div>
+
+                {/* Team Collaboration Note */}
+                <div className="pt-2 flex items-center gap-2 text-xs text-[#78716c]">
+                  <div className="w-5 h-5 rounded-full bg-[#fed7aa] text-[#9a3412] flex items-center justify-center text-[10px] font-bold">
+                    M
+                  </div>
+                  <span><strong>Marcus:</strong> Updated our team calendar with these dates!</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between pb-2 border-b border-[#f5f4f0]">
+                  <h2 className="font-serif-editorial text-2xl font-normal text-[#1c1917] tracking-tight">
+                    Attention Mechanism Formulation
+                  </h2>
+                  <div className="flex items-center gap-1.5 text-[11px] text-[#78716c]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" />
+                    <span>KaTeX Enabled</span>
+                  </div>
+                </div>
+
+                <p className="text-xs sm:text-sm text-[#44403c] leading-relaxed font-serif-editorial text-[15px]">
+                  The model computes a weighted score for each piece of text by comparing the query against keys, then applies the weights to return the most relevant answer:
+                </p>
+
+                {/* Formula display */}
+                <div className="p-4 rounded-lg bg-[#faf9f6] border border-[#e7e5e4] text-center font-mono text-sm text-[#1c1917]">
+                  <span className="font-serif italic font-bold text-[#c2410c]">Attention</span>
+                  <span className="text-[#57534e]">(Q, K, V) = softmax</span>
+                  <span className="text-[#78716c]">(</span>
+                  <span className="text-[#1c1917] font-semibold">QK</span>
+                  <sup className="text-[#c2410c]">T</sup>
+                  <span className="text-[#78716c]"> / &radic;</span>
+                  <span className="italic text-[#57534e]">d</span>
+                  <sub className="text-[#78716c]">k</sub>
+                  <span className="text-[#78716c]">) </span>
+                  <span className="text-[#1c1917] font-semibold">V</span>
+                </div>
+
+                {/* Citation callout */}
+                <div className="p-3.5 rounded-lg bg-[#fff7ed] border border-[#fed7aa] flex items-start gap-2.5 text-xs text-[#7c2d12]">
+                  <BookmarkCheck className="w-4 h-4 text-[#c2410c] shrink-0 mt-0.5" />
+                  <div className="font-serif-editorial text-[14px] leading-relaxed">
+                    <strong className="font-sans font-semibold text-[#9a3412] text-xs">Verified Source:</strong> Section 3.2, Page 4 &mdash; <em>&ldquo;The two most commonly used attention functions are additive attention and dot-product attention.&rdquo;</em>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </motion.div>
       </section>
 
-      {/* ── Section 1: Step-by-Step Workflow ───────────────────────────────── */}
+      {/* ── Section 1: How It Works ────────────────────────────────────────── */}
       <section id="workflow" className="border-t border-[#e7e5e4] bg-[#ffffff] py-20">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-14 space-y-2">
-            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// The Research Lifecycle</span>
+            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// How It Works</span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl font-normal text-[#1c1917] tracking-tight">
-              From raw literature to verified writing.
+              Four simple steps to get started.
             </h2>
             <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-              Every manuscript is deconstructed, semantically mapped, and anchored to exact references.
+              Upload your files, ask questions, and take notes together with your team.
             </p>
           </div>
 
@@ -349,7 +427,7 @@ export default function Landing() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-xs text-[#a8a29e] font-semibold">[{step.step}]</span>
+                    <span className="font-mono text-xs text-[#a8a29e] font-semibold">Step {step.step}</span>
                     <div className="w-8 h-8 rounded-lg bg-[#ffffff] border border-[#e7e5e4] flex items-center justify-center shadow-xs">
                       {step.icon}
                     </div>
@@ -363,27 +441,27 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Section 2: Comparison Grid (DocMind vs Generic PDF Tools) ──────── */}
+      {/* ── Section 2: Why Choose DocMind ──────────────────────────────────── */}
       <section id="comparison" className="border-t border-[#e7e5e4] bg-[#faf9f6] py-20">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
-            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// Grounded Precision</span>
+            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// Why DocMind</span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl font-normal text-[#1c1917] tracking-tight">
-              Engineered for academic rigor.
+              Built for accuracy, not guesswork.
             </h2>
             <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-              Why serious researchers choose DocMind over ungrounded generic chatbots.
+              See how DocMind gives you real page references instead of making things up.
             </p>
           </div>
 
           <div className="notion-card overflow-hidden border border-[#e7e5e4] bg-[#ffffff] shadow-sm">
             <div className="grid grid-cols-12 bg-[#f5f4f0] border-b border-[#e7e5e4] px-6 py-3 text-xs font-semibold text-[#1c1917]">
-              <div className="col-span-4 text-[#78716c]">Capability</div>
+              <div className="col-span-4 text-[#78716c]">Feature</div>
               <div className="col-span-4 text-[#c2410c] flex items-center gap-1.5">
                 <Feather className="w-3.5 h-3.5" />
-                <span>DocMind Studio</span>
+                <span>DocMind</span>
               </div>
-              <div className="col-span-4 text-[#78716c]">Generic PDF Chatbots</div>
+              <div className="col-span-4 text-[#78716c]">Standard Chatbots</div>
             </div>
 
             <div className="divide-y divide-[#e7e5e4] text-xs">
@@ -402,16 +480,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Section 3: Research Community Quotes ──────────────────────────── */}
+      {/* ── Section 3: Community Feedback ─────────────────────────────────── */}
       <section className="border-t border-[#e7e5e4] bg-[#ffffff] py-20">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-14 space-y-2">
-            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// Community Notes</span>
+            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// What People Say</span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl font-normal text-[#1c1917] tracking-tight">
-              Trusted by writers &amp; researchers.
+              Trusted by students, writers &amp; researchers.
             </h2>
             <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-              Quiet words from people who think, write, and publish with DocMind.
+              Read how people are using DocMind to understand documents faster.
             </p>
           </div>
 
@@ -432,16 +510,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Section 4: Frequently Asked Questions (FAQ) ───────────────────── */}
+      {/* ── Section 4: Frequently Asked Questions ──────────────────────────── */}
       <section id="faq" className="border-t border-[#e7e5e4] bg-[#faf9f6] py-20">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-12 space-y-2">
-            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// Answers &amp; Clarity</span>
+            <span className="text-xs font-mono uppercase text-[#c2410c] tracking-wider font-semibold">// Common Questions</span>
             <h2 className="font-serif-editorial text-3xl sm:text-4xl font-normal text-[#1c1917] tracking-tight">
               Frequently asked questions.
             </h2>
             <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-              Have other questions? Reach out anytime through our support channel.
+              Have other questions? Feel free to reach out to our team anytime.
             </p>
           </div>
 
@@ -497,14 +575,14 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Section 5: Final Call To Action Banner ─────────────────────────── */}
+      {/* ── Section 5: Get Started Call To Action ──────────────────────────── */}
       <section className="border-t border-[#e7e5e4] bg-[#ffffff] py-16 text-center">
         <div className="max-w-2xl mx-auto px-6 space-y-4">
           <h2 className="font-serif-editorial text-3xl sm:text-4xl font-normal text-[#1c1917] tracking-tight">
-            Begin your quiet research studio today.
+            Ready to get started?
           </h2>
           <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed max-w-lg mx-auto">
-            Upload your first manuscript or paper, verify citations with zero hallucinations, and collaborate with your team.
+            Upload your first document, ask questions with real page references, and write notes together with your team.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
@@ -529,14 +607,14 @@ export default function Landing() {
       <footer className="border-t border-[#e7e5e4] bg-[#faf9f6] py-10 text-xs text-[#78716c]">
         <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2 text-[#44403c]">
-            <span className="font-serif-editorial text-sm font-semibold text-[#1c1917]">DocMind Studio</span>
+            <span className="font-serif-editorial text-sm font-semibold text-[#1c1917]">DocMind</span>
             <span>&bull;</span>
-            <span className="text-[#78716c]">Clean Editorial Edition</span>
+            <span className="text-[#78716c]">Simple Document Assistant &amp; Notes</span>
           </div>
 
           <div className="flex items-center gap-6 text-[#78716c]">
             <a href="#workflow" className="hover:text-[#1c1917] transition-colors">How It Works</a>
-            <a href="#comparison" className="hover:text-[#1c1917] transition-colors">Comparison</a>
+            <a href="#comparison" className="hover:text-[#1c1917] transition-colors">Why DocMind</a>
             <a href="#faq" className="hover:text-[#1c1917] transition-colors">FAQ</a>
             <button
               onClick={() => setIsSupportOpen(true)}
@@ -550,8 +628,8 @@ export default function Landing() {
         </div>
 
         <div className="max-w-5xl mx-auto px-6 mt-6 pt-6 border-t border-[#e7e5e4] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#a8a29e]">
-          <span>&copy; {new Date().getFullYear()} DocMind Research Systems. All rights reserved.</span>
-          <span className="mt-2 sm:mt-0 font-serif-editorial italic">Designed for slow reading, verified citations &amp; clean thought.</span>
+          <span>&copy; {new Date().getFullYear()} DocMind. All rights reserved.</span>
+          <span className="mt-2 sm:mt-0 font-serif-editorial italic">Designed for clear reading, verified answers &amp; simple notes.</span>
         </div>
       </footer>
 
@@ -584,7 +662,7 @@ export default function Landing() {
                   </div>
                   <div>
                     <h2 className="font-serif-editorial text-base text-[#1c1917]">DocMind Support</h2>
-                    <p className="text-xs text-[#78716c]">We typically respond within 24 hours</p>
+                    <p className="text-xs text-[#78716c]">We typically reply within 24 hours</p>
                   </div>
                 </div>
 
@@ -603,9 +681,9 @@ export default function Landing() {
                     <div className="w-12 h-12 rounded-full bg-[#f0fdf4] text-[#16a34a] flex items-center justify-center mx-auto border border-[#bbf7d0]">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
-                    <h3 className="font-serif-editorial text-lg text-[#1c1917]">Inquiry Dispatched</h3>
+                    <h3 className="font-serif-editorial text-lg text-[#1c1917]">Message Sent!</h3>
                     <p className="text-xs text-[#57534e] max-w-xs mx-auto leading-relaxed">
-                      Thank you for contacting us. A confirmation has been logged under ticket <span className="font-mono text-[#c2410c] font-semibold">#SUP-8492</span>.
+                      Thank you for contacting us. We received your message under ticket <span className="font-mono text-[#c2410c] font-semibold">#SUP-8492</span>.
                     </p>
                   </div>
                 ) : (
@@ -630,35 +708,35 @@ export default function Landing() {
                         required
                         value={supportEmail}
                         onChange={(e) => setSupportEmail(e.target.value)}
-                        placeholder="alex@domain.com"
+                        placeholder="alex@example.com"
                         className="input-notion text-xs"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-[#44403c] mb-1">Inquiry Category</label>
+                      <label className="block text-xs font-medium text-[#44403c] mb-1">Topic</label>
                       <select
                         value={supportCategory}
                         onChange={(e) => setSupportCategory(e.target.value)}
                         className="input-notion text-xs bg-[#ffffff] cursor-pointer"
                       >
-                        <option value="General Inquiry">General Question</option>
-                        <option value="Technical Support">Technical Support / Bug Report</option>
+                        <option value="General Question">General Question</option>
+                        <option value="Technical Support">Technical Problem / Bug</option>
                         <option value="Feature Request">Feature Suggestion</option>
-                        <option value="Security & RLS">Data Privacy &amp; Security</option>
+                        <option value="Privacy">Privacy &amp; Security</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-[#44403c] mb-1">
-                        Message / Query <span className="text-[#c2410c]">*</span>
+                        Message <span className="text-[#c2410c]">*</span>
                       </label>
                       <textarea
                         required
                         rows={4}
                         value={supportMessage}
                         onChange={(e) => setSupportMessage(e.target.value)}
-                        placeholder="Describe your question or issue in detail…"
+                        placeholder="How can we help you?"
                         className="input-notion text-xs resize-none leading-relaxed"
                       />
                     </div>
@@ -668,7 +746,7 @@ export default function Landing() {
                         href="mailto:support@docmind.io"
                         className="text-[11px] text-[#78716c] hover:text-[#c2410c] underline"
                       >
-                        Direct: support@docmind.io
+                        support@docmind.io
                       </a>
 
                       <button
