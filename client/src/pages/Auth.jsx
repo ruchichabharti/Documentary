@@ -27,8 +27,8 @@ export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [otpLength, setOtpLength] = useState(6);
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otpLength, setOtpLength] = useState(8);
+  const [otp, setOtp] = useState(['', '', '', '', '', '', '', '']);
   const [pastedLink, setPastedLink] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -111,7 +111,7 @@ export default function Auth() {
   };
 
   const handleToggleOtpLength = () => {
-    const newLen = otpLength === 6 ? 8 : 6;
+    const newLen = otpLength === 8 ? 6 : 8;
     setOtpLength(newLen);
     setOtp(Array(newLen).fill(''));
     setError('');
@@ -606,7 +606,7 @@ export default function Auth() {
                   onClick={() => handleToggleOtpLength()}
                   className="text-[11px] text-[#c2410c] hover:underline font-medium transition-colors cursor-pointer"
                 >
-                  {otpLength === 6 ? 'Have an 8-digit code? Click here →' : 'Switch back to 6 digits →'}
+                  {otpLength === 8 ? 'Have a 6-digit code? Click here →' : 'Switch back to 8 digits →'}
                 </button>
               </div>
 

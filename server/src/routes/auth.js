@@ -26,7 +26,7 @@ router.post('/send-otp', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = Math.floor(10000000 + Math.random() * 90000000).toString();
     otpStore.set(cleanEmail, {
       code,
       expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
@@ -58,7 +58,7 @@ router.post('/send-otp', async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 16px; background: #ffffff;">
           <h2 style="color: #4f46e5; margin-top: 0;">DocMind Verification Code</h2>
-          <p style="color: #475569; font-size: 15px;">Your 6-digit verification code to sign in is:</p>
+          <p style="color: #475569; font-size: 15px;">Your 8-digit verification code to sign in is:</p>
           <div style="background: #f1f5f9; padding: 18px; border-radius: 12px; text-align: center; margin: 24px 0;">
             <span style="font-family: monospace; font-size: 34px; font-weight: bold; letter-spacing: 8px; color: #312e81;">${code}</span>
           </div>
@@ -80,7 +80,7 @@ router.post('/verify-otp', async (req, res) => {
   try {
     const { email, code } = req.body;
     if (!email || !code) {
-      return res.status(400).json({ error: 'Email and 6-digit code are required' });
+      return res.status(400).json({ error: 'Email and verification code are required' });
     }
 
     const cleanEmail = email.trim().toLowerCase();

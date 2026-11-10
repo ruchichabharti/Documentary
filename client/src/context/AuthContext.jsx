@@ -288,8 +288,8 @@ export function AuthProvider({ children }) {
     setAuthError(null);
     const trimmed = input.trim();
 
-    // 1. If it's a 6-digit numeric OTP code
-    if (/^\d{6}$/.test(trimmed)) {
+    // 1. If it's a numeric OTP code (6 or 8 digits)
+    if (/^\d{6,8}$/.test(trimmed)) {
       return await verifyOtp(targetEmail, trimmed);
     }
 
@@ -337,7 +337,7 @@ export function AuthProvider({ children }) {
         const type = urlObj.searchParams.get('type') || 'signup';
 
         if (tokenHash) {
-          if (/^\d{6}$/.test(tokenHash)) {
+          if (/^\d{6,8}$/.test(tokenHash)) {
             return await verifyOtp(targetEmail, tokenHash);
           }
           const { data, error } = await supabase.auth.verifyOtp({
