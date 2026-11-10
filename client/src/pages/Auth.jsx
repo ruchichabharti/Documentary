@@ -437,7 +437,7 @@ export default function Auth() {
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a8a29e]">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8a29e]">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
@@ -449,7 +449,7 @@ export default function Auth() {
                             autoFocus
                             required
                             disabled={isLoading}
-                            className="input-notion pl-10"
+                            className="input-notion !pl-10 input-notion-icon"
                           />
                         </div>
                       </div>
@@ -481,7 +481,7 @@ export default function Auth() {
                           Email Address
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a8a29e]">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8a29e]">
                             <Mail className="w-4 h-4" />
                           </div>
                           <input
@@ -491,7 +491,7 @@ export default function Auth() {
                             placeholder="name@company.com"
                             required
                             disabled={isLoading}
-                            className="input-notion pl-10"
+                            className="input-notion !pl-10 input-notion-icon"
                           />
                         </div>
                       </div>
@@ -501,7 +501,7 @@ export default function Auth() {
                           Password
                         </label>
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#a8a29e]">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#a8a29e]">
                             <Lock className="w-4 h-4" />
                           </div>
                           <input
@@ -511,7 +511,7 @@ export default function Auth() {
                             placeholder="••••••••"
                             required
                             disabled={isLoading}
-                            className="input-notion pl-10"
+                            className="input-notion !pl-10 input-notion-icon"
                           />
                         </div>
                       </div>

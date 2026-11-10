@@ -127,6 +127,9 @@ html, body, #root {
   box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03) inset;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
+.input-notion-icon {
+  padding-left: 2.5rem !important;
+}
 .input-notion:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.08);

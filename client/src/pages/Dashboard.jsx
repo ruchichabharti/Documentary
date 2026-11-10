@@ -221,7 +221,7 @@ export default function Dashboard() {
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search across documents and notes…"
-                className="input-notion pl-8.5 py-1 text-xs text-[#1c1917] bg-[#ffffff]"
+                className="input-notion !pl-9 py-1 text-xs text-[#1c1917] bg-[#ffffff]"
               />
             </div>
           </div>
