@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "npm --prefix client install --no-audit --no-fund && npm --prefix client run build",
     "build": "npm --prefix client install --no-audit --no-fund && npm --prefix client run build && npm --prefix server install --no-audit --no-fund",
     "start": "node server/src/index.js",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
