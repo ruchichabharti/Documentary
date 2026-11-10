@@ -208,17 +208,10 @@ export default function Landing() {
 
             <Link
               to="/auth"
-              className="text-xs font-medium text-[#57534e] hover:text-[#1c1917] px-2 py-1 transition-colors"
+              className="text-xs font-medium text-[#1c1917] hover:text-[#c2410c] px-3 py-1.5 rounded-lg border border-[#e7e5e4] bg-[#ffffff] hover:border-[#d6d3d1] transition-all no-underline shadow-xs"
             >
               Sign In
             </Link>
-            <button
-              onClick={() => navigate('/auth')}
-              className="btn-ink text-xs"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
           </div>
         </div>
       </header>
@@ -263,7 +256,7 @@ export default function Landing() {
               onClick={() => navigate('/auth')}
               className="btn-ink w-full sm:w-auto px-6 py-2.5 text-xs font-medium"
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
@@ -589,7 +582,7 @@ export default function Landing() {
               onClick={() => navigate('/auth')}
               className="btn-ink px-6 py-2.5 text-xs font-medium"
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
