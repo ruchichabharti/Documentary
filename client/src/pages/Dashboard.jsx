@@ -307,17 +307,6 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => {
-                const newId = 'doc-' + Date.now().toString(36);
-                navigate(`/doc/${newId}`);
-              }}
-              className="btn-notion-secondary text-xs"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-[#57534e]" />
-              <span>New Note</span>
-            </button>
-
-            <button
               onClick={() => setIsUploadModalOpen(true)}
               className="btn-ink text-xs"
             >
