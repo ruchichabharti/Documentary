@@ -332,7 +332,7 @@ The user is searching their uploaded document(s), but their query was not found 
    - Use \\frac{a}{b} for fractions and \\int_{a}^{b} for integrals.
 User Question: ${query}`;
 
-      for (const model of ['gemini-3.6-flash', 'gemini-2.5-flash']) {
+      for (const model of ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash-lite']) {
         try {
           const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
@@ -440,7 +440,7 @@ Guidelines:
   // 1. Check if Gemini API key available for LLM generation
   if (GEMINI_API_KEY) {
     const promptText = `${systemInstruction}\n\nContext Sources:\n${contextBlock}\n\nQuestion: ${query}`;
-    for (const model of ['gemini-3.6-flash', 'gemini-2.5-flash']) {
+    for (const model of ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash-lite']) {
       try {
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,

@@ -134,9 +134,17 @@ export default function Dashboard() {
     }
   };
 
-  const handleDocumentAdded = ({ document, chunks }) => {
-    const updatedDocs = [document, ...documents.filter((d) => d.id !== document.id)];
-    const updatedChunks = [...allLocalChunks, ...(chunks || [])];
+  const handleDocumentAdded = (payload) => {
+    const doc = payload?.document || payload;
+    if (!doc?.id) return;
+    const docChunks = payload?.chunks || doc?.chunks || [];
+    const docWithChunks = { ...doc, chunks: docChunks };
+
+    const updatedDocs = [docWithChunks, ...documents.filter((d) => d.id !== doc.id)];
+    const updatedChunks = [
+      ...allLocalChunks.filter((c) => (c.documentId || c.document_id) !== doc.id),
+      ...docChunks,
+    ];
 
     setDocuments(updatedDocs);
     setAllLocalChunks(updatedChunks);
@@ -150,6 +158,10 @@ export default function Dashboard() {
         );
       } catch (_) {}
     }
+
+    try {
+      api.saveIngestedDoc(docWithChunks);
+    } catch (_) {}
   };
 
   const handleDeleteDocument = async (id, e) => {
