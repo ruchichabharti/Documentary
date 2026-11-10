@@ -15,13 +15,15 @@ import {
   Edit3, 
   BookmarkCheck, 
   CheckCircle2,
-  Feather
+  Feather,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { api } from '../lib/api.js';
 import DocumentUploadModal from '../components/DocumentUploadModal.jsx';
 import ChatAssistant from '../components/ChatAssistant.jsx';
+import SummaryModal from '../components/SummaryModal.jsx';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -33,6 +35,7 @@ export default function Dashboard() {
   const [searchFilter, setSearchFilter] = useState('');
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChatDocId, setActiveChatDocId] = useState(null);
 
@@ -307,6 +310,15 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setIsSummaryOpen(true)}
+              className="btn-notion-secondary text-xs flex items-center gap-1.5"
+              title="Generate AI Summary, Key Takeaways & Exam Questions"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#c2410c]" />
+              <span>AI Study Summary</span>
+            </button>
+
+            <button
               onClick={() => setIsUploadModalOpen(true)}
               className="btn-ink text-xs"
             >
@@ -435,6 +447,14 @@ export default function Dashboard() {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onDocumentAdded={handleDocumentAdded}
+      />
+
+      {/* AI Document Summary & Study Guide Modal */}
+      <SummaryModal
+        isOpen={isSummaryOpen}
+        onClose={() => setIsSummaryOpen(false)}
+        documents={documents}
+        allLocalChunks={allLocalChunks}
       />
 
       {/* Research Companion Assistant Drawer */}
