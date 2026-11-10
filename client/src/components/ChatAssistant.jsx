@@ -464,8 +464,8 @@ export default function ChatAssistant({
             disabled={isGenerating}
             placeholder={
               documents.length === 0
-                ? 'Upload a volume first to ask questions…'
-                : 'Inquire across your library…'
+                ? 'Upload a document first to ask questions…'
+                : 'Ask AI about your documents…'
             }
             className="input-notion text-xs text-[13px]"
           />

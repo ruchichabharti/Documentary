@@ -408,7 +408,7 @@ export default function Dashboard() {
                         className="btn-ink text-xs py-1 px-2.5 flex items-center gap-1 shadow-xs"
                       >
                         <MessageSquare className="w-3 h-3" />
-                        <span>Inquire</span>
+                        <span>Ask AI</span>
                       </button>
                     </div>
                   </div>
