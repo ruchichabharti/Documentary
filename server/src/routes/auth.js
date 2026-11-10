@@ -32,6 +32,8 @@ router.post('/send-otp', async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
+    console.log(`[server] Generated OTP for ${cleanEmail}: ${code}`);
+
     const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER || 'ruchichabharti07@gmail.com';
     const smtpPass = (process.env.SMTP_PASS || process.env.GMAIL_PASS || 'jfnordwxjouozesg').replace(/\s+/g, '');
 
@@ -85,6 +87,8 @@ router.post('/verify-otp', async (req, res) => {
 
     const cleanEmail = email.trim().toLowerCase();
     const stored = otpStore.get(cleanEmail);
+
+    console.log(`[server] Verify request for ${cleanEmail}: entered "${code?.trim()}", stored "${stored?.code}"`);
 
     if (!stored) {
       return res.status(400).json({ error: 'No OTP request found for this email or it has expired. Please request a new code.' });

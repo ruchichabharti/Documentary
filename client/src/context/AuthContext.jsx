@@ -229,14 +229,10 @@ export function AuthProvider({ children }) {
         } catch (_) {}
         return data;
       } else {
-        throw new Error(data?.error || 'Invalid or expired verification code.');
+        console.warn('[DocMind Auth] Local OTP did not match:', data?.error);
       }
     } catch (localVerifyErr) {
-      if (localReachable) {
-        setAuthError(localVerifyErr.message);
-        throw localVerifyErr;
-      }
-      console.warn('[DocMind Auth] Local OTP verification unreachable, trying Supabase:', localVerifyErr);
+      console.warn('[DocMind Auth] Local verification notice, checking Supabase:', localVerifyErr.message);
     }
 
     // 2. Fallback to Supabase verification
