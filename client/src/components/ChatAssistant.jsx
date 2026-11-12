@@ -266,9 +266,9 @@ export default function ChatAssistant({
   };
 
   // Send query and stream answer
-  const handleSend = async (e) => {
+  const handleSend = async (e, customQuery) => {
     e?.preventDefault();
-    const query = inputQuery.trim();
+    const query = (typeof customQuery === 'string' ? customQuery : inputQuery).trim();
     if (!query || isGenerating || !activeThread) return;
 
     setInputQuery('');
@@ -772,6 +772,12 @@ export default function ChatAssistant({
                         </p>
                       ) : (
                         <div className="space-y-2 text-[#292524] font-serif-editorial text-[15px]">
+                          {msg.isStreaming && !msg.content && (
+                            <div className="flex items-center gap-2 text-xs text-[#78716c] py-1.5 font-sans animate-pulse">
+                              <Sparkles className="w-3.5 h-3.5 text-[#c2410c] animate-spin shrink-0" />
+                              <span>Formulating step-by-step verified answer...</span>
+                            </div>
+                          )}
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm, remarkMath]}
                             rehypePlugins={[
@@ -879,7 +885,7 @@ export default function ChatAssistant({
                     {samplePrompts.map((prompt, idx) => (
                       <button
                         key={idx}
-                        onClick={() => setInputQuery(prompt)}
+                        onClick={() => handleSend(null, prompt)}
                         className="w-full text-left p-2.5 rounded-lg bg-[#ffffff] hover:bg-[#faf9f6] border border-[#e7e5e4] text-xs text-[#57534e] hover:text-[#1c1917] transition-all flex items-center justify-between group cursor-pointer shadow-xs text-[13px] font-serif-editorial"
                       >
                         <span>{prompt}</span>

@@ -318,8 +318,7 @@ export async function generateGroundedAnswer({
 }) {
   // If no chunks matched the selected scope
   if (!retrievedChunks || retrievedChunks.length === 0) {
-    if (GEMINI_API_KEY) {
-      const outOfScopePrompt = `You are DocMind, an intelligent AI assistant. 
+    const outOfScopePrompt = `You are DocMind, an intelligent AI assistant. 
 The user is searching their uploaded document(s), but their query was not found in the selected document scope.
 1. Start with: "I searched your selected document(s) and could not find any sections matching your query. However, here is the answer to your question:"
 2. Answer the user's question clearly, comprehensively, and accurately.
@@ -333,13 +332,15 @@ The user is searching their uploaded document(s), but their query was not found 
    - For data tables and summaries, ALWAYS use standard Markdown tables (| Col 1 | Col 2 |). NEVER use LaTeX array or tabular.
 User Question: ${query}`;
 
-      for (const model of ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash-lite']) {
+    if (GEMINI_API_KEY) {
+      for (const model of ['gemini-3.5-flash', 'gemini-3.6-flash']) {
         try {
           const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
             {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              signal: AbortSignal.timeout(6000),
               body: JSON.stringify({
                 contents: [{ parts: [{ text: outOfScopePrompt }] }],
                 generationConfig: {
@@ -366,7 +367,7 @@ User Question: ${query}`;
               const tokens = fullAnswer.split(/(?<=\s)/);
               let accumulated = '';
               for (const tok of tokens) {
-                await new Promise((r) => setTimeout(r, 8));
+                await new Promise((r) => setTimeout(r, 6));
                 accumulated += tok;
                 onStreamChunk(tok);
               }
@@ -379,6 +380,32 @@ User Question: ${query}`;
         }
       }
     }
+
+    // Try backend proxy for out-of-scope answer
+    try {
+      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
+      const serverRes = await fetch(`${apiBase}/api/ai-summary`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(9000),
+        body: JSON.stringify({ prompt: outOfScopePrompt }),
+      });
+      if (serverRes.ok) {
+        const data = await serverRes.json();
+        if (data?.text) {
+          const tokens = data.text.split(/(?<=\s)/);
+          let accumulated = '';
+          for (const tok of tokens) {
+            await new Promise((r) => setTimeout(r, 6));
+            accumulated += tok;
+            onStreamChunk(tok);
+          }
+          onComplete?.({ answer: accumulated, citations: [] });
+          return;
+        }
+      }
+    } catch (_) {}
 
     const fallbackMsg = "I couldn't find any relevant sections in your selected document matching your question. Try switching Search Scope to 'All Documents' or rephrasing your search terms.";
     for (const char of fallbackMsg) {
@@ -439,16 +466,18 @@ Guidelines:
 4. Grounding & Citations:
    - Ground all facts in the provided sources and cite them in square brackets like [Source 1].`;
 
+  const promptText = `${systemInstruction}\n\nContext Sources:\n${contextBlock}\n\nQuestion: ${query}`;
+
   // 1. Check if Gemini API key available for LLM generation
   if (GEMINI_API_KEY) {
-    const promptText = `${systemInstruction}\n\nContext Sources:\n${contextBlock}\n\nQuestion: ${query}`;
-    for (const model of ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash-lite']) {
+    for (const model of ['gemini-3.5-flash', 'gemini-3.6-flash']) {
       try {
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(6500),
             body: JSON.stringify({
               contents: [{ parts: [{ text: promptText }] }],
               generationConfig: {
@@ -478,7 +507,7 @@ Guidelines:
             const tokens = fullAnswer.split(/(?<=\s)/);
             let accumulated = '';
             for (const tok of tokens) {
-              await new Promise((r) => setTimeout(r, 8));
+              await new Promise((r) => setTimeout(r, 6));
               accumulated += tok;
               onStreamChunk(tok);
             }
@@ -492,6 +521,35 @@ Guidelines:
         console.warn(`[DocMind] Gemini (${model}) generation network error:`, err);
       }
     }
+  }
+
+  // 1.5. Server Proxy Fallback via /api/ai-summary (Critical for production on Render)
+  try {
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
+    const serverRes = await fetch(`${apiBase}/api/ai-summary`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(10000),
+      body: JSON.stringify({ prompt: promptText }),
+    });
+
+    if (serverRes.ok) {
+      const data = await serverRes.json();
+      if (data?.text) {
+        const tokens = data.text.split(/(?<=\s)/);
+        let accumulated = '';
+        for (const tok of tokens) {
+          await new Promise((r) => setTimeout(r, 6));
+          accumulated += tok;
+          onStreamChunk(tok);
+        }
+        onComplete?.({ answer: accumulated, citations });
+        return;
+      }
+    }
+  } catch (srvErr) {
+    console.warn('[DocMind] Server AI proxy answer notice:', srvErr.message);
   }
 
   // 2. Check if OpenAI key available for real LLM streaming

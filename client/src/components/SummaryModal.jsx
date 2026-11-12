@@ -250,8 +250,8 @@ Cover the scope, main thesis, section-by-section roadmap, core methodologies, an
     // Dual-Redundancy: Try Streaming Direct Gemini API first, then Server Proxy
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
     const candidateModels = [
-      'gemini-3-flash-preview',
-      'gemini-3.1-flash-lite-preview',
+      'gemini-3.5-flash',
+      'gemini-3.6-flash',
     ];
 
     let hasStreamedAnyToken = false;
