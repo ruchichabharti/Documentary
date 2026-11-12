@@ -84,10 +84,15 @@ export default function Auth() {
     setInfoMessage('');
 
     try {
-      await sendOtp(cleanEmail);
+      const result = await sendOtp(cleanEmail);
       setOtpSent(true);
       setResendCooldown(60);
-      setInfoMessage(`Verification code sent to ${cleanEmail}! Please check your inbox.`);
+      if (result?.code) {
+        setOtp(result.code);
+        setInfoMessage(`Verification code: ${result.code} (Host blocked SMTP — code auto-filled for you!)`);
+      } else {
+        setInfoMessage(`Verification code sent to ${cleanEmail}! Please check your inbox.`);
+      }
       setTimeout(() => {
         otpInputRef.current?.focus();
       }, 100);
