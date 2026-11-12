@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookOpen, 
-  LogOut, 
-  ShieldCheck, 
-  FileUp, 
-  Plus, 
-  Search, 
-  MessageSquare, 
-  Trash2, 
-  FileText, 
-  Layers, 
-  Edit3, 
-  BookmarkCheck, 
+import {
+  BookOpen,
+  LogOut,
+  ShieldCheck,
+  FileUp,
+  Plus,
+  Search,
+  MessageSquare,
+  Trash2,
+  FileText,
+  Layers,
+  Edit3,
+  BookmarkCheck,
   CheckCircle2,
   Feather,
   Sparkles
@@ -24,6 +24,7 @@ import { api } from '../lib/api.js';
 import DocumentUploadModal from '../components/DocumentUploadModal.jsx';
 import ChatAssistant from '../components/ChatAssistant.jsx';
 import SummaryModal from '../components/SummaryModal.jsx';
+import DocumentViewerModal from '../components/DocumentViewerModal.jsx';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -38,6 +39,8 @@ export default function Dashboard() {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChatDocId, setActiveChatDocId] = useState(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [viewingDoc, setViewingDoc] = useState(null);
 
   const getUserStorageKey = (currentUser) => {
     if (!currentUser?.email) return 'docmind_guest_docs';
@@ -53,7 +56,7 @@ export default function Dashboard() {
 
     try {
       localStorage.removeItem('docmind_local_docs');
-    } catch (_) {}
+    } catch (_) { }
 
     if (!user) {
       setDocuments([]);
@@ -110,7 +113,7 @@ export default function Dashboard() {
             if (chunksData) {
               setAllLocalChunks(chunksData);
             }
-          } catch (_) {}
+          } catch (_) { }
           setLoadingDocs(false);
           return;
         }
@@ -156,12 +159,12 @@ export default function Dashboard() {
           storageKey,
           JSON.stringify({ documents: updatedDocs, chunks: updatedChunks })
         );
-      } catch (_) {}
+      } catch (_) { }
     }
 
     try {
       api.saveIngestedDoc(docWithChunks);
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const handleDeleteDocument = async (id, e) => {
@@ -171,7 +174,7 @@ export default function Dashboard() {
     try {
       try {
         await api.deleteIngestedDoc(id);
-      } catch (_) {}
+      } catch (_) { }
 
       if (isSupabaseConfigured && user?.id) {
         await supabase.from('document_chunks').delete().eq('document_id', id);
@@ -193,13 +196,18 @@ export default function Dashboard() {
           storageKey,
           JSON.stringify({ documents: updated, chunks: updatedChunks })
         );
-      } catch (_) {}
+      } catch (_) { }
     }
   };
 
   const handleOpenChat = (docId = null) => {
     setActiveChatDocId(docId);
     setIsChatOpen(true);
+  };
+
+  const handleOpenViewer = (doc) => {
+    setViewingDoc(doc);
+    setIsViewerOpen(true);
   };
 
   const handleSignOut = async () => {
@@ -214,9 +222,9 @@ export default function Dashboard() {
   const totalChunks = documents.reduce((acc, d) => acc + (d.chunk_count || 0), 0);
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] text-[#1c1917] flex flex-col font-sans selection:bg-[#fed7aa] selection:text-[#7c2d12]">
+    <div className="min-h-screen bg-[#ffffff] text-[#1c1917] flex flex-col font-sans selection:bg-[#fed7aa] selection:text-[#7c2d12]">
       {/* ── Studio Top Navigation ─────────────────────────────────────────── */}
-      <header className="border-b border-[#e7e5e4] bg-[#faf9f6]/90 backdrop-blur-md sticky top-0 z-30">
+      <header className="border-b border-[#e7e5e4] bg-[#ffffff]/90 backdrop-blur-md sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-md bg-[#ffffff] border border-[#e7e5e4] text-[#c2410c] flex items-center justify-center shadow-xs">
@@ -344,8 +352,8 @@ export default function Dashboard() {
         {filteredDocs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredDocs.map((doc) => {
-              const previewSnippet = doc.chunks?.[0]?.content 
-                ? doc.chunks[0].content.slice(0, 150) + '…' 
+              const previewSnippet = doc.chunks?.[0]?.content
+                ? doc.chunks[0].content.slice(0, 150) + '…'
                 : 'Reading sections ready for instant search and co-authoring notes.';
 
               return (
@@ -375,13 +383,21 @@ export default function Dashboard() {
                       </button>
                     </div>
 
-                    {/* Document Title */}
-                    <h3 className="font-serif-editorial text-base font-normal text-[#1c1917] line-clamp-1 group-hover:text-[#c2410c] transition-colors">
+                    {/* Document Title (Click to open viewer) */}
+                    <h3 
+                      onClick={() => handleOpenViewer(doc)}
+                      className="font-serif-editorial text-base font-normal text-[#1c1917] line-clamp-1 hover:text-[#c2410c] transition-colors cursor-pointer"
+                      title="Click to open document"
+                    >
                       {doc.title}
                     </h3>
 
                     {/* Document Excerpt Preview Snippet */}
-                    <p className="mt-2 text-xs text-[#57534e] leading-relaxed line-clamp-3 text-[13px] bg-[#faf9f6] p-3 rounded-lg border border-[#e7e5e4] italic font-serif-editorial">
+                    <p 
+                      onClick={() => handleOpenViewer(doc)}
+                      className="mt-2 text-xs text-[#57534e] leading-relaxed line-clamp-3 text-[13px] bg-[#faf9f6] p-3 rounded-lg border border-[#e7e5e4] italic font-serif-editorial hover:border-[#fed7aa] transition-colors cursor-pointer"
+                      title="Click to open document"
+                    >
                       "{previewSnippet}"
                     </p>
 
@@ -408,11 +424,11 @@ export default function Dashboard() {
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => navigate(`/doc/${doc.id}`)}
-                        title="Open Document & Notes"
-                        className="btn-notion-secondary text-xs py-1 px-2.5 flex items-center gap-1"
+                        onClick={() => handleOpenViewer(doc)}
+                        title="Open and read uploaded document"
+                        className="btn-notion-secondary text-xs py-1 px-2.5 flex items-center gap-1.5 hover:border-[#1c1917] hover:text-[#c2410c] transition-all cursor-pointer"
                       >
-                        <Edit3 className="w-3 h-3 text-[#78716c]" />
+                        <BookOpen className="w-3.5 h-3.5 text-[#c2410c]" />
                         <span>Read</span>
                       </button>
 
@@ -476,6 +492,20 @@ export default function Dashboard() {
         documents={documents}
         allLocalChunks={allLocalChunks}
         selectedDocId={activeChatDocId}
+        user={user}
+      />
+
+      {/* Document & PDF Reader Viewer Modal */}
+      <DocumentViewerModal
+        isOpen={isViewerOpen}
+        onClose={() => {
+          setIsViewerOpen(false);
+          setViewingDoc(null);
+        }}
+        doc={viewingDoc}
+        chunks={allLocalChunks}
+        onOpenChat={(id) => handleOpenChat(id)}
+        onOpenSummary={(id) => setIsSummaryOpen(true)}
       />
     </div>
   );

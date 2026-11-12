@@ -330,6 +330,7 @@ The user is searching their uploaded document(s), but their query was not found 
    - Never use '|' directly inside bmatrix rows (use '&' to separate columns).
    - Keep all English sentences and explanations outside math delimiters as normal markdown text.
    - Use \\frac{a}{b} for fractions and \\int_{a}^{b} for integrals.
+   - For data tables and summaries, ALWAYS use standard Markdown tables (| Col 1 | Col 2 |). NEVER use LaTeX array or tabular.
 User Question: ${query}`;
 
       for (const model of ['gemini-3.6-flash', 'gemini-flash-latest', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-2.5-flash-lite']) {
@@ -408,7 +409,7 @@ User Question: ${query}`;
     })
     .join('\n\n');
 
-  const systemInstruction = `You are DocMind, an advanced AI tutor and document analysis assistant, similar to ChatGPT, Claude, and Gemini Advanced.
+  const systemInstruction = `You are DocMind, an advanced AI tutor and document analysis assistant.
 Your objective is to provide a complete, comprehensive, and exhaustive step-by-step answer to the user's question, fully grounded in the provided document sources.
 
 Guidelines:
@@ -431,6 +432,7 @@ Guidelines:
    - INTEGRATION: ALWAYS use '\\int_{a}^{b} f(x)\\,dx'.
    - BOLD / HIGHLIGHTED ANSWERS: Use '\\mathbf{...}' or '\\boxed{...}' INSIDE math delimiters.
    - NEVER output bare LaTeX commands without enclosing them in '$...$' or '$$...$$'.
+   - TABLES & QUANTITATIVE BREAKDOWNS (CRITICAL): ALWAYS use standard GitHub-Flavored Markdown tables (| Header 1 | Header 2 |) for summaries, metrics, and comparisons. NEVER use LaTeX \\begin{array}, \\begin{tabular}, or \\hline for tables. Keep math inside table cells wrapped in single $ (e.g. | Metric | Value ($n$) |).
 3. Structure and Polish:
    - Use clean, structured Markdown with headings (###), numbered steps, and bullet points.
    - Present equations cleanly so they are easy to read and understand.

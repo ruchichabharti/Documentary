@@ -28,6 +28,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../client/.env') });
 
 import authRouter from './routes/auth.js';
 import docsRouter from './routes/docs.js';
+import chatsRouter from './routes/chats.js';
 import { createWsServer } from './ws/server.js';
 
 // Initialize database tables on startup
@@ -73,6 +74,65 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/auth', authRouter);
 app.use('/docs', docsRouter);
+app.use('/api/chats', chatsRouter);
+app.use('/chats', chatsRouter);
+
+app.post('/api/ai-summary', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
+
+    const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
+    const models = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite-preview'];
+
+    for (const model of models) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6500);
+
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.2,
+                maxOutputTokens: 8192,
+              },
+            }),
+          }
+        );
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          const parts = data.candidates?.[0]?.content?.parts || [];
+          const nonThoughtText = parts
+            .filter((p) => !p.thought && p.text)
+            .map((p) => p.text)
+            .join('');
+          const text = nonThoughtText.trim().length > 0 
+            ? nonThoughtText 
+            : parts.map((p) => p.text || '').join('');
+
+          if (text && text.trim().length > 0) {
+            return res.json({ success: true, text });
+          }
+        }
+      } catch (mErr) {
+        console.warn(`[server ai-summary] ${model} error:`, mErr.message);
+      }
+    }
+
+    res.status(502).json({ error: 'AI models temporarily unavailable' });
+  } catch (err) {
+    console.error('[server ai-summary error]:', err);
+    res.status(500).json({ error: 'Internal server error during AI generation' });
+  }
+});
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 

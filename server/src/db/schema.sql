@@ -92,3 +92,21 @@ CREATE TABLE IF NOT EXISTS ingested_documents (
 
 CREATE INDEX IF NOT EXISTS idx_ingested_owner ON ingested_documents(owner_id, owner_email);
 
+-- ----------------------------------------------------------
+-- Chat Threads (Persistent AI Conversations)
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS chat_threads (
+  id            TEXT PRIMARY KEY,
+  user_id       TEXT NOT NULL,
+  user_email    TEXT NOT NULL,
+  title         TEXT NOT NULL,
+  doc_id        TEXT DEFAULT 'all',
+  doc_title     TEXT DEFAULT 'All Documents',
+  messages_json TEXT NOT NULL DEFAULT '[]',
+  created_at    TEXT DEFAULT (datetime('now')),
+  updated_at    TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_threads_user ON chat_threads(user_id, user_email, doc_id);
+
+

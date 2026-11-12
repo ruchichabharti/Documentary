@@ -59,4 +59,20 @@ export const api = {
 
   deleteIngestedDoc: (id) =>
     request(`/docs/ingested/${id}`, { method: 'DELETE' }),
+
+  generateSummary: (prompt) =>
+    request('/api/ai-summary', { method: 'POST', body: JSON.stringify({ prompt }) }),
+
+  // Persistent AI Chat Conversations
+  listChats: (docId) =>
+    request('/api/chats' + (docId && docId !== 'all' ? `?docId=${docId}` : '')),
+
+  saveChat: (thread) =>
+    request('/api/chats', { method: 'POST', body: JSON.stringify(thread) }),
+
+  deleteChat: (id) =>
+    request(`/api/chats/${id}`, { method: 'DELETE' }),
+
+  clearChats: (docId) =>
+    request('/api/chats' + (docId && docId !== 'all' ? `?docId=${docId}` : ''), { method: 'DELETE' }),
 };

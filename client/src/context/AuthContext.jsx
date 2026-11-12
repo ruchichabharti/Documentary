@@ -27,6 +27,28 @@ export function AuthProvider({ children }) {
           if (savedSession) {
             const parsed = JSON.parse(savedSession);
             if (parsed?.user && mounted) {
+              const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+              const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
+              const token = parsed.access_token || localStorage.getItem('collab_token');
+
+              if (token) {
+                try {
+                  const verifyRes = await fetch(`${apiBase}/auth/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+                  if (!verifyRes.ok) {
+                    console.warn('[DocMind Auth] Stale local session detected. Purging...');
+                    localStorage.removeItem('docmind_auth_session');
+                    localStorage.removeItem('collab_token');
+                    localStorage.removeItem('collab_user');
+                    setUser(null);
+                    setSession(null);
+                    setLoading(false);
+                    return;
+                  }
+                } catch (_) {}
+              }
+
               setSession(parsed);
               setUser(parsed.user);
               setLoading(false);
@@ -127,7 +149,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * Dispatches a real 6-digit OTP code to the provided email address
+   * Dispatches a real 6-digit OTP code to the provided email address via Gmail SMTP
    */
   const sendOtp = async (email) => {
     setAuthError(null);
@@ -135,59 +157,22 @@ export function AuthProvider({ children }) {
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
 
-    // 1. Send directly through local backend using Gmail SMTP
-    let localReachable = false;
     try {
       const res = await fetch(`${apiBase}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail }),
       });
-      localReachable = true;
       const data = await res.json();
       if (res.ok) {
         return data;
       }
-      throw new Error(data?.error || 'Failed to send OTP code to your email.');
-    } catch (localErr) {
-      console.warn('[DocMind Auth] Backend mailer error, attempting Supabase OTP fallback:', localErr.message);
-      if (isSupabaseConfigured) {
-        try {
-          const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined;
-          const { data, error } = await supabase.auth.signInWithOtp({
-            email: cleanEmail,
-            options: {
-              shouldCreateUser: true,
-              emailRedirectTo: redirectUrl,
-            },
-          });
-          if (!error) return data;
-        } catch (_) {}
-      }
-      setAuthError(localErr.message);
-      throw localErr;
+      throw new Error(data?.error || 'Failed to dispatch verification code via Gmail.');
+    } catch (err) {
+      console.warn('[DocMind Auth] Send OTP error:', err.message);
+      setAuthError(err.message);
+      throw err;
     }
-
-    // 2. Fallback to Supabase Auth if backend is unreachable
-    if (isSupabaseConfigured) {
-      const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined;
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email: cleanEmail,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: redirectUrl,
-        },
-      });
-
-      if (error) {
-        setAuthError(error.message);
-        throw error;
-      }
-
-      return data;
-    }
-
-    throw new Error('Authentication service unavailable. Please ensure the backend server is running.');
   };
 
   /**
@@ -362,53 +347,83 @@ export function AuthProvider({ children }) {
   };
 
   /**
-   * Password Authentication: Sign In
+   * Password Authentication: Sign In (For existing users: Email + Password)
    */
   const signInWithPassword = async (email, password) => {
-    if (!isSupabaseConfigured) {
-      throw new Error('Supabase credentials are not configured in client/.env');
-    }
     setAuthError(null);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
-    if (error) {
-      setAuthError(error.message);
-      throw error;
+    const cleanEmail = email.trim().toLowerCase();
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
+
+    try {
+      const res = await fetch(`${apiBase}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        const userObj = { id: data.user.id, email: data.user.email, role: 'authenticated' };
+        const sessionObj = { access_token: data.token, user: userObj };
+        setUser(userObj);
+        setSession(sessionObj);
+        try {
+          localStorage.setItem('collab_token', data.token);
+          localStorage.setItem('collab_user', JSON.stringify(userObj));
+          localStorage.setItem('docmind_auth_session', JSON.stringify(sessionObj));
+        } catch (_) {}
+        return data;
+      }
+      throw new Error(data.error || 'Invalid email or password.');
+    } catch (err) {
+      setAuthError(err.message);
+      throw err;
     }
-    if (data?.session) {
-      setSession(data.session);
-      setUser(data.user);
-    }
-    return data;
   };
 
   /**
-   * Password Authentication: Sign Up
+   * Password Authentication: Sign Up (For new users: Email + Password + 6-Digit OTP)
    */
-  const signUpWithPassword = async (email, password) => {
-    if (!isSupabaseConfigured) {
-      throw new Error('Supabase credentials are not configured in client/.env');
-    }
+  const signUpWithPassword = async (email, password, otp = '') => {
     setAuthError(null);
-    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined;
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-      },
-    });
-    if (error) {
-      setAuthError(error.message);
-      throw error;
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanOtp = String(otp || '').trim();
+
+    if (!cleanOtp) {
+      throw new Error('Please enter the 6-digit verification code sent to your email.');
     }
-    if (data?.session) {
-      setSession(data.session);
-      setUser(data.user);
+
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const apiBase = isLocal ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') : '';
+
+    try {
+      const res = await fetch(`${apiBase}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, password, otp: cleanOtp }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        // STRICT: If OTP is invalid or account exists, fail immediately!
+        throw new Error(data.error || 'Failed to create account.');
+      }
+
+      const userObj = { id: data.user.id, email: data.user.email, role: 'authenticated' };
+      const sessionObj = { access_token: data.token, user: userObj };
+      setUser(userObj);
+      setSession(sessionObj);
+      try {
+        localStorage.setItem('collab_token', data.token);
+        localStorage.setItem('collab_user', JSON.stringify(userObj));
+        localStorage.setItem('docmind_auth_session', JSON.stringify(sessionObj));
+      } catch (_) {}
+
+      return data;
+    } catch (err) {
+      setAuthError(err.message);
+      throw err;
     }
-    return data;
   };
 
   /**

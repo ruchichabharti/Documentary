@@ -31,6 +31,14 @@ export async function getUserByEmail(email) {
   return res.rows[0] ?? null;
 }
 
+export async function updateUserPassword(email, hashedPassword) {
+  const cleanEmail = (email || '').toLowerCase().trim();
+  await db.execute({
+    sql: `UPDATE users SET password = ? WHERE email = ?`,
+    args: [hashedPassword, cleanEmail],
+  });
+}
+
 export async function getUserById(id) {
   const res = await db.execute({
     sql: `SELECT id, email, created_at FROM users WHERE id = ?`,
@@ -247,4 +255,92 @@ export async function deleteIngestedDocument(id, ownerId, ownerEmail = '') {
   });
   return res.rowsAffected > 0;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Chat Threads Queries
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getChatThreads(userId, userEmail = '', docId = null) {
+  const cleanEmail = (userEmail || '').toLowerCase();
+  let sql = `SELECT id, user_id, user_email, title, doc_id, doc_title, messages_json, created_at, updated_at
+             FROM chat_threads
+             WHERE (user_id = ? OR (user_email != '' AND user_email = ?))`;
+  const args = [userId, cleanEmail];
+
+  if (docId && docId !== 'all') {
+    sql += ` AND doc_id = ?`;
+    args.push(docId);
+  }
+
+  sql += ` ORDER BY updated_at DESC`;
+
+  const result = await db.execute({ sql, args });
+  return result.rows.map((row) => ({
+    id: row.id,
+    userId: row.user_id,
+    userEmail: row.user_email,
+    title: row.title,
+    docId: row.doc_id,
+    docTitle: row.doc_title,
+    messages: row.messages_json ? JSON.parse(row.messages_json) : [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
+}
+
+export async function saveChatThread({
+  id,
+  userId,
+  userEmail = '',
+  title,
+  docId = 'all',
+  docTitle = 'All Documents',
+  messages = [],
+}) {
+  const cleanEmail = (userEmail || '').toLowerCase();
+  const messagesJson = JSON.stringify(messages || []);
+
+  await db.execute({
+    sql: `INSERT OR REPLACE INTO chat_threads
+          (id, user_id, user_email, title, doc_id, doc_title, messages_json, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE((SELECT created_at FROM chat_threads WHERE id = ?), datetime('now')), datetime('now'))`,
+    args: [id, userId, cleanEmail, title, docId, docTitle, messagesJson, id],
+  });
+
+  return {
+    id,
+    userId,
+    userEmail: cleanEmail,
+    title,
+    docId,
+    docTitle,
+    messages,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export async function deleteChatThread(id, userId, userEmail = '') {
+  const cleanEmail = (userEmail || '').toLowerCase();
+  const res = await db.execute({
+    sql: `DELETE FROM chat_threads 
+          WHERE id = ? AND (user_id = ? OR (user_email != '' AND user_email = ?))`,
+    args: [id, userId, cleanEmail],
+  });
+  return res.rowsAffected > 0;
+}
+
+export async function clearChatThreads(userId, userEmail = '', docId = null) {
+  const cleanEmail = (userEmail || '').toLowerCase();
+  let sql = `DELETE FROM chat_threads WHERE (user_id = ? OR (user_email != '' AND user_email = ?))`;
+  const args = [userId, cleanEmail];
+
+  if (docId && docId !== 'all') {
+    sql += ` AND doc_id = ?`;
+    args.push(docId);
+  }
+
+  const res = await db.execute({ sql, args });
+  return res.rowsAffected > 0;
+}
+
 

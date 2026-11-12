@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookOpen, 
-  ArrowRight, 
-  Search, 
-  FileText, 
-  Edit3, 
-  Bookmark, 
-  Check, 
-  Layers, 
+import {
+  BookOpen,
+  ArrowRight,
+  Search,
+  FileText,
+  Edit3,
+  Bookmark,
+  Check,
+  Layers,
   ShieldCheck,
   Feather,
   Sparkles,
@@ -168,9 +168,9 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] text-[#1c1917] selection:bg-[#fed7aa] selection:text-[#7c2d12] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#ffffff] text-[#1c1917] selection:bg-[#fed7aa] selection:text-[#7c2d12] flex flex-col font-sans">
       {/* ── Top Navigation Bar ────────────────────────────────────────────── */}
-      <header className="border-b border-[#e7e5e4] bg-[#faf9f6]/90 backdrop-blur-md sticky top-0 z-40 transition-all">
+      <header className="border-b border-[#e7e5e4] bg-[#ffffff]/90 backdrop-blur-md sticky top-0 z-40 transition-all">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 no-underline text-[#1c1917]">
             <div className="w-7 h-7 rounded-md bg-[#ffffff] border border-[#e7e5e4] text-[#c2410c] flex items-center justify-center shadow-xs">
@@ -219,7 +219,7 @@ export default function Landing() {
       {/* ── Hero Section ──────────────────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 pt-16 pb-16 text-center">
         <div className="max-w-2xl mx-auto space-y-5">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffffff] border border-[#e7e5e4] text-xs text-[#57534e] shadow-xs"
@@ -228,7 +228,7 @@ export default function Landing() {
             <span>Upload PDFs &bull; Get Verified Answers &bull; Take Notes Together</span>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -237,7 +237,7 @@ export default function Landing() {
             A simple, smart workspace for your documents.
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
@@ -246,7 +246,7 @@ export default function Landing() {
             Upload your PDFs and documents. Ask questions and get clear, accurate answers with exact page references, then write and collaborate on notes in real time.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -270,7 +270,7 @@ export default function Landing() {
         </div>
 
         {/* ── Document Preview Card ─────────────────────────────────────────── */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -293,22 +293,20 @@ export default function Landing() {
               <button
                 type="button"
                 onClick={() => setPreviewMode('notes')}
-                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
-                  previewMode === 'notes'
-                    ? 'bg-[#ffffff] text-[#c2410c] shadow-xs'
-                    : 'text-[#78716c] hover:text-[#1c1917]'
-                }`}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${previewMode === 'notes'
+                  ? 'bg-[#ffffff] text-[#c2410c] shadow-xs'
+                  : 'text-[#78716c] hover:text-[#1c1917]'
+                  }`}
               >
                 Project Notes
               </button>
               <button
                 type="button"
                 onClick={() => setPreviewMode('math')}
-                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
-                  previewMode === 'math'
-                    ? 'bg-[#ffffff] text-[#c2410c] shadow-xs'
-                    : 'text-[#78716c] hover:text-[#1c1917]'
-                }`}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${previewMode === 'math'
+                  ? 'bg-[#ffffff] text-[#c2410c] shadow-xs'
+                  : 'text-[#78716c] hover:text-[#1c1917]'
+                  }`}
               >
                 Math &amp; Formulas
               </button>
@@ -414,7 +412,7 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {workflowSteps.map((step, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="notion-card p-6 border border-[#e7e5e4] bg-[#faf9f6] flex flex-col justify-between"
               >

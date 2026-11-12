@@ -6,28 +6,50 @@
 
 /* ─── Option 5: Clean Minimal (Notion & Substack Style) Variables ─────────── */
 :root {
-  --bg-primary:     #faf9f6;   /* Warm bone / Notion canvas */
-  --bg-secondary:   #ffffff;   /* Pure white paper */
-  --bg-surface:     #ffffff;   /* Elevated card surface */
-  --bg-hover:       #f5f4f0;   /* Warm stone hover */
-  --border:         #e7e5e4;   /* Minimal stone border */
-  --border-strong:  #d6d3d1;   /* Defined stone border */
-  --text-primary:   #1c1917;   /* Deep stone ink */
-  --text-secondary: #57534e;   /* Soft graphite stone */
-  --text-muted:     #a8a29e;   /* Muted warm stone */
-  --accent:         #1c1917;   /* Ink action black */
-  --terracotta:     #c2410c;   /* Substack terracotta rust */
-  --terracotta-light: #fff7ed; /* Light rust tint */
-  --danger:         #dc2626;
-  --success:        #15803d;
-  --editor-bg:      #ffffff;   /* Clean white sheet */
-  --editor-text:    #1c1917;   /* Deep ink text */
+  --bg-primary: #ffffff;
+  /* Pure white canvas */
+  --bg-secondary: #ffffff;
+  /* Pure white paper */
+  --bg-surface: #ffffff;
+  /* Elevated card surface */
+  --bg-hover: #f5f4f0;
+  /* Warm stone hover */
+  --border: #e7e5e4;
+  /* Minimal stone border */
+  --border-strong: #d6d3d1;
+  /* Defined stone border */
+  --text-primary: #1c1917;
+  /* Deep stone ink */
+  --text-secondary: #57534e;
+  /* Soft graphite stone */
+  --text-muted: #a8a29e;
+  /* Muted warm stone */
+  --accent: #1c1917;
+  /* Ink action black */
+  --terracotta: #c2410c;
+  /* Substack terracotta rust */
+  --terracotta-light: #fff7ed;
+  /* Light rust tint */
+  --danger: #dc2626;
+  --success: #15803d;
+  --editor-bg: #ffffff;
+  /* Clean white sheet */
+  --editor-text: #1c1917;
+  /* Deep ink text */
 }
 
 /* ─── Base Reset ──────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -42,10 +64,23 @@ html, body, #root {
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}
 
 /* ─── Notion-Style Minimal Cards ─────────────────────────────────────────── */
 .notion-card {
@@ -79,14 +114,17 @@ html, body, #root {
   transition: all 0.15s ease;
   cursor: pointer;
 }
+
 .btn-ink:hover {
   background: #292524;
   box-shadow: 0 3px 10px rgba(28, 25, 23, 0.18);
   transform: translateY(-0.5px);
 }
+
 .btn-ink:active {
   transform: translateY(0);
 }
+
 .btn-ink:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -109,6 +147,7 @@ html, body, #root {
   transition: all 0.15s ease;
   cursor: pointer;
 }
+
 .btn-notion-secondary:hover {
   background: var(--bg-hover);
   border-color: var(--border-strong);
@@ -127,14 +166,19 @@ html, body, #root {
   box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03) inset;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
+
 .input-notion-icon {
   padding-left: 2.5rem !important;
 }
+
 .input-notion:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.08);
 }
-.input-notion::placeholder { color: var(--text-muted); }
+
+.input-notion::placeholder {
+  color: var(--text-muted);
+}
 
 /* ─── Editor Canvas (Pure Distraction-Free Paper Sheet) ──────────────────── */
 .editor-canvas {
@@ -200,32 +244,39 @@ html, body, #root {
   font-weight: 500;
   border: 1px solid transparent;
 }
+
 .status-dot {
   width: 6px;
   height: 6px;
   border-radius: 9999px;
 }
+
 .status-connected {
   background: #f0fdf4;
   color: #166534;
   border-color: #bbf7d0;
 }
+
 .status-connected .status-dot {
   background: #16a34a;
 }
+
 .status-connecting {
   background: #fffbeb;
   color: #92400e;
   border-color: #fde68a;
 }
+
 .status-connecting .status-dot {
   background: #d97706;
 }
+
 .status-disconnected {
   background: #fef2f2;
   color: #991b1b;
   border-color: #fecaca;
 }
+
 .status-disconnected .status-dot {
   background: #dc2626;
 }
@@ -245,7 +296,10 @@ html, body, #root {
   margin-left: -6px;
   box-shadow: 0 1px 3px rgba(28, 25, 23, 0.1);
 }
-.presence-avatar:first-child { margin-left: 0; }
+
+.presence-avatar:first-child {
+  margin-left: 0;
+}
 
 /* ─── KaTeX Math Display Styles (Editorial Ivory Paper) ──────────────────── */
 .katex {
@@ -263,7 +317,7 @@ html, body, #root {
   border: 1px solid #e7e5e4;
 }
 
-.katex-display > .katex {
+.katex-display>.katex {
   max-width: 100%;
   text-align: center;
   color: #1c1917;
