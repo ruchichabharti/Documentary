@@ -83,12 +83,12 @@ app.post('/api/ai-summary', async (req, res) => {
     if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
 
     const apiKey = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || '';
-    const models = ['gemini-3.5-flash', 'gemini-3.6-flash'];
+    const models = ['gemini-3.6-flash', 'gemini-3.5-flash'];
 
     for (const model of models) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
 
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,

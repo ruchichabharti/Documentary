@@ -333,7 +333,7 @@ The user is searching their uploaded document(s), but their query was not found 
 User Question: ${query}`;
 
     if (GEMINI_API_KEY) {
-      for (const model of ['gemini-3.5-flash', 'gemini-3.6-flash']) {
+      for (const model of ['gemini-3.6-flash', 'gemini-3.5-flash']) {
         try {
           const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
@@ -470,7 +470,7 @@ Guidelines:
 
   // 1. Check if Gemini API key available for LLM generation
   if (GEMINI_API_KEY) {
-    for (const model of ['gemini-3.5-flash', 'gemini-3.6-flash']) {
+    for (const model of ['gemini-3.6-flash', 'gemini-3.5-flash']) {
       try {
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
