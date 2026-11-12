@@ -247,10 +247,6 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ error: 'Internal server error processing registration' });
   }
 });
-    console.error('[signup]', err);
-    res.status(500).json({ error: 'Internal server error processing registration' });
-  }
-});
 
 // POST /auth/login (For existing users: requires only email and password)
 router.post('/login', async (req, res) => {
